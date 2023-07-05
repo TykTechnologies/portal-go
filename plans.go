@@ -4,8 +4,8 @@ type Plans struct {
 	client *Client
 }
 
-func (u Plans) ListPlans() {}
+func (p Plans) ListPlans() {}
 
-func (u Plans) CreatePlan() {}
+func (p Plans) CreatePlan() {}
 
-func (u Plans) GetPlanByID() {}
+func (p Plans) GetPlanByID() {}

@@ -10,7 +10,7 @@ type Products struct {
 	client *Client
 }
 
-func (u Products) CreateProduct(input CreateProductInput) (error, error) {
+func (p Products) CreateProduct(input CreateProductInput) (error, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func (u Products) CreateProduct(input CreateProductInput) (error, error) {
 	return nil, nil
 }
 
-func (u Products) GetProduct(id uint64) (error, error) {
+func (p Products) GetProduct(id uint64) (error, error) {
 	req, err := u.client.newGetRequest(fmt.Sprintf("/portal-api/products/%d", id), nil)
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func (u Products) GetProduct(id uint64) (error, error) {
 	return nil, nil
 }
 
-func (u Products) ListProducts(options *ListProductsOptions) (error, error) {
+func (p Products) ListProducts(options *ListProductsOptions) (error, error) {
 	req, err := u.client.newGetRequest("/portal-api/products", nil)
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (u Products) ListProducts(options *ListProductsOptions) (error, error) {
 	return nil, nil
 }
 
-func (u Products) UpdateProduct(id uint64, input UpdateProductInput) (error, error) {
+func (p Products) UpdateProduct(id uint64, input UpdateProductInput) (error, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err

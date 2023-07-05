@@ -4,8 +4,8 @@ type Teams struct {
 	client *Client
 }
 
-func (u Teams) ListTeams() {}
+func (t Teams) ListTeams() {}
 
-func (u Teams) CreateTeam() {}
+func (t Teams) CreateTeam() {}
 
-func (u Teams) GetTeamByID() {}
+func (t Teams) GetTeamByID() {}

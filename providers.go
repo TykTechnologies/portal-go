@@ -4,12 +4,12 @@ type Providers struct {
 	client *Client
 }
 
-func (u Providers) ListProvider() {}
+func (p Providers) ListProvider() {}
 
-func (u Providers) CreateProvider() {}
+func (p Providers) CreateProvider() {}
 
-func (u Providers) GetProviderByID() {}
+func (p Providers) GetProviderByID() {}
 
-func (u Providers) SynchronizeData() {}
+func (p Providers) SynchronizeData() {}
 
-func (u Providers) SynchronizeDataById() {}
+func (p Providers) SynchronizeDataById() {}

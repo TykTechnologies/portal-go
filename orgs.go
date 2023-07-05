@@ -4,6 +4,6 @@ type Orgs struct {
 	client *Client
 }
 
-func (u Orgs) CreateOrg() {}
+func (o Orgs) CreateOrg() {}
 
-func (u Orgs) GetOrgByID() {}
+func (o Orgs) GetOrgByID() {}

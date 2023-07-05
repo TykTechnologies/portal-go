@@ -10,7 +10,7 @@ type Catalogues struct {
 	client *Client
 }
 
-func (u Catalogues) CreateCatalogue(input CreateCatalogueInput) (*CreateCatalogueOutput, error) {
+func (c Catalogues) CreateCatalogue(input CreateCatalogueInput) (*CreateCatalogueOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func (u Catalogues) CreateCatalogue(input CreateCatalogueInput) (*CreateCatalogu
 	return &CreateCatalogueOutput{}, nil
 }
 
-func (u Catalogues) GetCatalogue(id uint64) (*GetCatalogueOutput, error) {
+func (c Catalogues) GetCatalogue(id uint64) (*GetCatalogueOutput, error) {
 	req, err := u.client.newGetRequest(fmt.Sprintf("/portal-api/catalogues/%d", id), nil)
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func (u Catalogues) GetCatalogue(id uint64) (*GetCatalogueOutput, error) {
 	return &GetCatalogueOutput{}, nil
 }
 
-func (u Catalogues) UpdateCatalogue(id uint64, params UpdateCatalogueInput) (*UpdateCatalogueOutput, error) {
+func (c Catalogues) UpdateCatalogue(id uint64, params UpdateCatalogueInput) (*UpdateCatalogueOutput, error) {
 	req, err := u.client.newGetRequest(fmt.Sprintf("/portal-api/catalogues/%d", id), nil)
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (u Catalogues) UpdateCatalogue(id uint64, params UpdateCatalogueInput) (*Up
 	return &GetCatalogueOutput{}, nil
 }
 
-func (u Catalogues) DeleteCatalogue(id uint64) (*DeleteCatalogueOutput, error) {
+func (c Catalogues) DeleteCatalogue(id uint64) (*DeleteCatalogueOutput, error) {
 	req, err := u.client.newDeleteRequest(fmt.Sprintf("/portal-api/catalogues/%d", id), nil, nil)
 	if err != nil {
 		return nil, err
@@ -71,7 +71,7 @@ func (u Catalogues) DeleteCatalogue(id uint64) (*DeleteCatalogueOutput, error) {
 	return &DeleteCatalogueOutput{}, nil
 }
 
-func (u Catalogues) ListCatalogues(opts *ListCataloguesOptions) (*ListCataloguesOutput, error) {
+func (c Catalogues) ListCatalogues(opts *ListCataloguesOptions) (*ListCataloguesOutput, error) {
 	req, err := u.client.newGetRequest("/portal-api/catalogues", nil)
 	if err != nil {
 		return nil, err
