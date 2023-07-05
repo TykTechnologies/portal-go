@@ -1,17 +1,17 @@
 package portal
 
-type Users struct {
+type usersService struct {
 	client *Client
 }
 
-func (u Users) CreateUser() {}
+func (u usersService) CreateUser() {}
 
-func (u Users) DeleteUser() {}
+func (u usersService) DeleteUser() {}
 
-func (u Users) InviteUser() {}
+func (u usersService) InviteUser() {}
 
-func (u Users) UpdateUser() {}
+func (u usersService) UpdateUser() {}
 
-func (u Users) GetUserByID() {}
+func (u usersService) GetUserByID() {}
 
-func (u Users) ListUsers() {}
+func (u usersService) ListUsers() {}

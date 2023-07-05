@@ -1,11 +1,11 @@
 package portal
 
-type Teams struct {
+type teamsService struct {
 	client *Client
 }
 
-func (t Teams) ListTeams() {}
+func (t teamsService) ListTeams() {}
 
-func (t Teams) CreateTeam() {}
+func (t teamsService) CreateTeam() {}
 
-func (t Teams) GetTeamByID() {}
+func (t teamsService) GetTeamByID() {}

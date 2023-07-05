@@ -1,11 +1,11 @@
 package portal
 
-type Plans struct {
+type plansService struct {
 	client *Client
 }
 
-func (p Plans) ListPlans() {}
+func (p plansService) ListPlans() {}
 
-func (p Plans) CreatePlan() {}
+func (p plansService) CreatePlan() {}
 
-func (p Plans) GetPlanByID() {}
+func (p plansService) GetPlanByID() {}

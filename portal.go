@@ -15,14 +15,73 @@ type Config struct {
 	HTTPClient *http.Client
 }
 
+type CataloguesService interface {
+	CreateCatalogue(input CreateCatalogueInput) (*CreateCatalogueOutput, error)
+	GetCatalogue(id uint64) (*GetCatalogueOutput, error)
+	UpdateCatalogue(id uint64, params UpdateCatalogueInput) (*UpdateCatalogueOutput, error)
+	DeleteCatalogue(id uint64) (*DeleteCatalogueOutput, error)
+	ListCatalogues(opts *ListCataloguesOptions) (*ListCataloguesOutput, error)
+}
+
 type Client struct {
 	config     *Config
-	Users      *Users
-	Catalogues *Catalogues
-	Providers  *Providers
-	Teams      *Teams
-	Products   *Products
-	Orgs       *Orgs
+	users      *usersService
+	catalogues CataloguesService
+	providers  ProvidersService
+	teams      *teamsService
+	products   *productsService
+	orgs       *orgsService
+}
+
+func (c Client) Users() *usersService {
+	return c.users
+}
+
+func (c Client) Catalogues() CataloguesService {
+	return c.catalogues
+}
+
+func (c *Client) SetCatalogues(catalogues CataloguesService) {
+	c.catalogues = catalogues
+}
+
+func (c Client) Products() *productsService {
+	return c.products
+}
+
+type ProvidersService interface {
+	CreateProvider(input CreateProviderInput) (*CreateProviderOutput, error)
+	GetProvider(id uint64) (*GetProviderOutput, error)
+	ListProviders(options *ListProvidersOptions) (*ListProvidersOutput, error)
+	UpdateProvider(id uint64, input UpdateProviderInput) (*UpdateProviderOutput, error)
+}
+
+func (c Client) Providers() ProvidersService {
+	return c.providers
+}
+
+func (c *Client) SetProviders(providers ProvidersService) {
+	c.providers = providers
+}
+
+func (c Client) Teams() *teamsService {
+	return c.teams
+}
+
+func (c Client) Orgs() *orgsService {
+	return c.orgs
+}
+
+func (c *Client) SetProducts(products *productsService) {
+	c.products = products
+}
+
+func (c *Client) SetTeams(teams *teamsService) {
+	c.teams = teams
+}
+
+func (c *Client) SetOrgs(orgs *orgsService) {
+	c.orgs = orgs
 }
 
 func newPortal(config *Config) (*Client, error) {
@@ -30,12 +89,12 @@ func newPortal(config *Config) (*Client, error) {
 		config: config,
 	}
 
-	client.Users = &Users{client: client}
-	client.Catalogues = &Catalogues{client: client}
-	client.Products = &Products{client: client}
-	client.Providers = &Providers{client: client}
-	client.Teams = &Teams{client: client}
-	client.Orgs = &Orgs{client: client}
+	client.users = &usersService{client: client}
+	client.catalogues = &cataloguesService{client: client}
+	client.products = &productsService{client: client}
+	client.providers = &providersService{client: client}
+	client.teams = &teamsService{client: client}
+	client.orgs = &orgsService{client: client}
 
 	return client, nil
 }

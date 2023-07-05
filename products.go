@@ -6,74 +6,79 @@ import (
 	"fmt"
 )
 
-type Products struct {
+const (
+	pathProducts = "/portal-api/products"
+	pathProduct  = "/portal-api/products/%d"
+)
+
+type productsService struct {
 	client *Client
 }
 
-func (p Products) CreateProduct(input CreateProductInput) (error, error) {
+func (p productsService) CreateProduct(input CreateProductInput) (*CreateProductOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := u.client.newPostRequest("/portal-api/products", bytes.NewReader(payload), nil)
+	req, err := p.client.newPostRequest(pathProducts, bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = u.client.performRequest(req)
+	_, err = p.client.performRequest(req)
 	if err != nil {
 		return nil, err
 	}
 
-	return nil, nil
+	return &CreateProductOutput{}, nil
 }
 
-func (p Products) GetProduct(id uint64) (error, error) {
-	req, err := u.client.newGetRequest(fmt.Sprintf("/portal-api/products/%d", id), nil)
+func (p productsService) GetProduct(id uint64) (*GetProductOutput, error) {
+	req, err := p.client.newGetRequest(fmt.Sprintf(pathProduct, id), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = u.client.performRequest(req)
+	_, err = p.client.performRequest(req)
 	if err != nil {
 		return nil, err
 	}
 
-	return nil, nil
+	return &GetProductOutput{}, nil
 }
 
-func (p Products) ListProducts(options *ListProductsOptions) (error, error) {
-	req, err := u.client.newGetRequest("/portal-api/products", nil)
+func (p productsService) ListProducts(options *ListProductsOptions) (*ListProductsOutput, error) {
+	req, err := p.client.newGetRequest(pathProducts, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = u.client.performRequest(req)
+	_, err = p.client.performRequest(req)
 	if err != nil {
 		return nil, err
 	}
 
-	return nil, nil
+	return &ListProductsOutput{}, nil
 }
 
-func (p Products) UpdateProduct(id uint64, input UpdateProductInput) (error, error) {
+func (p productsService) UpdateProduct(id uint64, input UpdateProductInput) (*UpdateProductOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := u.client.newPutRequest(fmt.Sprintf("/portal-api/products/%d", id), bytes.NewReader(payload), nil)
+	req, err := p.client.newPutRequest(fmt.Sprintf(pathProduct, id), bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = u.client.performRequest(req)
+	_, err = p.client.performRequest(req)
 	if err != nil {
 		return nil, err
 	}
 
-	return nil, nil
+	return &UpdateProductOutput{}, nil
 }
 
 type UpdateProductInput struct {
@@ -83,3 +88,15 @@ type UpdateProductInput struct {
 type CreateProductInput struct{}
 
 type ListProductsOptions struct{}
+
+type ListProductsOutput struct{}
+
+type Product struct{}
+
+type ProductOutput struct{}
+
+type UpdateProductOutput = ProductOutput
+
+type GetProductOutput = ProductOutput
+
+type CreateProductOutput = ProductOutput

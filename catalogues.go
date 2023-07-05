@@ -6,22 +6,27 @@ import (
 	"fmt"
 )
 
-type Catalogues struct {
+const (
+	pathCatalogues = "/portal-api/catalogues"
+	pathCatalogue  = "/portal-api/catalogues/%d"
+)
+
+type cataloguesService struct {
 	client *Client
 }
 
-func (c Catalogues) CreateCatalogue(input CreateCatalogueInput) (*CreateCatalogueOutput, error) {
+func (c cataloguesService) CreateCatalogue(input CreateCatalogueInput) (*CreateCatalogueOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := u.client.newPostRequest("/portal-api/products/%d", bytes.NewReader(payload), nil)
+	req, err := c.client.newPostRequest(pathCatalogues, bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = u.client.performRequest(req)
+	_, err = c.client.performRequest(req)
 	if err != nil {
 		return nil, err
 	}
@@ -29,27 +34,13 @@ func (c Catalogues) CreateCatalogue(input CreateCatalogueInput) (*CreateCatalogu
 	return &CreateCatalogueOutput{}, nil
 }
 
-func (c Catalogues) GetCatalogue(id uint64) (*GetCatalogueOutput, error) {
-	req, err := u.client.newGetRequest(fmt.Sprintf("/portal-api/catalogues/%d", id), nil)
+func (c cataloguesService) GetCatalogue(id uint64) (*GetCatalogueOutput, error) {
+	req, err := c.client.newGetRequest(fmt.Sprintf(pathCatalogue, id), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = u.client.performRequest(req)
-	if err != nil {
-		return nil, err
-	}
-
-	return &GetCatalogueOutput{}, nil
-}
-
-func (c Catalogues) UpdateCatalogue(id uint64, params UpdateCatalogueInput) (*UpdateCatalogueOutput, error) {
-	req, err := u.client.newGetRequest(fmt.Sprintf("/portal-api/catalogues/%d", id), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = u.client.performRequest(req)
+	_, err = c.client.performRequest(req)
 	if err != nil {
 		return nil, err
 	}
@@ -57,13 +48,27 @@ func (c Catalogues) UpdateCatalogue(id uint64, params UpdateCatalogueInput) (*Up
 	return &GetCatalogueOutput{}, nil
 }
 
-func (c Catalogues) DeleteCatalogue(id uint64) (*DeleteCatalogueOutput, error) {
-	req, err := u.client.newDeleteRequest(fmt.Sprintf("/portal-api/catalogues/%d", id), nil, nil)
+func (c cataloguesService) UpdateCatalogue(id uint64, params UpdateCatalogueInput) (*UpdateCatalogueOutput, error) {
+	req, err := c.client.newGetRequest(fmt.Sprintf(pathCatalogue, id), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = u.client.performRequest(req)
+	_, err = c.client.performRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &GetCatalogueOutput{}, nil
+}
+
+func (c cataloguesService) DeleteCatalogue(id uint64) (*DeleteCatalogueOutput, error) {
+	req, err := c.client.newDeleteRequest(fmt.Sprintf(pathCatalogue, id), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = c.client.performRequest(req)
 	if err != nil {
 		return nil, err
 	}
@@ -71,13 +76,13 @@ func (c Catalogues) DeleteCatalogue(id uint64) (*DeleteCatalogueOutput, error) {
 	return &DeleteCatalogueOutput{}, nil
 }
 
-func (c Catalogues) ListCatalogues(opts *ListCataloguesOptions) (*ListCataloguesOutput, error) {
-	req, err := u.client.newGetRequest("/portal-api/catalogues", nil)
+func (c cataloguesService) ListCatalogues(opts *ListCataloguesOptions) (*ListCataloguesOutput, error) {
+	req, err := c.client.newGetRequest(pathCatalogues, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = u.client.performRequest(req)
+	_, err = c.client.performRequest(req)
 	if err != nil {
 		return nil, err
 	}
