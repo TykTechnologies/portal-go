@@ -1,3 +1,3 @@
-module github.com/edsonmichaque/tdp-go
+module github.com/edsonmichaque/portal-go
 
 go 1.20
