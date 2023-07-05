@@ -1,19 +1,85 @@
-package tdp
+package portal
 
-type Products struct{}
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+)
 
-func (u Products) CreateProduct(input ProductCreateInput) {}
+type Products struct {
+	client *Client
+}
 
-func (u Products) GetProduct(id uint64) {}
+func (u Products) CreateProduct(input CreateProductInput) (error, error) {
+	payload, err := json.Marshal(input)
+	if err != nil {
+		return nil, err
+	}
 
-func (u Products) ListProducts(options ProductListOptions) {}
+	req, err := u.client.newPostRequest("/portal-api/products", bytes.NewReader(payload), nil)
+	if err != nil {
+		return nil, err
+	}
 
-func (u Products) UpdateProducts(id uint64, input ProductUpdateInput) {}
+	_, err = u.client.performRequest(req)
+	if err != nil {
+		return nil, err
+	}
 
-type ProductUpdateInput struct {
+	return nil, nil
+}
+
+func (u Products) GetProduct(id uint64) (error, error) {
+	req, err := u.client.newGetRequest(fmt.Sprintf("/portal-api/products/%d", id), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = u.client.performRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+}
+
+func (u Products) ListProducts(options *ListProductsOptions) (error, error) {
+	req, err := u.client.newGetRequest("/portal-api/products", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = u.client.performRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+}
+
+func (u Products) UpdateProduct(id uint64, input UpdateProductInput) (error, error) {
+	payload, err := json.Marshal(input)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := u.client.newPutRequest(fmt.Sprintf("/portal-api/products/%d", id), bytes.NewReader(payload), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = u.client.performRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+}
+
+type UpdateProductInput struct {
 	Catalogues []uint64
 }
 
-type ProductCreateInput struct{}
+type CreateProductInput struct{}
 
-type ProductListOptions struct{}
+type ListProductsOptions struct{}

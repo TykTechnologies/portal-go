@@ -1,6 +1,8 @@
-package tdp
+package portal
 
-type Providers struct{}
+type Providers struct {
+	client *Client
+}
 
 func (u Providers) ListProvider() {}
 

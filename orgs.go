@@ -1,6 +1,8 @@
-package tdp
+package portal
 
-type Orgs struct{}
+type Orgs struct {
+	client *Client
+}
 
 func (u Orgs) CreateOrg() {}
 

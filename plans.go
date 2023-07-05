@@ -1,6 +1,8 @@
-package tdp
+package portal
 
-type Plans struct{}
+type Plans struct {
+	client *Client
+}
 
 func (u Plans) ListPlans() {}
 

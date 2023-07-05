@@ -1,6 +1,8 @@
-package tdp
+package portal
 
-type Teams struct{}
+type Teams struct {
+	client *Client
+}
 
 func (u Teams) ListTeams() {}
 

@@ -1,6 +1,8 @@
-package tdp
+package portal
 
-type Users struct{}
+type Users struct {
+	client *Client
+}
 
 func (u Users) CreateUser() {}
 
