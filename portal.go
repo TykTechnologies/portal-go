@@ -2,65 +2,37 @@ package portal
 
 import (
 	"crypto/tls"
+	"encoding/json"
+	"errors"
 	"io"
+	"log"
+	"net"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
+	"time"
+)
+
+const (
+	headerAuthorization      = "Authorization"
+	headerAccept             = "Accept"
+	headerContentType        = "Content-Type"
+	defaultBaseURL           = "http://localhost:3001"
+	defaultConnectionTimeout = 30 * time.Second
 )
 
 type Config struct {
-	Token      string
-	Debug      bool
-	Insecure   bool
-	BaseURL    string
-	HTTPClient *http.Client
-}
-
-type ProductsService interface {
-	CreateProduct(input CreateProductInput) (*CreateProductOutput, error)
-	GetProduct(id uint64) (*GetProductOutput, error)
-	ListProducts(options *ListProductsOptions) (*ListProductsOutput, error)
-	UpdateProduct(id uint64, input UpdateProductInput) (*UpdateProductOutput, error)
-}
-
-type CataloguesService interface {
-	CreateCatalogue(input CreateCatalogueInput) (*CreateCatalogueOutput, error)
-	GetCatalogue(id uint64) (*GetCatalogueOutput, error)
-	UpdateCatalogue(id uint64, params UpdateCatalogueInput) (*UpdateCatalogueOutput, error)
-	DeleteCatalogue(id uint64) (*DeleteCatalogueOutput, error)
-	ListCatalogues(opts *ListCataloguesOptions) (*ListCataloguesOutput, error)
-}
-
-type ProvidersService interface {
-	CreateProvider(input CreateProviderInput) (*CreateProviderOutput, error)
-	GetProvider(id uint64) (*GetProviderOutput, error)
-	ListProviders(options *ListProvidersOptions) (*ListProvidersOutput, error)
-	UpdateProvider(id uint64, input UpdateProviderInput) (*UpdateProviderOutput, error)
+	Token             string
+	Debug             bool
+	Insecure          bool
+	BaseURL           string
+	HTTPClient        *http.Client
+	ConnectionTimeout time.Duration
 }
 
 type Client struct {
-	config     *Config
-	users      *usersService
-	catalogues CataloguesService
-	providers  ProvidersService
-	teams      *teamsService
-	products   ProductsService
-	orgs       *orgsService
-}
-
-func (c Client) Users() *usersService {
-	return c.users
-}
-
-func (c Client) Catalogues() CataloguesService {
-	return c.catalogues
-}
-
-func (c *Client) SetCatalogues(catalogues CataloguesService) {
-	c.catalogues = catalogues
-}
-
-func (c Client) Products() ProductsService {
-	return c.products
+	config    *Config
+	providers ProvidersService
 }
 
 func (c Client) Providers() ProvidersService {
@@ -71,37 +43,28 @@ func (c *Client) SetProviders(providers ProvidersService) {
 	c.providers = providers
 }
 
-func (c Client) Teams() *teamsService {
-	return c.teams
+func New(config *Config) (*Client, error) {
+	return newClient(config)
 }
 
-func (c Client) Orgs() *orgsService {
-	return c.orgs
-}
+func newClient(config *Config) (*Client, error) {
+	if config == nil {
+		return nil, errors.New("config should not be empty")
+	}
 
-func (c *Client) SetProducts(products ProductsService) {
-	c.products = products
-}
+	if config.BaseURL == "" {
+		config.BaseURL = defaultBaseURL
+	}
 
-func (c *Client) SetTeams(teams *teamsService) {
-	c.teams = teams
-}
+	if config.ConnectionTimeout == 0 {
+		config.ConnectionTimeout = defaultConnectionTimeout
+	}
 
-func (c *Client) SetOrgs(orgs *orgsService) {
-	c.orgs = orgs
-}
-
-func newPortal(config *Config) (*Client, error) {
 	client := &Client{
 		config: config,
 	}
 
-	client.users = &usersService{client: client}
-	client.catalogues = &cataloguesService{client: client}
-	client.products = &productsService{client: client}
 	client.providers = &providersService{client: client}
-	client.teams = &teamsService{client: client}
-	client.orgs = &orgsService{client: client}
 
 	return client, nil
 }
@@ -116,6 +79,10 @@ func (c Client) newRequest(method string, path string, body io.Reader, params ur
 	if err != nil {
 		return nil, err
 	}
+
+	req.Header.Add(headerAuthorization, c.config.Token)
+	req.Header.Add(headerAccept, "application/json")
+	req.Header.Add(headerContentType, "application/json")
 
 	req.URL.RawQuery = params.Encode()
 
@@ -138,12 +105,74 @@ func (c Client) newDeleteRequest(path string, body io.Reader, params url.Values)
 	return c.newRequest(http.MethodDelete, path, body, params)
 }
 
-func (c Client) performRequest(req *http.Request) (*http.Response, error) {
+func (c Client) doGet(path string, params url.Values) (*apiResponse, error) {
+	req, err := c.newGetRequest(path, params)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.performRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func (c Client) doPost(path string, body io.Reader, params url.Values) (*apiResponse, error) {
+	req, err := c.newPostRequest(path, body, params)
+
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.performRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func (c Client) doDelete(path string, body io.Reader, params url.Values) (*apiResponse, error) {
+	req, err := c.newDeleteRequest(path, body, params)
+
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.performRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func (c Client) doPut(path string, body io.Reader, params url.Values) (*apiResponse, error) {
+	req, err := c.newPutRequest(path, body, params)
+
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.performRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func (c Client) performRequest(req *http.Request) (*apiResponse, error) {
 	httpClient := http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: c.config.Insecure,
 			},
+			DialContext: (&net.Dialer{
+				Timeout: c.config.ConnectionTimeout,
+			}).DialContext,
 		},
 	}
 
@@ -156,5 +185,62 @@ func (c Client) performRequest(req *http.Request) (*http.Response, error) {
 		return nil, err
 	}
 
-	return resp, nil
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode >= 299 {
+		return nil, handleAPIError(resp.StatusCode, apiError{
+			Body: body,
+		})
+	}
+
+	return &apiResponse{
+		Body: body,
+	}, nil
+}
+
+var (
+	ErrNotFound  = errors.New("not found")
+	ErrForbidden = errors.New("forbidden")
+)
+
+func handleAPIError(code int, apiErr apiError) error {
+	if code == 400 || code == 422 {
+		var e Error
+		if err := json.Unmarshal(apiErr.Body, &e); err != nil {
+			return err
+		}
+
+		return e
+	}
+
+	return apiErr
+}
+
+type apiResponse struct {
+	Body []byte
+}
+
+func (a apiResponse) Parse(v interface{}) error {
+	return json.Unmarshal(a.Body, &v)
+}
+
+type apiError struct {
+	Body []byte
+}
+
+func (e apiError) Error() string {
+	return "API error"
+}
+
+type Error struct {
+	Errors []string `json:"errors"`
+}
+
+func (e Error) Error() string {
+	return "API error"
 }

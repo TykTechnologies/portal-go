@@ -2,78 +2,91 @@ package portal
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 )
 
 const (
-	pathProviders = "/portal-api/providers"
-	pathProvider  = "/portal-api/providers/%d"
+	pathProviders    = "/portal-api/providers"
+	pathProvider     = "/portal-api/providers/%d"
+	pathProviderSync = "/portal-api/providers/%d/synchronize"
 )
+
+type ProvidersService interface {
+	CreateProvider(ctx context.Context, input CreateProviderInput) (*CreateProviderOutput, error)
+	GetProvider(ctx context.Context, id uint64) (*GetProviderOutput, error)
+	ListProviders(ctx context.Context, options *ListProvidersOptions) (*ListProvidersOutput, error)
+	UpdateProvider(ctx context.Context, id uint64, input UpdateProviderInput) (*UpdateProviderOutput, error)
+	SynchronizeProvider(ctx context.Context, id uint64) (*SynchronizeProviderOutput, error)
+}
 
 type providersService struct {
 	client *Client
 }
 
-func (p providersService) CreateProvider(input CreateProviderInput) (*CreateProviderOutput, error) {
+func (p providersService) CreateProvider(ctx context.Context, input CreateProviderInput) (*CreateProviderOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := p.client.newPostRequest(pathProviders, bytes.NewReader(payload), nil)
+	resp, err := p.client.doPost(pathProviders, bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = p.client.performRequest(req)
-	if err != nil {
+	var provider Provider
+
+	if err := resp.Parse(&provider); err != nil {
 		return nil, err
 	}
 
-	return &CreateProviderOutput{}, nil
+	return &CreateProviderOutput{
+		Provider: &provider,
+	}, nil
 }
 
-func (p providersService) GetProvider(id uint64) (*GetProviderOutput, error) {
-	req, err := p.client.newGetRequest(fmt.Sprintf(pathProvider, id), nil)
+func (p providersService) GetProvider(ctx context.Context, id uint64) (*GetProviderOutput, error) {
+	resp, err := p.client.doGet(fmt.Sprintf(pathProvider, id), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = p.client.performRequest(req)
-	if err != nil {
+	var provider Provider
+	if err := resp.Parse(&provider); err != nil {
 		return nil, err
 	}
 
-	return &GetProviderOutput{}, nil
+	return &GetProviderOutput{
+		Provider: &provider,
+	}, nil
 }
 
-func (p providersService) ListProviders(options *ListProvidersOptions) (*ListProvidersOutput, error) {
-	req, err := p.client.newGetRequest(pathProviders, nil)
+func (p providersService) ListProviders(ctx context.Context, options *ListProvidersOptions) (*ListProvidersOutput, error) {
+	resp, err := p.client.doGet(pathProviders, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = p.client.performRequest(req)
-	if err != nil {
+	var providers []Provider
+
+	if err := resp.Parse(&providers); err != nil {
 		return nil, err
 	}
 
-	return &ListProvidersOutput{}, nil
+	return &ListProvidersOutput{
+		Providers: providers,
+	}, nil
 }
 
-func (p providersService) UpdateProvider(id uint64, input UpdateProviderInput) (*UpdateProviderOutput, error) {
+func (p providersService) UpdateProvider(ctx context.Context, id uint64, input UpdateProviderInput) (*UpdateProviderOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := p.client.newPutRequest(fmt.Sprintf(pathProvider, id), bytes.NewReader(payload), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = p.client.performRequest(req)
+	_, err = p.client.doPut(fmt.Sprintf(pathProvider, id), bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -81,60 +94,61 @@ func (p providersService) UpdateProvider(id uint64, input UpdateProviderInput) (
 	return &UpdateProviderOutput{}, nil
 }
 
-func (p providersService) SynchronizeProvider(id, providerId uint64, input UpdateProviderInput) (*UpdateProviderOutput, error) {
-	payload, err := json.Marshal(input)
+func (p providersService) SynchronizeProvider(ctx context.Context, id uint64) (*SynchronizeProviderOutput, error) {
+	resp, err := p.client.doPut(fmt.Sprintf(pathProviderSync, id), nil, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := p.client.newPutRequest(fmt.Sprintf(pathProvider, id), bytes.NewReader(payload), nil)
-	if err != nil {
+	var msg Message
+
+	if err := resp.Parse(&msg); err != nil {
 		return nil, err
 	}
 
-	_, err = p.client.performRequest(req)
-	if err != nil {
-		return nil, err
-	}
-
-	return &UpdateProviderOutput{}, nil
-}
-
-func (p providersService) SynchronizeProviders(id uint64, input UpdateProviderInput) (*UpdateProviderOutput, error) {
-	payload, err := json.Marshal(input)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := p.client.newPutRequest(fmt.Sprintf(pathProvider, id), bytes.NewReader(payload), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = p.client.performRequest(req)
-	if err != nil {
-		return nil, err
-	}
-
-	return &UpdateProviderOutput{}, nil
+	return &SynchronizeProviderOutput{
+		Message: msg,
+	}, nil
 }
 
 type UpdateProviderInput struct {
 	Catalogues []uint64
 }
 
-type CreateProviderInput struct{}
+type CreateProviderInput struct {
+	Type string
+	Name string
+}
 
 type ListProvidersOptions struct{}
 
-type ListProvidersOutput struct{}
+type ListProvidersOutput struct {
+	Providers []Provider
+}
 
-type Provider struct{}
+type Provider struct {
+	ID          uint64
+	Name        string
+	Type        string
+	Status      string
+	LastSynched string
+}
 
-type ProviderOutput struct{}
+type ProviderOutput struct {
+	Provider *Provider
+}
+
+type SynchronizeProviderOutput struct {
+	Message Message
+}
 
 type UpdateProviderOutput = ProviderOutput
 
 type GetProviderOutput = ProviderOutput
 
 type CreateProviderOutput = ProviderOutput
+
+type Message struct {
+	Message string `json:"message"`
+	Status  string `json:"status"`
+}
