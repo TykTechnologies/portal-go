@@ -81,6 +81,44 @@ func (p providersService) UpdateProvider(id uint64, input UpdateProviderInput) (
 	return &UpdateProviderOutput{}, nil
 }
 
+func (p providersService) SynchronizeProvider(id, providerId uint64, input UpdateProviderInput) (*UpdateProviderOutput, error) {
+	payload, err := json.Marshal(input)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := p.client.newPutRequest(fmt.Sprintf(pathProvider, id), bytes.NewReader(payload), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = p.client.performRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &UpdateProviderOutput{}, nil
+}
+
+func (p providersService) SynchronizeProviders(id uint64, input UpdateProviderInput) (*UpdateProviderOutput, error) {
+	payload, err := json.Marshal(input)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := p.client.newPutRequest(fmt.Sprintf(pathProvider, id), bytes.NewReader(payload), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = p.client.performRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &UpdateProviderOutput{}, nil
+}
+
 type UpdateProviderInput struct {
 	Catalogues []uint64
 }

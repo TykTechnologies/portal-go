@@ -15,6 +15,13 @@ type Config struct {
 	HTTPClient *http.Client
 }
 
+type ProductsService interface {
+	CreateProduct(input CreateProductInput) (*CreateProductOutput, error)
+	GetProduct(id uint64) (*GetProductOutput, error)
+	ListProducts(options *ListProductsOptions) (*ListProductsOutput, error)
+	UpdateProduct(id uint64, input UpdateProductInput) (*UpdateProductOutput, error)
+}
+
 type CataloguesService interface {
 	CreateCatalogue(input CreateCatalogueInput) (*CreateCatalogueOutput, error)
 	GetCatalogue(id uint64) (*GetCatalogueOutput, error)
@@ -23,13 +30,20 @@ type CataloguesService interface {
 	ListCatalogues(opts *ListCataloguesOptions) (*ListCataloguesOutput, error)
 }
 
+type ProvidersService interface {
+	CreateProvider(input CreateProviderInput) (*CreateProviderOutput, error)
+	GetProvider(id uint64) (*GetProviderOutput, error)
+	ListProviders(options *ListProvidersOptions) (*ListProvidersOutput, error)
+	UpdateProvider(id uint64, input UpdateProviderInput) (*UpdateProviderOutput, error)
+}
+
 type Client struct {
 	config     *Config
 	users      *usersService
 	catalogues CataloguesService
 	providers  ProvidersService
 	teams      *teamsService
-	products   *productsService
+	products   ProductsService
 	orgs       *orgsService
 }
 
@@ -45,15 +59,8 @@ func (c *Client) SetCatalogues(catalogues CataloguesService) {
 	c.catalogues = catalogues
 }
 
-func (c Client) Products() *productsService {
+func (c Client) Products() ProductsService {
 	return c.products
-}
-
-type ProvidersService interface {
-	CreateProvider(input CreateProviderInput) (*CreateProviderOutput, error)
-	GetProvider(id uint64) (*GetProviderOutput, error)
-	ListProviders(options *ListProvidersOptions) (*ListProvidersOutput, error)
-	UpdateProvider(id uint64, input UpdateProviderInput) (*UpdateProviderOutput, error)
 }
 
 func (c Client) Providers() ProvidersService {
@@ -72,7 +79,7 @@ func (c Client) Orgs() *orgsService {
 	return c.orgs
 }
 
-func (c *Client) SetProducts(products *productsService) {
+func (c *Client) SetProducts(products ProductsService) {
 	c.products = products
 }
 

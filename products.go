@@ -81,6 +81,101 @@ func (p productsService) UpdateProduct(id uint64, input UpdateProductInput) (*Up
 	return &UpdateProductOutput{}, nil
 }
 
+func (p productsService) ListAPIDetails(id uint64, input UpdateProductInput) (*UpdateProductOutput, error) {
+	payload, err := json.Marshal(input)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := p.client.newPutRequest(fmt.Sprintf(pathProduct, id), bytes.NewReader(payload), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = p.client.performRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &UpdateProductOutput{}, nil
+}
+
+func (p productsService) CreateAPIDetails(id uint64, input UpdateProductInput) (*UpdateProductOutput, error) {
+	payload, err := json.Marshal(input)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := p.client.newPutRequest(fmt.Sprintf(pathProduct, id), bytes.NewReader(payload), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = p.client.performRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &UpdateProductOutput{}, nil
+}
+
+func (p productsService) UpdateAPIDetails(id uint64, input UpdateProductInput) (*UpdateProductOutput, error) {
+	payload, err := json.Marshal(input)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := p.client.newPutRequest(fmt.Sprintf(pathProduct, id), bytes.NewReader(payload), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = p.client.performRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &UpdateProductOutput{}, nil
+}
+
+func (p productsService) GetAPIDetails(id uint64, input UpdateProductInput) (*UpdateProductOutput, error) {
+	payload, err := json.Marshal(input)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := p.client.newPutRequest(fmt.Sprintf(pathProduct, id), bytes.NewReader(payload), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = p.client.performRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &UpdateProductOutput{}, nil
+}
+
+func (p productsService) DeleteAPIDetails(id uint64, input UpdateProductInput) (*UpdateProductOutput, error) {
+	payload, err := json.Marshal(input)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := p.client.newPutRequest(fmt.Sprintf(pathProduct, id), bytes.NewReader(payload), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = p.client.performRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &UpdateProductOutput{}, nil
+}
+
 type UpdateProductInput struct {
 	Catalogues []uint64
 }
