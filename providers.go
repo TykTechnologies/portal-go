@@ -131,7 +131,7 @@ type Provider struct {
 	Name        string
 	Type        string
 	Status      string
-	LastSynched string
+	LastSynched string `json:"LastSynced"`
 }
 
 type ProviderOutput struct {
