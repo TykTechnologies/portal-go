@@ -100,14 +100,14 @@ func (p providersService) SynchronizeProvider(ctx context.Context, id uint64) (*
 		return nil, err
 	}
 
-	var msg Message
+	var msg SynchronizationStatus
 
 	if err := resp.Parse(&msg); err != nil {
 		return nil, err
 	}
 
 	return &SynchronizeProviderOutput{
-		Message: msg,
+		Synchronization: msg,
 	}, nil
 }
 
@@ -139,7 +139,7 @@ type ProviderOutput struct {
 }
 
 type SynchronizeProviderOutput struct {
-	Message Message
+	Synchronization SynchronizationStatus
 }
 
 type UpdateProviderOutput = ProviderOutput
@@ -148,7 +148,7 @@ type GetProviderOutput = ProviderOutput
 
 type CreateProviderOutput = ProviderOutput
 
-type Message struct {
+type SynchronizationStatus struct {
 	Message string `json:"message"`
 	Status  string `json:"status"`
 }
