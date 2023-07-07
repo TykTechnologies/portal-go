@@ -31,6 +31,25 @@ type Config struct {
 type Client struct {
 	config    *Config
 	providers ProvidersService
+	plans     PlansService
+	users     UsersService
+	orgs      OrgsService
+}
+
+func (c Client) Orgs() OrgsService {
+	return c.orgs
+}
+
+func (c *Client) SetOrgs(orgs OrgsService) {
+	c.orgs = orgs
+}
+
+func (c Client) Users() UsersService {
+	return c.users
+}
+
+func (c *Client) SetUsers(users UsersService) {
+	c.users = users
 }
 
 func (c Client) Providers() ProvidersService {
@@ -39,6 +58,14 @@ func (c Client) Providers() ProvidersService {
 
 func (c *Client) SetProviders(providers ProvidersService) {
 	c.providers = providers
+}
+
+func (c Client) Plans() PlansService {
+	return c.plans
+}
+
+func (c *Client) SetPlans(plans PlansService) {
+	c.plans = plans
 }
 
 func New(config *Config) (*Client, error) {
@@ -63,6 +90,9 @@ func newClient(config *Config) (*Client, error) {
 	}
 
 	client.providers = &providersService{client: client}
+	client.plans = &plansService{client: client}
+	client.users = &usersService{client: client}
+	client.orgs = &orgsService{client: client}
 
 	return client, nil
 }
