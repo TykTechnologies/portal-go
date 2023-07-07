@@ -116,8 +116,15 @@ type UpdateProviderInput struct {
 }
 
 type CreateProviderInput struct {
-	Type string
-	Name string
+	Type          string
+	Name          string
+	Status        string
+	Configuration ProviderConfiguration
+}
+
+type ProviderConfiguration struct {
+	ProviderID uint64
+	MetaData   string
 }
 
 type ListProvidersOptions struct{}
@@ -127,11 +134,12 @@ type ListProvidersOutput struct {
 }
 
 type Provider struct {
-	ID          uint64
-	Name        string
-	Type        string
-	Status      string
-	LastSynched string `json:"LastSynced"`
+	ID            uint64
+	Name          string
+	Type          string
+	Status        string
+	LastSynched   string `json:"LastSynced"`
+	Configuration ProviderConfiguration
 }
 
 type ProviderOutput struct {
