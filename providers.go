@@ -86,12 +86,20 @@ func (p providersService) UpdateProvider(ctx context.Context, id uint64, input U
 		return nil, err
 	}
 
-	_, err = p.client.doPut(fmt.Sprintf(pathProvider, id), bytes.NewReader(payload), nil)
+	resp, err := p.client.doPut(fmt.Sprintf(pathProvider, id), bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	return &UpdateProviderOutput{}, nil
+	var provider Provider
+
+	if err := resp.Parse(&provider); err != nil {
+		return nil, err
+	}
+
+	return &UpdateProviderOutput{
+		Provider: &provider,
+	}, nil
 }
 
 func (p providersService) SynchronizeProvider(ctx context.Context, id uint64) (*SynchronizeProviderOutput, error) {
@@ -118,13 +126,13 @@ type UpdateProviderInput struct {
 type CreateProviderInput struct {
 	Type          string
 	Name          string
-	Status        string
-	Configuration ProviderConfiguration
+	Configuration *ProviderConfiguration `json:"Configuration,omitempty"`
 }
 
 type ProviderConfiguration struct {
-	ProviderID uint64
+	ProviderID *uint64 `json:"ProviderID,omitempty"`
 	MetaData   string
+	ID         uint64
 }
 
 type ListProvidersOptions struct{}
@@ -136,6 +144,8 @@ type ListProvidersOutput struct {
 type Provider struct {
 	ID            uint64
 	Name          string
+	CreatedAt     string
+	UpdatedAt     string
 	Type          string
 	Status        string
 	LastSynched   string `json:"LastSynced"`
