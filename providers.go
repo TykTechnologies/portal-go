@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 )
 
@@ -81,6 +82,11 @@ func (p providersService) ListProviders(ctx context.Context, options *ListProvid
 }
 
 func (p providersService) UpdateProvider(ctx context.Context, id uint64, input UpdateProviderInput) (*UpdateProviderOutput, error) {
+	// TODO: review this
+	if input.Configuration != nil && input.Configuration.ID == nil {
+		return nil, errors.New("configuration id must not be nil")
+	}
+
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -119,20 +125,21 @@ func (p providersService) SynchronizeProvider(ctx context.Context, id uint64) (*
 	}, nil
 }
 
-type UpdateProviderInput struct {
-	Catalogues []uint64
-}
-
-type CreateProviderInput struct {
+type ProviderInput struct {
+	ID            *uint64 `json:",omitempty"`
 	Type          string
 	Name          string
-	Configuration *ProviderConfiguration `json:"Configuration,omitempty"`
+	Configuration *ProviderConfiguration `json:",omitempty"`
 }
+
+type UpdateProviderInput = ProviderInput
+
+type CreateProviderInput = ProviderInput
 
 type ProviderConfiguration struct {
 	ProviderID *uint64 `json:"ProviderID,omitempty"`
 	MetaData   string
-	ID         uint64
+	ID         *uint64 `json:"ID,omitempty"`
 }
 
 type ListProvidersOptions struct{}
