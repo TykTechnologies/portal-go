@@ -34,6 +34,15 @@ type Client struct {
 	plans     PlansService
 	users     UsersService
 	orgs      OrgsService
+	products  ProductsService
+}
+
+func (c Client) Products() ProductsService {
+	return c.products
+}
+
+func (c *Client) SetProducts(products ProductsService) {
+	c.products = products
 }
 
 func (c Client) Orgs() OrgsService {
@@ -93,6 +102,7 @@ func newClient(config *Config) (*Client, error) {
 	client.plans = &plansService{client: client}
 	client.users = &usersService{client: client}
 	client.orgs = &orgsService{client: client}
+	client.products = &productsService{client: client}
 
 	return client, nil
 }
