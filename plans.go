@@ -13,6 +13,7 @@ const (
 	pathPlan  = "/portal-api/plans/%d"
 )
 
+//go:generate mockery --name PlansService
 type PlansService interface {
 	CreatePlan(ctx context.Context, input CreatePlanInput) (*CreatePlanOutput, error)
 	GetPlan(ctx context.Context, id uint64) (*GetPlanOutput, error)

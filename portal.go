@@ -29,12 +29,21 @@ type Config struct {
 }
 
 type Client struct {
-	config    *Config
-	providers ProvidersService
-	plans     PlansService
-	users     UsersService
-	orgs      OrgsService
-	products  ProductsService
+	config     *Config
+	providers  ProvidersService
+	plans      PlansService
+	users      UsersService
+	orgs       OrgsService
+	products   ProductsService
+	catalogues CataloguesService
+}
+
+func (c Client) Catalogues() CataloguesService {
+	return c.catalogues
+}
+
+func (c *Client) SetCatalogues(catalogues CataloguesService) {
+	c.catalogues = catalogues
 }
 
 func (c Client) Products() ProductsService {
@@ -103,6 +112,7 @@ func newClient(config *Config) (*Client, error) {
 	client.users = &usersService{client: client}
 	client.orgs = &orgsService{client: client}
 	client.products = &productsService{client: client}
+	client.catalogues = &cataloguesService{client: client}
 
 	return client, nil
 }

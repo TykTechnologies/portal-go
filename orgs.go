@@ -12,6 +12,7 @@ const (
 	pathOrg  = "/portal-api/organitations/%d"
 )
 
+//go:generate mockery --name OrgsService
 type OrgsService interface {
 	CreateOrg(ctx context.Context, input CreateOrgInput) (*CreateOrgOutput, error)
 	GetOrg(ctx context.Context, id uint64) (*GetOrgOutput, error)
