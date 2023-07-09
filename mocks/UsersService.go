@@ -41,15 +41,15 @@ func (_m *UsersService) CreateUser(ctx context.Context, input portal.UserInput) 
 }
 
 // GetUser provides a mock function with given fields: ctx, id
-func (_m *UsersService) GetUser(ctx context.Context, id uint64) (*portal.UserOutput, error) {
+func (_m *UsersService) GetUser(ctx context.Context, id int64) (*portal.UserOutput, error) {
 	ret := _m.Called(ctx, id)
 
 	var r0 *portal.UserOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, uint64) (*portal.UserOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64) (*portal.UserOutput, error)); ok {
 		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, uint64) *portal.UserOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64) *portal.UserOutput); ok {
 		r0 = rf(ctx, id)
 	} else {
 		if ret.Get(0) != nil {
@@ -57,7 +57,7 @@ func (_m *UsersService) GetUser(ctx context.Context, id uint64) (*portal.UserOut
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, uint64) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
 		r1 = rf(ctx, id)
 	} else {
 		r1 = ret.Error(1)
@@ -93,15 +93,15 @@ func (_m *UsersService) ListUsers(ctx context.Context, options *portal.ListUsers
 }
 
 // UpdateUser provides a mock function with given fields: ctx, id, input
-func (_m *UsersService) UpdateUser(ctx context.Context, id uint64, input portal.UserInput) (*portal.UserOutput, error) {
+func (_m *UsersService) UpdateUser(ctx context.Context, id int64, input portal.UserInput) (*portal.UserOutput, error) {
 	ret := _m.Called(ctx, id, input)
 
 	var r0 *portal.UserOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, uint64, portal.UserInput) (*portal.UserOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, portal.UserInput) (*portal.UserOutput, error)); ok {
 		return rf(ctx, id, input)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, uint64, portal.UserInput) *portal.UserOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, portal.UserInput) *portal.UserOutput); ok {
 		r0 = rf(ctx, id, input)
 	} else {
 		if ret.Get(0) != nil {
@@ -109,7 +109,7 @@ func (_m *UsersService) UpdateUser(ctx context.Context, id uint64, input portal.
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, uint64, portal.UserInput) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64, portal.UserInput) error); ok {
 		r1 = rf(ctx, id, input)
 	} else {
 		r1 = ret.Error(1)

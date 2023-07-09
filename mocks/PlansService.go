@@ -41,15 +41,15 @@ func (_m *PlansService) CreatePlan(ctx context.Context, input portal.PlanInput) 
 }
 
 // GetPlan provides a mock function with given fields: ctx, id
-func (_m *PlansService) GetPlan(ctx context.Context, id uint64) (*portal.PlanOutput, error) {
+func (_m *PlansService) GetPlan(ctx context.Context, id int64) (*portal.PlanOutput, error) {
 	ret := _m.Called(ctx, id)
 
 	var r0 *portal.PlanOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, uint64) (*portal.PlanOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64) (*portal.PlanOutput, error)); ok {
 		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, uint64) *portal.PlanOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64) *portal.PlanOutput); ok {
 		r0 = rf(ctx, id)
 	} else {
 		if ret.Get(0) != nil {
@@ -57,7 +57,7 @@ func (_m *PlansService) GetPlan(ctx context.Context, id uint64) (*portal.PlanOut
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, uint64) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
 		r1 = rf(ctx, id)
 	} else {
 		r1 = ret.Error(1)
@@ -93,15 +93,15 @@ func (_m *PlansService) ListPlans(ctx context.Context, options *portal.ListPlans
 }
 
 // UpdatePlan provides a mock function with given fields: ctx, id, input
-func (_m *PlansService) UpdatePlan(ctx context.Context, id uint64, input portal.PlanInput) (*portal.PlanOutput, error) {
+func (_m *PlansService) UpdatePlan(ctx context.Context, id int64, input portal.PlanInput) (*portal.PlanOutput, error) {
 	ret := _m.Called(ctx, id, input)
 
 	var r0 *portal.PlanOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, uint64, portal.PlanInput) (*portal.PlanOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, portal.PlanInput) (*portal.PlanOutput, error)); ok {
 		return rf(ctx, id, input)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, uint64, portal.PlanInput) *portal.PlanOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, portal.PlanInput) *portal.PlanOutput); ok {
 		r0 = rf(ctx, id, input)
 	} else {
 		if ret.Get(0) != nil {
@@ -109,7 +109,7 @@ func (_m *PlansService) UpdatePlan(ctx context.Context, id uint64, input portal.
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, uint64, portal.PlanInput) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64, portal.PlanInput) error); ok {
 		r1 = rf(ctx, id, input)
 	} else {
 		r1 = ret.Error(1)

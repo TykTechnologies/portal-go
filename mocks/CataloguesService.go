@@ -41,15 +41,15 @@ func (_m *CataloguesService) CreateCatalogue(ctx context.Context, input portal.C
 }
 
 // GetCatalogue provides a mock function with given fields: ctx, id
-func (_m *CataloguesService) GetCatalogue(ctx context.Context, id uint64) (*portal.CatalogueOutput, error) {
+func (_m *CataloguesService) GetCatalogue(ctx context.Context, id int64) (*portal.CatalogueOutput, error) {
 	ret := _m.Called(ctx, id)
 
 	var r0 *portal.CatalogueOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, uint64) (*portal.CatalogueOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64) (*portal.CatalogueOutput, error)); ok {
 		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, uint64) *portal.CatalogueOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64) *portal.CatalogueOutput); ok {
 		r0 = rf(ctx, id)
 	} else {
 		if ret.Get(0) != nil {
@@ -57,7 +57,7 @@ func (_m *CataloguesService) GetCatalogue(ctx context.Context, id uint64) (*port
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, uint64) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
 		r1 = rf(ctx, id)
 	} else {
 		r1 = ret.Error(1)
@@ -93,15 +93,15 @@ func (_m *CataloguesService) ListCatalogues(ctx context.Context, options *portal
 }
 
 // UpdateCatalogue provides a mock function with given fields: ctx, id, input
-func (_m *CataloguesService) UpdateCatalogue(ctx context.Context, id uint64, input portal.CatalogueInput) (*portal.CatalogueOutput, error) {
+func (_m *CataloguesService) UpdateCatalogue(ctx context.Context, id int64, input portal.CatalogueInput) (*portal.CatalogueOutput, error) {
 	ret := _m.Called(ctx, id, input)
 
 	var r0 *portal.CatalogueOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, uint64, portal.CatalogueInput) (*portal.CatalogueOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, portal.CatalogueInput) (*portal.CatalogueOutput, error)); ok {
 		return rf(ctx, id, input)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, uint64, portal.CatalogueInput) *portal.CatalogueOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, portal.CatalogueInput) *portal.CatalogueOutput); ok {
 		r0 = rf(ctx, id, input)
 	} else {
 		if ret.Get(0) != nil {
@@ -109,7 +109,7 @@ func (_m *CataloguesService) UpdateCatalogue(ctx context.Context, id uint64, inp
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, uint64, portal.CatalogueInput) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64, portal.CatalogueInput) error); ok {
 		r1 = rf(ctx, id, input)
 	} else {
 		r1 = ret.Error(1)

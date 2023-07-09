@@ -41,15 +41,15 @@ func (_m *OrgsService) CreateOrg(ctx context.Context, input portal.OrgInput) (*p
 }
 
 // GetOrg provides a mock function with given fields: ctx, id
-func (_m *OrgsService) GetOrg(ctx context.Context, id uint64) (*portal.OrgOutput, error) {
+func (_m *OrgsService) GetOrg(ctx context.Context, id int64) (*portal.OrgOutput, error) {
 	ret := _m.Called(ctx, id)
 
 	var r0 *portal.OrgOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, uint64) (*portal.OrgOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64) (*portal.OrgOutput, error)); ok {
 		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, uint64) *portal.OrgOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64) *portal.OrgOutput); ok {
 		r0 = rf(ctx, id)
 	} else {
 		if ret.Get(0) != nil {
@@ -57,7 +57,7 @@ func (_m *OrgsService) GetOrg(ctx context.Context, id uint64) (*portal.OrgOutput
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, uint64) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
 		r1 = rf(ctx, id)
 	} else {
 		r1 = ret.Error(1)
@@ -93,15 +93,15 @@ func (_m *OrgsService) ListOrgs(ctx context.Context, options *portal.ListOrgsOpt
 }
 
 // UpdateOrg provides a mock function with given fields: ctx, id, input
-func (_m *OrgsService) UpdateOrg(ctx context.Context, id uint64, input portal.OrgInput) (*portal.OrgOutput, error) {
+func (_m *OrgsService) UpdateOrg(ctx context.Context, id int64, input portal.OrgInput) (*portal.OrgOutput, error) {
 	ret := _m.Called(ctx, id, input)
 
 	var r0 *portal.OrgOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, uint64, portal.OrgInput) (*portal.OrgOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, portal.OrgInput) (*portal.OrgOutput, error)); ok {
 		return rf(ctx, id, input)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, uint64, portal.OrgInput) *portal.OrgOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, portal.OrgInput) *portal.OrgOutput); ok {
 		r0 = rf(ctx, id, input)
 	} else {
 		if ret.Get(0) != nil {
@@ -109,7 +109,7 @@ func (_m *OrgsService) UpdateOrg(ctx context.Context, id uint64, input portal.Or
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, uint64, portal.OrgInput) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64, portal.OrgInput) error); ok {
 		r1 = rf(ctx, id, input)
 	} else {
 		r1 = ret.Error(1)

@@ -41,15 +41,15 @@ func (_m *ProvidersService) CreateProvider(ctx context.Context, input portal.Pro
 }
 
 // GetProvider provides a mock function with given fields: ctx, id
-func (_m *ProvidersService) GetProvider(ctx context.Context, id uint64) (*portal.ProviderOutput, error) {
+func (_m *ProvidersService) GetProvider(ctx context.Context, id int64) (*portal.ProviderOutput, error) {
 	ret := _m.Called(ctx, id)
 
 	var r0 *portal.ProviderOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, uint64) (*portal.ProviderOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64) (*portal.ProviderOutput, error)); ok {
 		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, uint64) *portal.ProviderOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64) *portal.ProviderOutput); ok {
 		r0 = rf(ctx, id)
 	} else {
 		if ret.Get(0) != nil {
@@ -57,7 +57,7 @@ func (_m *ProvidersService) GetProvider(ctx context.Context, id uint64) (*portal
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, uint64) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
 		r1 = rf(ctx, id)
 	} else {
 		r1 = ret.Error(1)
@@ -93,15 +93,15 @@ func (_m *ProvidersService) ListProviders(ctx context.Context, options *portal.L
 }
 
 // SynchronizeProvider provides a mock function with given fields: ctx, id
-func (_m *ProvidersService) SynchronizeProvider(ctx context.Context, id uint64) (*portal.SynchronizeProviderOutput, error) {
+func (_m *ProvidersService) SynchronizeProvider(ctx context.Context, id int64) (*portal.SynchronizeProviderOutput, error) {
 	ret := _m.Called(ctx, id)
 
 	var r0 *portal.SynchronizeProviderOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, uint64) (*portal.SynchronizeProviderOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64) (*portal.SynchronizeProviderOutput, error)); ok {
 		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, uint64) *portal.SynchronizeProviderOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64) *portal.SynchronizeProviderOutput); ok {
 		r0 = rf(ctx, id)
 	} else {
 		if ret.Get(0) != nil {
@@ -109,7 +109,7 @@ func (_m *ProvidersService) SynchronizeProvider(ctx context.Context, id uint64) 
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, uint64) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
 		r1 = rf(ctx, id)
 	} else {
 		r1 = ret.Error(1)
@@ -119,15 +119,15 @@ func (_m *ProvidersService) SynchronizeProvider(ctx context.Context, id uint64) 
 }
 
 // UpdateProvider provides a mock function with given fields: ctx, id, input
-func (_m *ProvidersService) UpdateProvider(ctx context.Context, id uint64, input portal.ProviderInput) (*portal.ProviderOutput, error) {
+func (_m *ProvidersService) UpdateProvider(ctx context.Context, id int64, input portal.ProviderInput) (*portal.ProviderOutput, error) {
 	ret := _m.Called(ctx, id, input)
 
 	var r0 *portal.ProviderOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, uint64, portal.ProviderInput) (*portal.ProviderOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, portal.ProviderInput) (*portal.ProviderOutput, error)); ok {
 		return rf(ctx, id, input)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, uint64, portal.ProviderInput) *portal.ProviderOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, portal.ProviderInput) *portal.ProviderOutput); ok {
 		r0 = rf(ctx, id, input)
 	} else {
 		if ret.Get(0) != nil {
@@ -135,7 +135,7 @@ func (_m *ProvidersService) UpdateProvider(ctx context.Context, id uint64, input
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, uint64, portal.ProviderInput) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64, portal.ProviderInput) error); ok {
 		r1 = rf(ctx, id, input)
 	} else {
 		r1 = ret.Error(1)
