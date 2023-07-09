@@ -15,9 +15,9 @@ const (
 //go:generate mockery --name OrgsService
 type OrgsService interface {
 	CreateOrg(ctx context.Context, input CreateOrgInput) (*CreateOrgOutput, error)
-	GetOrg(ctx context.Context, id uint64) (*GetOrgOutput, error)
+	GetOrg(ctx context.Context, id int64) (*GetOrgOutput, error)
 	ListOrgs(ctx context.Context, options *ListOrgsOptions) (*ListOrgsOutput, error)
-	UpdateOrg(ctx context.Context, id uint64, input UpdateOrgInput) (*UpdateOrgOutput, error)
+	UpdateOrg(ctx context.Context, id int64, input UpdateOrgInput) (*UpdateOrgOutput, error)
 }
 
 type orgsService struct {
@@ -46,7 +46,7 @@ func (p orgsService) CreateOrg(ctx context.Context, input CreateOrgInput) (*Crea
 	}, nil
 }
 
-func (p orgsService) GetOrg(ctx context.Context, id uint64) (*GetOrgOutput, error) {
+func (p orgsService) GetOrg(ctx context.Context, id int64) (*GetOrgOutput, error) {
 	resp, err := p.client.doGet(fmt.Sprintf(pathOrg, id), nil)
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func (p orgsService) ListOrgs(ctx context.Context, options *ListOrgsOptions) (*L
 	}, nil
 }
 
-func (p orgsService) UpdateOrg(ctx context.Context, id uint64, input UpdateOrgInput) (*UpdateOrgOutput, error) {
+func (p orgsService) UpdateOrg(ctx context.Context, id int64, input UpdateOrgInput) (*UpdateOrgOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -102,7 +102,7 @@ func (p orgsService) UpdateOrg(ctx context.Context, id uint64, input UpdateOrgIn
 }
 
 type OrgInput struct {
-	ID   *uint64 `json:",omitempty"`
+	ID   *int64 `json:",omitempty"`
 	Type string
 	Name string
 }
@@ -118,7 +118,7 @@ type ListOrgsOutput struct {
 }
 
 type Org struct {
-	ID   uint64
+	ID   int64
 	Name string
 }
 

@@ -17,10 +17,10 @@ const (
 //go:generate mockery --name ProvidersService
 type ProvidersService interface {
 	CreateProvider(ctx context.Context, input CreateProviderInput) (*CreateProviderOutput, error)
-	GetProvider(ctx context.Context, id uint64) (*GetProviderOutput, error)
+	GetProvider(ctx context.Context, id int64) (*GetProviderOutput, error)
 	ListProviders(ctx context.Context, options *ListProvidersOptions) (*ListProvidersOutput, error)
-	UpdateProvider(ctx context.Context, id uint64, input UpdateProviderInput) (*UpdateProviderOutput, error)
-	SynchronizeProvider(ctx context.Context, id uint64) (*SynchronizeProviderOutput, error)
+	UpdateProvider(ctx context.Context, id int64, input UpdateProviderInput) (*UpdateProviderOutput, error)
+	SynchronizeProvider(ctx context.Context, id int64) (*SynchronizeProviderOutput, error)
 }
 
 type providersService struct {
@@ -49,7 +49,7 @@ func (p providersService) CreateProvider(ctx context.Context, input CreateProvid
 	}, nil
 }
 
-func (p providersService) GetProvider(ctx context.Context, id uint64) (*GetProviderOutput, error) {
+func (p providersService) GetProvider(ctx context.Context, id int64) (*GetProviderOutput, error) {
 	resp, err := p.client.doGet(fmt.Sprintf(pathProvider, id), nil)
 	if err != nil {
 		return nil, err
@@ -82,7 +82,7 @@ func (p providersService) ListProviders(ctx context.Context, options *ListProvid
 	}, nil
 }
 
-func (p providersService) UpdateProvider(ctx context.Context, id uint64, input UpdateProviderInput) (*UpdateProviderOutput, error) {
+func (p providersService) UpdateProvider(ctx context.Context, id int64, input UpdateProviderInput) (*UpdateProviderOutput, error) {
 	// TODO: review this
 	if input.Configuration != nil && input.Configuration.ID == nil {
 		return nil, errors.New("configuration id must not be nil")
@@ -109,7 +109,7 @@ func (p providersService) UpdateProvider(ctx context.Context, id uint64, input U
 	}, nil
 }
 
-func (p providersService) SynchronizeProvider(ctx context.Context, id uint64) (*SynchronizeProviderOutput, error) {
+func (p providersService) SynchronizeProvider(ctx context.Context, id int64) (*SynchronizeProviderOutput, error) {
 	resp, err := p.client.doPut(fmt.Sprintf(pathProviderSync, id), nil, nil)
 	if err != nil {
 		return nil, err
@@ -127,7 +127,7 @@ func (p providersService) SynchronizeProvider(ctx context.Context, id uint64) (*
 }
 
 type ProviderInput struct {
-	ID            *uint64 `json:",omitempty"`
+	ID            *int64 `json:",omitempty"`
 	Type          string
 	Name          string
 	Configuration *ProviderConfiguration `json:",omitempty"`
@@ -138,9 +138,9 @@ type UpdateProviderInput = ProviderInput
 type CreateProviderInput = ProviderInput
 
 type ProviderConfiguration struct {
-	ProviderID *uint64 `json:"ProviderID,omitempty"`
+	ProviderID *int64 `json:"ProviderID,omitempty"`
 	MetaData   string
-	ID         *uint64 `json:"ID,omitempty"`
+	ID         *int64 `json:"ID,omitempty"`
 }
 
 type ListProvidersOptions struct{}
@@ -150,7 +150,7 @@ type ListProvidersOutput struct {
 }
 
 type Provider struct {
-	ID            uint64
+	ID            int64
 	Name          string
 	CreatedAt     string
 	UpdatedAt     string

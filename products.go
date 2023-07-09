@@ -15,9 +15,9 @@ const (
 //go:generate mockery --name ProductsService
 type ProductsService interface {
 	CreateProduct(ctx context.Context, input CreateProductInput) (*CreateProductOutput, error)
-	GetProduct(ctx context.Context, id uint64) (*GetProductOutput, error)
+	GetProduct(ctx context.Context, id int64) (*GetProductOutput, error)
 	ListProducts(ctx context.Context, options *ListProductsOptions) (*ListProductsOutput, error)
-	UpdateProduct(ctx context.Context, id uint64, input UpdateProductInput) (*UpdateProductOutput, error)
+	UpdateProduct(ctx context.Context, id int64, input UpdateProductInput) (*UpdateProductOutput, error)
 }
 
 type productsService struct {
@@ -46,7 +46,7 @@ func (p productsService) CreateProduct(ctx context.Context, input CreateProductI
 	}, nil
 }
 
-func (p productsService) GetProduct(ctx context.Context, id uint64) (*GetProductOutput, error) {
+func (p productsService) GetProduct(ctx context.Context, id int64) (*GetProductOutput, error) {
 	resp, err := p.client.doGet(fmt.Sprintf(pathProduct, id), nil)
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func (p productsService) ListProducts(ctx context.Context, options *ListProducts
 	}, nil
 }
 
-func (p productsService) UpdateProduct(ctx context.Context, id uint64, input UpdateProductInput) (*UpdateProductOutput, error) {
+func (p productsService) UpdateProduct(ctx context.Context, id int64, input UpdateProductInput) (*UpdateProductOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -102,7 +102,7 @@ func (p productsService) UpdateProduct(ctx context.Context, id uint64, input Upd
 }
 
 type ProductInput struct {
-	ID   *uint64 `json:",omitempty"`
+	ID   *int64 `json:",omitempty"`
 	Type string
 	Name string
 }
@@ -118,7 +118,7 @@ type ListProductsOutput struct {
 }
 
 type Product struct {
-	ID          uint64
+	ID          int64
 	Name        string
 	DisplayName string
 	ReferenceID string

@@ -15,9 +15,9 @@ const (
 //go:generate mockery --name UsersService
 type UsersService interface {
 	CreateUser(ctx context.Context, input CreateUserInput) (*CreateUserOutput, error)
-	GetUser(ctx context.Context, id uint64) (*GetUserOutput, error)
+	GetUser(ctx context.Context, id int64) (*GetUserOutput, error)
 	ListUsers(ctx context.Context, options *ListUsersOptions) (*ListUsersOutput, error)
-	UpdateUser(ctx context.Context, id uint64, input UpdateUserInput) (*UpdateUserOutput, error)
+	UpdateUser(ctx context.Context, id int64, input UpdateUserInput) (*UpdateUserOutput, error)
 }
 
 type usersService struct {
@@ -46,7 +46,7 @@ func (p usersService) CreateUser(ctx context.Context, input CreateUserInput) (*C
 	}, nil
 }
 
-func (p usersService) GetUser(ctx context.Context, id uint64) (*GetUserOutput, error) {
+func (p usersService) GetUser(ctx context.Context, id int64) (*GetUserOutput, error) {
 	resp, err := p.client.doGet(fmt.Sprintf(pathUser, id), nil)
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func (p usersService) ListUsers(ctx context.Context, options *ListUsersOptions) 
 	}, nil
 }
 
-func (p usersService) UpdateUser(ctx context.Context, id uint64, input UpdateUserInput) (*UpdateUserOutput, error) {
+func (p usersService) UpdateUser(ctx context.Context, id int64, input UpdateUserInput) (*UpdateUserOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -102,7 +102,7 @@ func (p usersService) UpdateUser(ctx context.Context, id uint64, input UpdateUse
 }
 
 type UserInput struct {
-	ID   *uint64 `json:",omitempty"`
+	ID   *int64 `json:",omitempty"`
 	Type string
 	Name string
 }
@@ -118,12 +118,12 @@ type ListUsersOutput struct {
 }
 
 type User struct {
-	ID             uint64
+	ID             int64
 	Active         bool
 	Email          string
 	First          string
 	Last           string
-	OrganisationID uint64
+	OrganisationID int64
 	Provider       string
 	Role           string
 }

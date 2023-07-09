@@ -15,9 +15,9 @@ const (
 //go:generate mockery --name CataloguesService
 type CataloguesService interface {
 	CreateCatalogue(ctx context.Context, input CreateCatalogueInput) (*CreateCatalogueOutput, error)
-	GetCatalogue(ctx context.Context, id uint64) (*GetCatalogueOutput, error)
+	GetCatalogue(ctx context.Context, id int64) (*GetCatalogueOutput, error)
 	ListCatalogues(ctx context.Context, options *ListCataloguesOptions) (*ListCataloguesOutput, error)
-	UpdateCatalogue(ctx context.Context, id uint64, input UpdateCatalogueInput) (*UpdateCatalogueOutput, error)
+	UpdateCatalogue(ctx context.Context, id int64, input UpdateCatalogueInput) (*UpdateCatalogueOutput, error)
 }
 
 type cataloguesService struct {
@@ -46,7 +46,7 @@ func (p cataloguesService) CreateCatalogue(ctx context.Context, input CreateCata
 	}, nil
 }
 
-func (p cataloguesService) GetCatalogue(ctx context.Context, id uint64) (*GetCatalogueOutput, error) {
+func (p cataloguesService) GetCatalogue(ctx context.Context, id int64) (*GetCatalogueOutput, error) {
 	resp, err := p.client.doGet(fmt.Sprintf(pathCatalogue, id), nil)
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func (p cataloguesService) ListCatalogues(ctx context.Context, options *ListCata
 	}, nil
 }
 
-func (p cataloguesService) UpdateCatalogue(ctx context.Context, id uint64, input UpdateCatalogueInput) (*UpdateCatalogueOutput, error) {
+func (p cataloguesService) UpdateCatalogue(ctx context.Context, id int64, input UpdateCatalogueInput) (*UpdateCatalogueOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -102,7 +102,7 @@ func (p cataloguesService) UpdateCatalogue(ctx context.Context, id uint64, input
 }
 
 type CatalogueInput struct {
-	ID   *uint64 `json:",omitempty"`
+	ID   *int64 `json:",omitempty"`
 	Type string
 	Name string
 }
@@ -118,7 +118,7 @@ type ListCataloguesOutput struct {
 }
 
 type Catalogue struct {
-	ID               uint64
+	ID               int64
 	Name             string
 	NameWithSlug     string
 	VisibilityStatus string

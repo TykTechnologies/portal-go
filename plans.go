@@ -16,9 +16,9 @@ const (
 //go:generate mockery --name PlansService
 type PlansService interface {
 	CreatePlan(ctx context.Context, input CreatePlanInput) (*CreatePlanOutput, error)
-	GetPlan(ctx context.Context, id uint64) (*GetPlanOutput, error)
+	GetPlan(ctx context.Context, id int64) (*GetPlanOutput, error)
 	ListPlans(ctx context.Context, options *ListPlansOptions) (*ListPlansOutput, error)
-	UpdatePlan(ctx context.Context, id uint64, input UpdatePlanInput) (*UpdatePlanOutput, error)
+	UpdatePlan(ctx context.Context, id int64, input UpdatePlanInput) (*UpdatePlanOutput, error)
 }
 
 type plansService struct {
@@ -47,7 +47,7 @@ func (p plansService) CreatePlan(ctx context.Context, input CreatePlanInput) (*C
 	}, nil
 }
 
-func (p plansService) GetPlan(ctx context.Context, id uint64) (*GetPlanOutput, error) {
+func (p plansService) GetPlan(ctx context.Context, id int64) (*GetPlanOutput, error) {
 	resp, err := p.client.doGet(fmt.Sprintf(pathPlan, id), nil)
 	if err != nil {
 		return nil, err
@@ -80,7 +80,7 @@ func (p plansService) ListPlans(ctx context.Context, options *ListPlansOptions) 
 	}, nil
 }
 
-func (p plansService) UpdatePlan(ctx context.Context, id uint64, input UpdatePlanInput) (*UpdatePlanOutput, error) {
+func (p plansService) UpdatePlan(ctx context.Context, id int64, input UpdatePlanInput) (*UpdatePlanOutput, error) {
 	// TODO: review this
 	if input.Configuration != nil && input.Configuration.ID == nil {
 		return nil, errors.New("configuration id must not be nil")
@@ -108,7 +108,7 @@ func (p plansService) UpdatePlan(ctx context.Context, id uint64, input UpdatePla
 }
 
 type PlanInput struct {
-	ID            *uint64 `json:",omitempty"`
+	ID            *int64 `json:",omitempty"`
 	Type          string
 	Name          string
 	Configuration *PlanConfiguration `json:",omitempty"`
@@ -119,9 +119,9 @@ type UpdatePlanInput = PlanInput
 type CreatePlanInput = PlanInput
 
 type PlanConfiguration struct {
-	PlanID   *uint64 `json:"PlanID,omitempty"`
+	PlanID   *int64 `json:"PlanID,omitempty"`
 	MetaData string
-	ID       *uint64 `json:"ID,omitempty"`
+	ID       *int64 `json:"ID,omitempty"`
 }
 
 type ListPlansOptions struct{}
@@ -131,7 +131,7 @@ type ListPlansOutput struct {
 }
 
 type Plan struct {
-	ID                        uint64
+	ID                        int64
 	Name                      string
 	Quota                     string
 	DisplayName               string
