@@ -1,0 +1,58 @@
+HTTP/1.1 200 OK
+Cache-Control: no-store
+Content-Type: application/json
+Pragma: no-cache
+Date: Sun, 09 Jul 2023 18:15:08 GMT
+Content-Length: 838
+
+[
+	{
+		"ID": 54,
+		"LastSynced": "Not synced yet",
+		"Name": "tf-tyk-pro-20",
+		"Status": "Unknown",
+		"Type": "tyk-pro"
+	},
+	{
+		"ID": 53,
+		"LastSynced": "Not synced yet",
+		"Name": "tf-tyk-pro-1",
+		"Status": "Unknown",
+		"Type": "tyk-pro"
+	},
+	{
+		"ID": 52,
+		"LastSynced": "Not synced yet",
+		"Name": "tf-tyk-pro",
+		"Status": "Unknown",
+		"Type": ""
+	},
+	{
+		"ID": 51,
+		"LastSynced": "Not synced yet",
+		"Name": "tyk-pro",
+		"Status": "Unknown",
+		"Type": ""
+	},
+	{
+		"ID": 24,
+		"LastSynced": "Not synced yet",
+		"Name": "tyk-pro@localhost",
+		"Status": "Down",
+		"Type": "tyk-pro"
+	},
+	{
+		"ID": 23,
+		"LastSynced": "53 hours 11 minutes ago",
+		"Name": "tyk-pro",
+		"Status": "Down",
+		"Type": "tyk-pro"
+	},
+	{
+		"ID": 1,
+		"LastSynced": "53 hours 11 minutes ago",
+		"Name": "TykPro",
+		"Status": "Down",
+		"Type": "tyk-pro"
+	}
+]

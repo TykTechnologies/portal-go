@@ -1,0 +1,39 @@
+HTTP/1.1 200 OK
+Cache-Control: no-store
+Content-Type: application/json
+Pragma: no-cache
+Date: Sun, 09 Jul 2023 18:12:49 GMT
+Content-Length: 615
+
+{
+	"APIDetails": [
+		{
+			"APIID": "5dfaa68d0a0b4e0a69c6e6e40c2d80fe",
+			"APIType": "REST",
+			"Description": "",
+			"ListenPath": "/keycloak_y/",
+			"Name": "keycloak_Y",
+			"OASDocument": "",
+			"OASUrl": "",
+			"Status": true,
+			"TargetURL": "http://server:8000"
+		}
+	],
+	"AuthType": "jwt",
+	"Catalogues": [
+		"Private Catalogue"
+	],
+	"Content": "",
+	"DCREnabled": false,
+	"Description": "",
+	"DisplayName": "",
+	"Feature": false,
+	"ID": 8,
+	"Logo": "",
+	"Name": "keycloak_product_Y",
+	"Path": "keycloak_product_y",
+	"ReferenceID": "636253c3f1d9280001a673c2",
+	"Scopes": "",
+	"Tags": null,
+	"Templates": null
+}
