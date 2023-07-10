@@ -12,7 +12,7 @@ const (
 	pathProduct  = "/portal-api/products/%d"
 )
 
-//go:generate mockery --name ProductsService
+//go:generate mockery --name ProductsService --filename productss_service.go
 type ProductsService interface {
 	CreateProduct(ctx context.Context, input CreateProductInput) (*CreateProductOutput, error)
 	GetProduct(ctx context.Context, id int64) (*GetProductOutput, error)
@@ -42,7 +42,7 @@ func (p productsService) CreateProduct(ctx context.Context, input CreateProductI
 	}
 
 	return &CreateProductOutput{
-		Product: &product,
+		Data: &product,
 	}, nil
 }
 
@@ -58,7 +58,7 @@ func (p productsService) GetProduct(ctx context.Context, id int64) (*GetProductO
 	}
 
 	return &GetProductOutput{
-		Product: &product,
+		Data: &product,
 	}, nil
 }
 
@@ -75,7 +75,7 @@ func (p productsService) ListProducts(ctx context.Context, options *ListProducts
 	}
 
 	return &ListProductsOutput{
-		Products: products,
+		Data: products,
 	}, nil
 }
 
@@ -97,7 +97,7 @@ func (p productsService) UpdateProduct(ctx context.Context, id int64, input Upda
 	}
 
 	return &UpdateProductOutput{
-		Product: &product,
+		Data: &product,
 	}, nil
 }
 
@@ -114,7 +114,7 @@ type CreateProductInput = ProductInput
 type ListProductsOptions struct{}
 
 type ListProductsOutput struct {
-	Products []Product
+	Data []Product
 }
 
 type Product struct {
@@ -130,7 +130,7 @@ type Product struct {
 }
 
 type ProductOutput struct {
-	Product *Product
+	Data *Product
 }
 
 type UpdateProductOutput = ProductOutput

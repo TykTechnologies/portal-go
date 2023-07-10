@@ -92,20 +92,20 @@ func (_m *ProvidersService) ListProviders(ctx context.Context, options *portal.L
 	return r0, r1
 }
 
-// SynchronizeProvider provides a mock function with given fields: ctx, id
-func (_m *ProvidersService) SynchronizeProvider(ctx context.Context, id int64) (*portal.SynchronizeProviderOutput, error) {
+// SyncProvider provides a mock function with given fields: ctx, id
+func (_m *ProvidersService) SyncProvider(ctx context.Context, id int64) (*portal.SyncProviderOutput, error) {
 	ret := _m.Called(ctx, id)
 
-	var r0 *portal.SynchronizeProviderOutput
+	var r0 *portal.SyncProviderOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64) (*portal.SynchronizeProviderOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64) (*portal.SyncProviderOutput, error)); ok {
 		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64) *portal.SynchronizeProviderOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64) *portal.SyncProviderOutput); ok {
 		r0 = rf(ctx, id)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*portal.SynchronizeProviderOutput)
+			r0 = ret.Get(0).(*portal.SyncProviderOutput)
 		}
 	}
 

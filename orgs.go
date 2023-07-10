@@ -12,7 +12,7 @@ const (
 	pathOrg  = "/portal-api/organitations/%d"
 )
 
-//go:generate mockery --name OrgsService
+//go:generate mockery --name OrgsService --filename orgs_service.go
 type OrgsService interface {
 	CreateOrg(ctx context.Context, input CreateOrgInput) (*CreateOrgOutput, error)
 	GetOrg(ctx context.Context, id int64) (*GetOrgOutput, error)
@@ -42,7 +42,7 @@ func (p orgsService) CreateOrg(ctx context.Context, input CreateOrgInput) (*Crea
 	}
 
 	return &CreateOrgOutput{
-		Org: &org,
+		Data: &org,
 	}, nil
 }
 
@@ -58,7 +58,7 @@ func (p orgsService) GetOrg(ctx context.Context, id int64) (*GetOrgOutput, error
 	}
 
 	return &GetOrgOutput{
-		Org: &org,
+		Data: &org,
 	}, nil
 }
 
@@ -75,7 +75,7 @@ func (p orgsService) ListOrgs(ctx context.Context, options *ListOrgsOptions) (*L
 	}
 
 	return &ListOrgsOutput{
-		Orgs: orgs,
+		Data: orgs,
 	}, nil
 }
 
@@ -97,7 +97,7 @@ func (p orgsService) UpdateOrg(ctx context.Context, id int64, input UpdateOrgInp
 	}
 
 	return &UpdateOrgOutput{
-		Org: &org,
+		Data: &org,
 	}, nil
 }
 
@@ -114,7 +114,7 @@ type CreateOrgInput = OrgInput
 type ListOrgsOptions struct{}
 
 type ListOrgsOutput struct {
-	Orgs []Org
+	Data []Org
 }
 
 type Org struct {
@@ -123,7 +123,7 @@ type Org struct {
 }
 
 type OrgOutput struct {
-	Org *Org
+	Data *Org
 }
 
 type UpdateOrgOutput = OrgOutput

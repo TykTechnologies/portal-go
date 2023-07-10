@@ -12,7 +12,7 @@ const (
 	pathCatalogue  = "/portal-api/catalogues/%d"
 )
 
-//go:generate mockery --name CataloguesService
+//go:generate mockery --name CataloguesService --filename catagogues_service.go
 type CataloguesService interface {
 	CreateCatalogue(ctx context.Context, input CreateCatalogueInput) (*CreateCatalogueOutput, error)
 	GetCatalogue(ctx context.Context, id int64) (*GetCatalogueOutput, error)
@@ -42,7 +42,7 @@ func (p cataloguesService) CreateCatalogue(ctx context.Context, input CreateCata
 	}
 
 	return &CreateCatalogueOutput{
-		Catalogue: &catalogue,
+		Data: &catalogue,
 	}, nil
 }
 
@@ -58,7 +58,7 @@ func (p cataloguesService) GetCatalogue(ctx context.Context, id int64) (*GetCata
 	}
 
 	return &GetCatalogueOutput{
-		Catalogue: &catalogue,
+		Data: &catalogue,
 	}, nil
 }
 
@@ -75,7 +75,7 @@ func (p cataloguesService) ListCatalogues(ctx context.Context, options *ListCata
 	}
 
 	return &ListCataloguesOutput{
-		Catalogues: catalogues,
+		Data: catalogues,
 	}, nil
 }
 
@@ -97,7 +97,7 @@ func (p cataloguesService) UpdateCatalogue(ctx context.Context, id int64, input 
 	}
 
 	return &UpdateCatalogueOutput{
-		Catalogue: &catalogue,
+		Data: &catalogue,
 	}, nil
 }
 
@@ -114,7 +114,7 @@ type CreateCatalogueInput = CatalogueInput
 type ListCataloguesOptions struct{}
 
 type ListCataloguesOutput struct {
-	Catalogues []Catalogue
+	Data []Catalogue
 }
 
 type Catalogue struct {
@@ -125,7 +125,7 @@ type Catalogue struct {
 }
 
 type CatalogueOutput struct {
-	Catalogue *Catalogue
+	Data *Catalogue
 }
 
 type UpdateCatalogueOutput = CatalogueOutput

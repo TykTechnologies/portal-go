@@ -12,7 +12,7 @@ const (
 	pathUser  = "/portal-api/users/%d"
 )
 
-//go:generate mockery --name UsersService
+//go:generate mockery --name UsersService --filename catagogues_service.go
 type UsersService interface {
 	CreateUser(ctx context.Context, input CreateUserInput) (*CreateUserOutput, error)
 	GetUser(ctx context.Context, id int64) (*GetUserOutput, error)
@@ -42,7 +42,7 @@ func (p usersService) CreateUser(ctx context.Context, input CreateUserInput) (*C
 	}
 
 	return &CreateUserOutput{
-		User: &user,
+		Data: &user,
 	}, nil
 }
 
@@ -58,7 +58,7 @@ func (p usersService) GetUser(ctx context.Context, id int64) (*GetUserOutput, er
 	}
 
 	return &GetUserOutput{
-		User: &user,
+		Data: &user,
 	}, nil
 }
 
@@ -97,7 +97,7 @@ func (p usersService) UpdateUser(ctx context.Context, id int64, input UpdateUser
 	}
 
 	return &UpdateUserOutput{
-		User: &user,
+		Data: &user,
 	}, nil
 }
 
@@ -129,7 +129,7 @@ type User struct {
 }
 
 type UserOutput struct {
-	User *User
+	Data *User
 }
 
 type UpdateUserOutput = UserOutput

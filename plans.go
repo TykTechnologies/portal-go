@@ -13,7 +13,7 @@ const (
 	pathPlan  = "/portal-api/plans/%d"
 )
 
-//go:generate mockery --name PlansService
+//go:generate mockery --name PlansService --filename plans_service.go
 type PlansService interface {
 	CreatePlan(ctx context.Context, input CreatePlanInput) (*CreatePlanOutput, error)
 	GetPlan(ctx context.Context, id int64) (*GetPlanOutput, error)
@@ -43,7 +43,7 @@ func (p plansService) CreatePlan(ctx context.Context, input CreatePlanInput) (*C
 	}
 
 	return &CreatePlanOutput{
-		Plan: &plan,
+		Data: &plan,
 	}, nil
 }
 
@@ -59,7 +59,7 @@ func (p plansService) GetPlan(ctx context.Context, id int64) (*GetPlanOutput, er
 	}
 
 	return &GetPlanOutput{
-		Plan: &plan,
+		Data: &plan,
 	}, nil
 }
 
@@ -76,7 +76,7 @@ func (p plansService) ListPlans(ctx context.Context, options *ListPlansOptions) 
 	}
 
 	return &ListPlansOutput{
-		Plans: plans,
+		Data: plans,
 	}, nil
 }
 
@@ -103,7 +103,7 @@ func (p plansService) UpdatePlan(ctx context.Context, id int64, input UpdatePlan
 	}
 
 	return &UpdatePlanOutput{
-		Plan: &plan,
+		Data: &plan,
 	}, nil
 }
 
@@ -127,7 +127,7 @@ type PlanConfiguration struct {
 type ListPlansOptions struct{}
 
 type ListPlansOutput struct {
-	Plans []Plan
+	Data []Plan
 }
 
 type Plan struct {
@@ -141,7 +141,7 @@ type Plan struct {
 }
 
 type PlanOutput struct {
-	Plan *Plan
+	Data *Plan
 }
 
 type UpdatePlanOutput = PlanOutput

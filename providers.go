@@ -11,16 +11,16 @@ import (
 const (
 	pathProviders    = "/portal-api/providers"
 	pathProvider     = "/portal-api/providers/%d"
-	pathProviderSync = "/portal-api/providers/%d/synchronize"
+	pathProviderSync = "/portal-api/providers/%v/synchronize"
 )
 
-//go:generate mockery --name ProvidersService
+//go:generate mockery --name ProvidersService --filename providers_service.go
 type ProvidersService interface {
 	CreateProvider(ctx context.Context, input CreateProviderInput) (*CreateProviderOutput, error)
 	GetProvider(ctx context.Context, id int64) (*GetProviderOutput, error)
 	ListProviders(ctx context.Context, options *ListProvidersOptions) (*ListProvidersOutput, error)
 	UpdateProvider(ctx context.Context, id int64, input UpdateProviderInput) (*UpdateProviderOutput, error)
-	SynchronizeProvider(ctx context.Context, id int64) (*SynchronizeProviderOutput, error)
+	SyncProvider(ctx context.Context, id int64) (*SyncProviderOutput, error)
 }
 
 type providersService struct {
@@ -78,7 +78,7 @@ func (p providersService) ListProviders(ctx context.Context, options *ListProvid
 	}
 
 	return &ListProvidersOutput{
-		Providers: providers,
+		Data: providers,
 	}, nil
 }
 
@@ -109,20 +109,37 @@ func (p providersService) UpdateProvider(ctx context.Context, id int64, input Up
 	}, nil
 }
 
-func (p providersService) SynchronizeProvider(ctx context.Context, id int64) (*SynchronizeProviderOutput, error) {
+func (p providersService) SyncProvider(ctx context.Context, id int64) (*SyncProviderOutput, error) {
 	resp, err := p.client.doPut(fmt.Sprintf(pathProviderSync, id), nil, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	var msg SynchronizationStatus
+	var msg SyncStatus
 
 	if err := resp.Parse(&msg); err != nil {
 		return nil, err
 	}
 
-	return &SynchronizeProviderOutput{
-		Synchronization: msg,
+	return &SyncProviderOutput{
+		Data: msg,
+	}, nil
+}
+
+func (p providersService) SyncProviders(ctx context.Context) (*SyncProviderOutput, error) {
+	resp, err := p.client.doPut(fmt.Sprintf(pathProviderSync, "all"), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var msg SyncStatus
+
+	if err := resp.Parse(&msg); err != nil {
+		return nil, err
+	}
+
+	return &SyncProviderOutput{
+		Data: msg,
 	}, nil
 }
 
@@ -130,14 +147,14 @@ type ProviderInput struct {
 	ID            *int64 `json:",omitempty"`
 	Type          string
 	Name          string
-	Configuration *ProviderConfiguration `json:",omitempty"`
+	Configuration *ProviderConfig `json:",omitempty"`
 }
 
 type UpdateProviderInput = ProviderInput
 
 type CreateProviderInput = ProviderInput
 
-type ProviderConfiguration struct {
+type ProviderConfig struct {
 	ProviderID *int64 `json:"ProviderID,omitempty"`
 	MetaData   string
 	ID         *int64 `json:"ID,omitempty"`
@@ -146,7 +163,7 @@ type ProviderConfiguration struct {
 type ListProvidersOptions struct{}
 
 type ListProvidersOutput struct {
-	Providers []Provider
+	Data []Provider
 }
 
 type Provider struct {
@@ -156,16 +173,16 @@ type Provider struct {
 	UpdatedAt     string
 	Type          string
 	Status        string
-	LastSynched   string `json:"LastSynced"`
-	Configuration ProviderConfiguration
+	LastSynced    string
+	Configuration ProviderConfig
 }
 
 type ProviderOutput struct {
 	Provider *Provider
 }
 
-type SynchronizeProviderOutput struct {
-	Synchronization SynchronizationStatus
+type SyncProviderOutput struct {
+	Data SyncStatus
 }
 
 type UpdateProviderOutput = ProviderOutput
@@ -174,7 +191,7 @@ type GetProviderOutput = ProviderOutput
 
 type CreateProviderOutput = ProviderOutput
 
-type SynchronizationStatus struct {
+type SyncStatus struct {
 	Message string `json:"message"`
 	Status  string `json:"status"`
 }
