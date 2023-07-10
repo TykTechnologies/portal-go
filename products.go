@@ -12,7 +12,7 @@ const (
 	pathProduct  = "/portal-api/products/%d"
 )
 
-//go:generate mockery --name ProductsService --filename productss_service.go
+//go:generate mockery --name ProductsService --filename products_service.go
 type ProductsService interface {
 	CreateProduct(ctx context.Context, input CreateProductInput) (*CreateProductOutput, error)
 	GetProduct(ctx context.Context, id int64) (*GetProductOutput, error)

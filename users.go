@@ -12,7 +12,7 @@ const (
 	pathUser  = "/portal-api/users/%d"
 )
 
-//go:generate mockery --name UsersService --filename catagogues_service.go
+//go:generate mockery --name UsersService --filename users_service.go
 type UsersService interface {
 	CreateUser(ctx context.Context, input CreateUserInput) (*CreateUserOutput, error)
 	GetUser(ctx context.Context, id int64) (*GetUserOutput, error)
