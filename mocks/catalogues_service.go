@@ -14,25 +14,32 @@ type CataloguesService struct {
 	mock.Mock
 }
 
-// CreateCatalogue provides a mock function with given fields: ctx, input
-func (_m *CataloguesService) CreateCatalogue(ctx context.Context, input portal.CatalogueInput) (*portal.CatalogueOutput, error) {
-	ret := _m.Called(ctx, input)
+// CreateCatalogue provides a mock function with given fields: ctx, input, opts
+func (_m *CataloguesService) CreateCatalogue(ctx context.Context, input *portal.CatalogueInput, opts ...func(*portal.Options)) (*portal.CatalogueOutput, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, input)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
 
 	var r0 *portal.CatalogueOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, portal.CatalogueInput) (*portal.CatalogueOutput, error)); ok {
-		return rf(ctx, input)
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.CatalogueInput, ...func(*portal.Options)) (*portal.CatalogueOutput, error)); ok {
+		return rf(ctx, input, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, portal.CatalogueInput) *portal.CatalogueOutput); ok {
-		r0 = rf(ctx, input)
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.CatalogueInput, ...func(*portal.Options)) *portal.CatalogueOutput); ok {
+		r0 = rf(ctx, input, opts...)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*portal.CatalogueOutput)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, portal.CatalogueInput) error); ok {
-		r1 = rf(ctx, input)
+	if rf, ok := ret.Get(1).(func(context.Context, *portal.CatalogueInput, ...func(*portal.Options)) error); ok {
+		r1 = rf(ctx, input, opts...)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -40,25 +47,32 @@ func (_m *CataloguesService) CreateCatalogue(ctx context.Context, input portal.C
 	return r0, r1
 }
 
-// GetCatalogue provides a mock function with given fields: ctx, id
-func (_m *CataloguesService) GetCatalogue(ctx context.Context, id int64) (*portal.CatalogueOutput, error) {
-	ret := _m.Called(ctx, id)
+// GetCatalogue provides a mock function with given fields: ctx, id, opts
+func (_m *CataloguesService) GetCatalogue(ctx context.Context, id int64, opts ...func(*portal.Options)) (*portal.CatalogueOutput, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, id)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
 
 	var r0 *portal.CatalogueOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64) (*portal.CatalogueOutput, error)); ok {
-		return rf(ctx, id)
+	if rf, ok := ret.Get(0).(func(context.Context, int64, ...func(*portal.Options)) (*portal.CatalogueOutput, error)); ok {
+		return rf(ctx, id, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64) *portal.CatalogueOutput); ok {
-		r0 = rf(ctx, id)
+	if rf, ok := ret.Get(0).(func(context.Context, int64, ...func(*portal.Options)) *portal.CatalogueOutput); ok {
+		r0 = rf(ctx, id, opts...)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*portal.CatalogueOutput)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
-		r1 = rf(ctx, id)
+	if rf, ok := ret.Get(1).(func(context.Context, int64, ...func(*portal.Options)) error); ok {
+		r1 = rf(ctx, id, opts...)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -66,25 +80,32 @@ func (_m *CataloguesService) GetCatalogue(ctx context.Context, id int64) (*porta
 	return r0, r1
 }
 
-// ListCatalogues provides a mock function with given fields: ctx, options
-func (_m *CataloguesService) ListCatalogues(ctx context.Context, options *portal.ListCataloguesOptions) (*portal.ListCataloguesOutput, error) {
-	ret := _m.Called(ctx, options)
+// ListCatalogues provides a mock function with given fields: ctx, options, opts
+func (_m *CataloguesService) ListCatalogues(ctx context.Context, options *portal.ListCataloguesOptions, opts ...func(*portal.Options)) (*portal.ListCataloguesOutput, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, options)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
 
 	var r0 *portal.ListCataloguesOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListCataloguesOptions) (*portal.ListCataloguesOutput, error)); ok {
-		return rf(ctx, options)
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListCataloguesOptions, ...func(*portal.Options)) (*portal.ListCataloguesOutput, error)); ok {
+		return rf(ctx, options, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListCataloguesOptions) *portal.ListCataloguesOutput); ok {
-		r0 = rf(ctx, options)
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListCataloguesOptions, ...func(*portal.Options)) *portal.ListCataloguesOutput); ok {
+		r0 = rf(ctx, options, opts...)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*portal.ListCataloguesOutput)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *portal.ListCataloguesOptions) error); ok {
-		r1 = rf(ctx, options)
+	if rf, ok := ret.Get(1).(func(context.Context, *portal.ListCataloguesOptions, ...func(*portal.Options)) error); ok {
+		r1 = rf(ctx, options, opts...)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -92,25 +113,32 @@ func (_m *CataloguesService) ListCatalogues(ctx context.Context, options *portal
 	return r0, r1
 }
 
-// UpdateCatalogue provides a mock function with given fields: ctx, id, input
-func (_m *CataloguesService) UpdateCatalogue(ctx context.Context, id int64, input portal.CatalogueInput) (*portal.CatalogueOutput, error) {
-	ret := _m.Called(ctx, id, input)
+// UpdateCatalogue provides a mock function with given fields: ctx, id, input, opts
+func (_m *CataloguesService) UpdateCatalogue(ctx context.Context, id int64, input *portal.CatalogueInput, opts ...func(*portal.Options)) (*portal.CatalogueOutput, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, id, input)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
 
 	var r0 *portal.CatalogueOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64, portal.CatalogueInput) (*portal.CatalogueOutput, error)); ok {
-		return rf(ctx, id, input)
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.CatalogueInput, ...func(*portal.Options)) (*portal.CatalogueOutput, error)); ok {
+		return rf(ctx, id, input, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64, portal.CatalogueInput) *portal.CatalogueOutput); ok {
-		r0 = rf(ctx, id, input)
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.CatalogueInput, ...func(*portal.Options)) *portal.CatalogueOutput); ok {
+		r0 = rf(ctx, id, input, opts...)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*portal.CatalogueOutput)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64, portal.CatalogueInput) error); ok {
-		r1 = rf(ctx, id, input)
+	if rf, ok := ret.Get(1).(func(context.Context, int64, *portal.CatalogueInput, ...func(*portal.Options)) error); ok {
+		r1 = rf(ctx, id, input, opts...)
 	} else {
 		r1 = ret.Error(1)
 	}

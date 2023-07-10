@@ -14,17 +14,17 @@ const (
 
 //go:generate mockery --name CataloguesService --filename catalogues_service.go
 type CataloguesService interface {
-	CreateCatalogue(ctx context.Context, input CreateCatalogueInput) (*CreateCatalogueOutput, error)
-	GetCatalogue(ctx context.Context, id int64) (*GetCatalogueOutput, error)
-	ListCatalogues(ctx context.Context, options *ListCataloguesOptions) (*ListCataloguesOutput, error)
-	UpdateCatalogue(ctx context.Context, id int64, input UpdateCatalogueInput) (*UpdateCatalogueOutput, error)
+	CreateCatalogue(ctx context.Context, input *CreateCatalogueInput, opts ...func(*Options)) (*CreateCatalogueOutput, error)
+	GetCatalogue(ctx context.Context, id int64, opts ...func(*Options)) (*GetCatalogueOutput, error)
+	ListCatalogues(ctx context.Context, options *ListCataloguesOptions, opts ...func(*Options)) (*ListCataloguesOutput, error)
+	UpdateCatalogue(ctx context.Context, id int64, input *UpdateCatalogueInput, opts ...func(*Options)) (*UpdateCatalogueOutput, error)
 }
 
 type cataloguesService struct {
 	client *Client
 }
 
-func (p cataloguesService) CreateCatalogue(ctx context.Context, input CreateCatalogueInput) (*CreateCatalogueOutput, error) {
+func (p cataloguesService) CreateCatalogue(ctx context.Context, input *CreateCatalogueInput, opts ...func(*Options)) (*CreateCatalogueOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -46,7 +46,7 @@ func (p cataloguesService) CreateCatalogue(ctx context.Context, input CreateCata
 	}, nil
 }
 
-func (p cataloguesService) GetCatalogue(ctx context.Context, id int64) (*GetCatalogueOutput, error) {
+func (p cataloguesService) GetCatalogue(ctx context.Context, id int64, opts ...func(*Options)) (*GetCatalogueOutput, error) {
 	resp, err := p.client.doGet(fmt.Sprintf(pathCatalogue, id), nil)
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func (p cataloguesService) GetCatalogue(ctx context.Context, id int64) (*GetCata
 	}, nil
 }
 
-func (p cataloguesService) ListCatalogues(ctx context.Context, options *ListCataloguesOptions) (*ListCataloguesOutput, error) {
+func (p cataloguesService) ListCatalogues(ctx context.Context, options *ListCataloguesOptions, opts ...func(*Options)) (*ListCataloguesOutput, error) {
 	resp, err := p.client.doGet(pathCatalogues, nil)
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func (p cataloguesService) ListCatalogues(ctx context.Context, options *ListCata
 	}, nil
 }
 
-func (p cataloguesService) UpdateCatalogue(ctx context.Context, id int64, input UpdateCatalogueInput) (*UpdateCatalogueOutput, error) {
+func (p cataloguesService) UpdateCatalogue(ctx context.Context, id int64, input *UpdateCatalogueInput, opts ...func(*Options)) (*UpdateCatalogueOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err

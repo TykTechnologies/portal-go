@@ -14,17 +14,17 @@ const (
 
 //go:generate mockery --name OrgsService --filename orgs_service.go
 type OrgsService interface {
-	CreateOrg(ctx context.Context, input CreateOrgInput) (*CreateOrgOutput, error)
-	GetOrg(ctx context.Context, id int64) (*GetOrgOutput, error)
-	ListOrgs(ctx context.Context, options *ListOrgsOptions) (*ListOrgsOutput, error)
-	UpdateOrg(ctx context.Context, id int64, input UpdateOrgInput) (*UpdateOrgOutput, error)
+	CreateOrg(ctx context.Context, input *CreateOrgInput, opts ...func(*Options)) (*CreateOrgOutput, error)
+	GetOrg(ctx context.Context, id int64, opts ...func(*Options)) (*GetOrgOutput, error)
+	ListOrgs(ctx context.Context, options *ListOrgsOptions, opts ...func(*Options)) (*ListOrgsOutput, error)
+	UpdateOrg(ctx context.Context, id int64, input *UpdateOrgInput, opts ...func(*Options)) (*UpdateOrgOutput, error)
 }
 
 type orgsService struct {
 	client *Client
 }
 
-func (p orgsService) CreateOrg(ctx context.Context, input CreateOrgInput) (*CreateOrgOutput, error) {
+func (p orgsService) CreateOrg(ctx context.Context, input *CreateOrgInput, opts ...func(*Options)) (*CreateOrgOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -46,7 +46,7 @@ func (p orgsService) CreateOrg(ctx context.Context, input CreateOrgInput) (*Crea
 	}, nil
 }
 
-func (p orgsService) GetOrg(ctx context.Context, id int64) (*GetOrgOutput, error) {
+func (p orgsService) GetOrg(ctx context.Context, id int64, opts ...func(*Options)) (*GetOrgOutput, error) {
 	resp, err := p.client.doGet(fmt.Sprintf(pathOrg, id), nil)
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func (p orgsService) GetOrg(ctx context.Context, id int64) (*GetOrgOutput, error
 	}, nil
 }
 
-func (p orgsService) ListOrgs(ctx context.Context, options *ListOrgsOptions) (*ListOrgsOutput, error) {
+func (p orgsService) ListOrgs(ctx context.Context, options *ListOrgsOptions, opts ...func(*Options)) (*ListOrgsOutput, error) {
 	resp, err := p.client.doGet(pathOrgs, nil)
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func (p orgsService) ListOrgs(ctx context.Context, options *ListOrgsOptions) (*L
 	}, nil
 }
 
-func (p orgsService) UpdateOrg(ctx context.Context, id int64, input UpdateOrgInput) (*UpdateOrgOutput, error) {
+func (p orgsService) UpdateOrg(ctx context.Context, id int64, input *UpdateOrgInput, opts ...func(*Options)) (*UpdateOrgOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err

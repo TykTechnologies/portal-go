@@ -14,17 +14,17 @@ const (
 
 //go:generate mockery --name ProductsService --filename products_service.go
 type ProductsService interface {
-	CreateProduct(ctx context.Context, input CreateProductInput) (*CreateProductOutput, error)
-	GetProduct(ctx context.Context, id int64) (*GetProductOutput, error)
-	ListProducts(ctx context.Context, options *ListProductsOptions) (*ListProductsOutput, error)
-	UpdateProduct(ctx context.Context, id int64, input UpdateProductInput) (*UpdateProductOutput, error)
+	CreateProduct(ctx context.Context, input *CreateProductInput, opts ...func(*Options)) (*CreateProductOutput, error)
+	GetProduct(ctx context.Context, id int64, opts ...func(*Options)) (*GetProductOutput, error)
+	ListProducts(ctx context.Context, options *ListProductsOptions, opts ...func(*Options)) (*ListProductsOutput, error)
+	UpdateProduct(ctx context.Context, id int64, input *UpdateProductInput, opts ...func(*Options)) (*UpdateProductOutput, error)
 }
 
 type productsService struct {
 	client *Client
 }
 
-func (p productsService) CreateProduct(ctx context.Context, input CreateProductInput) (*CreateProductOutput, error) {
+func (p productsService) CreateProduct(ctx context.Context, input *CreateProductInput, opts ...func(*Options)) (*CreateProductOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -46,7 +46,7 @@ func (p productsService) CreateProduct(ctx context.Context, input CreateProductI
 	}, nil
 }
 
-func (p productsService) GetProduct(ctx context.Context, id int64) (*GetProductOutput, error) {
+func (p productsService) GetProduct(ctx context.Context, id int64, opts ...func(*Options)) (*GetProductOutput, error) {
 	resp, err := p.client.doGet(fmt.Sprintf(pathProduct, id), nil)
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func (p productsService) GetProduct(ctx context.Context, id int64) (*GetProductO
 	}, nil
 }
 
-func (p productsService) ListProducts(ctx context.Context, options *ListProductsOptions) (*ListProductsOutput, error) {
+func (p productsService) ListProducts(ctx context.Context, options *ListProductsOptions, opts ...func(*Options)) (*ListProductsOutput, error) {
 	resp, err := p.client.doGet(pathProducts, nil)
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func (p productsService) ListProducts(ctx context.Context, options *ListProducts
 	}, nil
 }
 
-func (p productsService) UpdateProduct(ctx context.Context, id int64, input UpdateProductInput) (*UpdateProductOutput, error) {
+func (p productsService) UpdateProduct(ctx context.Context, id int64, input *UpdateProductInput, opts ...func(*Options)) (*UpdateProductOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err

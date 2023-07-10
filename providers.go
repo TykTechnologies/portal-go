@@ -16,18 +16,18 @@ const (
 
 //go:generate mockery --name ProvidersService --filename providers_service.go
 type ProvidersService interface {
-	CreateProvider(ctx context.Context, input CreateProviderInput) (*CreateProviderOutput, error)
-	GetProvider(ctx context.Context, id int64) (*GetProviderOutput, error)
-	ListProviders(ctx context.Context, options *ListProvidersOptions) (*ListProvidersOutput, error)
-	UpdateProvider(ctx context.Context, id int64, input UpdateProviderInput) (*UpdateProviderOutput, error)
-	SyncProvider(ctx context.Context, id int64) (*SyncProviderOutput, error)
+	CreateProvider(ctx context.Context, input *CreateProviderInput, opts ...func(*Options)) (*CreateProviderOutput, error)
+	GetProvider(ctx context.Context, id int64, opts ...func(*Options)) (*GetProviderOutput, error)
+	ListProviders(ctx context.Context, options *ListProvidersOptions, opts ...func(*Options)) (*ListProvidersOutput, error)
+	UpdateProvider(ctx context.Context, id int64, input *UpdateProviderInput, opts ...func(*Options)) (*UpdateProviderOutput, error)
+	SyncProvider(ctx context.Context, id int64, opts ...func(*Options)) (*SyncProviderOutput, error)
 }
 
 type providersService struct {
 	client *Client
 }
 
-func (p providersService) CreateProvider(ctx context.Context, input CreateProviderInput) (*CreateProviderOutput, error) {
+func (p providersService) CreateProvider(ctx context.Context, input *CreateProviderInput, opts ...func(*Options)) (*CreateProviderOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -49,7 +49,7 @@ func (p providersService) CreateProvider(ctx context.Context, input CreateProvid
 	}, nil
 }
 
-func (p providersService) GetProvider(ctx context.Context, id int64) (*GetProviderOutput, error) {
+func (p providersService) GetProvider(ctx context.Context, id int64, opts ...func(*Options)) (*GetProviderOutput, error) {
 	resp, err := p.client.doGet(fmt.Sprintf(pathProvider, id), nil)
 	if err != nil {
 		return nil, err
@@ -65,7 +65,7 @@ func (p providersService) GetProvider(ctx context.Context, id int64) (*GetProvid
 	}, nil
 }
 
-func (p providersService) ListProviders(ctx context.Context, options *ListProvidersOptions) (*ListProvidersOutput, error) {
+func (p providersService) ListProviders(ctx context.Context, options *ListProvidersOptions, opts ...func(*Options)) (*ListProvidersOutput, error) {
 	resp, err := p.client.doGet(pathProviders, nil)
 	if err != nil {
 		return nil, err
@@ -82,7 +82,7 @@ func (p providersService) ListProviders(ctx context.Context, options *ListProvid
 	}, nil
 }
 
-func (p providersService) UpdateProvider(ctx context.Context, id int64, input UpdateProviderInput) (*UpdateProviderOutput, error) {
+func (p providersService) UpdateProvider(ctx context.Context, id int64, input *UpdateProviderInput, opts ...func(*Options)) (*UpdateProviderOutput, error) {
 	// TODO: review this
 	if input.Configuration != nil && input.Configuration.ID == nil {
 		return nil, errors.New("configuration id must not be nil")
@@ -109,7 +109,7 @@ func (p providersService) UpdateProvider(ctx context.Context, id int64, input Up
 	}, nil
 }
 
-func (p providersService) SyncProvider(ctx context.Context, id int64) (*SyncProviderOutput, error) {
+func (p providersService) SyncProvider(ctx context.Context, id int64, opts ...func(*Options)) (*SyncProviderOutput, error) {
 	resp, err := p.client.doPut(fmt.Sprintf(pathProviderSync, id), nil, nil)
 	if err != nil {
 		return nil, err
@@ -126,7 +126,7 @@ func (p providersService) SyncProvider(ctx context.Context, id int64) (*SyncProv
 	}, nil
 }
 
-func (p providersService) SyncProviders(ctx context.Context) (*SyncProviderOutput, error) {
+func (p providersService) SyncProviders(ctx context.Context, opts ...func(*Options)) (*SyncProviderOutput, error) {
 	resp, err := p.client.doPut(fmt.Sprintf(pathProviderSync, "all"), nil, nil)
 	if err != nil {
 		return nil, err

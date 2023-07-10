@@ -24,8 +24,14 @@ type Config struct {
 	Debug             bool
 	Insecure          bool
 	BaseURL           string
-	HTTPClient        *http.Client
 	ConnectionTimeout time.Duration
+	HTTPClient        HTTPClient
+}
+
+type Options struct {
+	HTTPClient     *http.Client
+	DialTimeout    time.Duration
+	RequestTimeout time.Duration
 }
 
 type Client struct {
@@ -213,7 +219,7 @@ func (c Client) doPut(path string, body io.Reader, params url.Values) (*apiRespo
 }
 
 func (c Client) performRequest(req *http.Request) (*apiResponse, error) {
-	httpClient := http.Client{
+	var httpClient HTTPClient = &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: c.config.Insecure,
@@ -225,7 +231,7 @@ func (c Client) performRequest(req *http.Request) (*apiResponse, error) {
 	}
 
 	if c.config.HTTPClient != nil {
-		httpClient = *c.config.HTTPClient
+		httpClient = c.config.HTTPClient
 	}
 
 	resp, err := httpClient.Do(req)
@@ -291,4 +297,32 @@ type Error struct {
 
 func (e Error) Error() string {
 	return "API error"
+}
+
+type HTTPClient interface {
+	Do(*http.Request) (*http.Response, error)
+}
+
+func String(v string) *string {
+	return &v
+}
+
+func StringValue(s *string) string {
+	if s == nil {
+		return ""
+	}
+
+	return *s
+}
+
+func Int64(v int64) *int64 {
+	return &v
+}
+
+func Int64Value(s *int64) int64 {
+	if s == nil {
+		return 0
+	}
+
+	return *s
 }

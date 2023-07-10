@@ -14,17 +14,17 @@ const (
 
 //go:generate mockery --name UsersService --filename users_service.go
 type UsersService interface {
-	CreateUser(ctx context.Context, input CreateUserInput) (*CreateUserOutput, error)
-	GetUser(ctx context.Context, id int64) (*GetUserOutput, error)
-	ListUsers(ctx context.Context, options *ListUsersOptions) (*ListUsersOutput, error)
-	UpdateUser(ctx context.Context, id int64, input UpdateUserInput) (*UpdateUserOutput, error)
+	CreateUser(ctx context.Context, input *CreateUserInput, opts ...func(*Options)) (*CreateUserOutput, error)
+	GetUser(ctx context.Context, id int64, opts ...func(*Options)) (*GetUserOutput, error)
+	ListUsers(ctx context.Context, options *ListUsersOptions, opts ...func(*Options)) (*ListUsersOutput, error)
+	UpdateUser(ctx context.Context, id int64, input *UpdateUserInput, opts ...func(*Options)) (*UpdateUserOutput, error)
 }
 
 type usersService struct {
 	client *Client
 }
 
-func (p usersService) CreateUser(ctx context.Context, input CreateUserInput) (*CreateUserOutput, error) {
+func (p usersService) CreateUser(ctx context.Context, input *CreateUserInput, opts ...func(*Options)) (*CreateUserOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -46,7 +46,7 @@ func (p usersService) CreateUser(ctx context.Context, input CreateUserInput) (*C
 	}, nil
 }
 
-func (p usersService) GetUser(ctx context.Context, id int64) (*GetUserOutput, error) {
+func (p usersService) GetUser(ctx context.Context, id int64, opts ...func(*Options)) (*GetUserOutput, error) {
 	resp, err := p.client.doGet(fmt.Sprintf(pathUser, id), nil)
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func (p usersService) GetUser(ctx context.Context, id int64) (*GetUserOutput, er
 	}, nil
 }
 
-func (p usersService) ListUsers(ctx context.Context, options *ListUsersOptions) (*ListUsersOutput, error) {
+func (p usersService) ListUsers(ctx context.Context, options *ListUsersOptions, opts ...func(*Options)) (*ListUsersOutput, error) {
 	resp, err := p.client.doGet(pathUsers, nil)
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func (p usersService) ListUsers(ctx context.Context, options *ListUsersOptions) 
 	}, nil
 }
 
-func (p usersService) UpdateUser(ctx context.Context, id int64, input UpdateUserInput) (*UpdateUserOutput, error) {
+func (p usersService) UpdateUser(ctx context.Context, id int64, input *UpdateUserInput, opts ...func(*Options)) (*UpdateUserOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err

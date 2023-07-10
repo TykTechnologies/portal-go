@@ -15,17 +15,17 @@ const (
 
 //go:generate mockery --name PlansService --filename plans_service.go
 type PlansService interface {
-	CreatePlan(ctx context.Context, input CreatePlanInput) (*CreatePlanOutput, error)
-	GetPlan(ctx context.Context, id int64) (*GetPlanOutput, error)
-	ListPlans(ctx context.Context, options *ListPlansOptions) (*ListPlansOutput, error)
-	UpdatePlan(ctx context.Context, id int64, input UpdatePlanInput) (*UpdatePlanOutput, error)
+	CreatePlan(ctx context.Context, input *CreatePlanInput, opts ...func(*Options)) (*CreatePlanOutput, error)
+	GetPlan(ctx context.Context, id int64, opts ...func(*Options)) (*GetPlanOutput, error)
+	ListPlans(ctx context.Context, options *ListPlansOptions, opts ...func(*Options)) (*ListPlansOutput, error)
+	UpdatePlan(ctx context.Context, id int64, input *UpdatePlanInput, opts ...func(*Options)) (*UpdatePlanOutput, error)
 }
 
 type plansService struct {
 	client *Client
 }
 
-func (p plansService) CreatePlan(ctx context.Context, input CreatePlanInput) (*CreatePlanOutput, error) {
+func (p plansService) CreatePlan(ctx context.Context, input *CreatePlanInput, opts ...func(*Options)) (*CreatePlanOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func (p plansService) CreatePlan(ctx context.Context, input CreatePlanInput) (*C
 	}, nil
 }
 
-func (p plansService) GetPlan(ctx context.Context, id int64) (*GetPlanOutput, error) {
+func (p plansService) GetPlan(ctx context.Context, id int64, opts ...func(*Options)) (*GetPlanOutput, error) {
 	resp, err := p.client.doGet(fmt.Sprintf(pathPlan, id), nil)
 	if err != nil {
 		return nil, err
@@ -63,7 +63,7 @@ func (p plansService) GetPlan(ctx context.Context, id int64) (*GetPlanOutput, er
 	}, nil
 }
 
-func (p plansService) ListPlans(ctx context.Context, options *ListPlansOptions) (*ListPlansOutput, error) {
+func (p plansService) ListPlans(ctx context.Context, options *ListPlansOptions, opts ...func(*Options)) (*ListPlansOutput, error) {
 	resp, err := p.client.doGet(pathPlans, nil)
 	if err != nil {
 		return nil, err
@@ -80,7 +80,7 @@ func (p plansService) ListPlans(ctx context.Context, options *ListPlansOptions) 
 	}, nil
 }
 
-func (p plansService) UpdatePlan(ctx context.Context, id int64, input UpdatePlanInput) (*UpdatePlanOutput, error) {
+func (p plansService) UpdatePlan(ctx context.Context, id int64, input *UpdatePlanInput, opts ...func(*Options)) (*UpdatePlanOutput, error) {
 	// TODO: review this
 	if input.Configuration != nil && input.Configuration.ID == nil {
 		return nil, errors.New("configuration id must not be nil")

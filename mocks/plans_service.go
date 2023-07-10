@@ -14,25 +14,32 @@ type PlansService struct {
 	mock.Mock
 }
 
-// CreatePlan provides a mock function with given fields: ctx, input
-func (_m *PlansService) CreatePlan(ctx context.Context, input portal.PlanInput) (*portal.PlanOutput, error) {
-	ret := _m.Called(ctx, input)
+// CreatePlan provides a mock function with given fields: ctx, input, opts
+func (_m *PlansService) CreatePlan(ctx context.Context, input *portal.PlanInput, opts ...func(*portal.Options)) (*portal.PlanOutput, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, input)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
 
 	var r0 *portal.PlanOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, portal.PlanInput) (*portal.PlanOutput, error)); ok {
-		return rf(ctx, input)
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.PlanInput, ...func(*portal.Options)) (*portal.PlanOutput, error)); ok {
+		return rf(ctx, input, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, portal.PlanInput) *portal.PlanOutput); ok {
-		r0 = rf(ctx, input)
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.PlanInput, ...func(*portal.Options)) *portal.PlanOutput); ok {
+		r0 = rf(ctx, input, opts...)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*portal.PlanOutput)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, portal.PlanInput) error); ok {
-		r1 = rf(ctx, input)
+	if rf, ok := ret.Get(1).(func(context.Context, *portal.PlanInput, ...func(*portal.Options)) error); ok {
+		r1 = rf(ctx, input, opts...)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -40,25 +47,32 @@ func (_m *PlansService) CreatePlan(ctx context.Context, input portal.PlanInput) 
 	return r0, r1
 }
 
-// GetPlan provides a mock function with given fields: ctx, id
-func (_m *PlansService) GetPlan(ctx context.Context, id int64) (*portal.PlanOutput, error) {
-	ret := _m.Called(ctx, id)
+// GetPlan provides a mock function with given fields: ctx, id, opts
+func (_m *PlansService) GetPlan(ctx context.Context, id int64, opts ...func(*portal.Options)) (*portal.PlanOutput, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, id)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
 
 	var r0 *portal.PlanOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64) (*portal.PlanOutput, error)); ok {
-		return rf(ctx, id)
+	if rf, ok := ret.Get(0).(func(context.Context, int64, ...func(*portal.Options)) (*portal.PlanOutput, error)); ok {
+		return rf(ctx, id, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64) *portal.PlanOutput); ok {
-		r0 = rf(ctx, id)
+	if rf, ok := ret.Get(0).(func(context.Context, int64, ...func(*portal.Options)) *portal.PlanOutput); ok {
+		r0 = rf(ctx, id, opts...)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*portal.PlanOutput)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
-		r1 = rf(ctx, id)
+	if rf, ok := ret.Get(1).(func(context.Context, int64, ...func(*portal.Options)) error); ok {
+		r1 = rf(ctx, id, opts...)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -66,25 +80,32 @@ func (_m *PlansService) GetPlan(ctx context.Context, id int64) (*portal.PlanOutp
 	return r0, r1
 }
 
-// ListPlans provides a mock function with given fields: ctx, options
-func (_m *PlansService) ListPlans(ctx context.Context, options *portal.ListPlansOptions) (*portal.ListPlansOutput, error) {
-	ret := _m.Called(ctx, options)
+// ListPlans provides a mock function with given fields: ctx, options, opts
+func (_m *PlansService) ListPlans(ctx context.Context, options *portal.ListPlansOptions, opts ...func(*portal.Options)) (*portal.ListPlansOutput, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, options)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
 
 	var r0 *portal.ListPlansOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListPlansOptions) (*portal.ListPlansOutput, error)); ok {
-		return rf(ctx, options)
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListPlansOptions, ...func(*portal.Options)) (*portal.ListPlansOutput, error)); ok {
+		return rf(ctx, options, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListPlansOptions) *portal.ListPlansOutput); ok {
-		r0 = rf(ctx, options)
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListPlansOptions, ...func(*portal.Options)) *portal.ListPlansOutput); ok {
+		r0 = rf(ctx, options, opts...)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*portal.ListPlansOutput)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *portal.ListPlansOptions) error); ok {
-		r1 = rf(ctx, options)
+	if rf, ok := ret.Get(1).(func(context.Context, *portal.ListPlansOptions, ...func(*portal.Options)) error); ok {
+		r1 = rf(ctx, options, opts...)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -92,25 +113,32 @@ func (_m *PlansService) ListPlans(ctx context.Context, options *portal.ListPlans
 	return r0, r1
 }
 
-// UpdatePlan provides a mock function with given fields: ctx, id, input
-func (_m *PlansService) UpdatePlan(ctx context.Context, id int64, input portal.PlanInput) (*portal.PlanOutput, error) {
-	ret := _m.Called(ctx, id, input)
+// UpdatePlan provides a mock function with given fields: ctx, id, input, opts
+func (_m *PlansService) UpdatePlan(ctx context.Context, id int64, input *portal.PlanInput, opts ...func(*portal.Options)) (*portal.PlanOutput, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, id, input)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
 
 	var r0 *portal.PlanOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64, portal.PlanInput) (*portal.PlanOutput, error)); ok {
-		return rf(ctx, id, input)
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.PlanInput, ...func(*portal.Options)) (*portal.PlanOutput, error)); ok {
+		return rf(ctx, id, input, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64, portal.PlanInput) *portal.PlanOutput); ok {
-		r0 = rf(ctx, id, input)
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.PlanInput, ...func(*portal.Options)) *portal.PlanOutput); ok {
+		r0 = rf(ctx, id, input, opts...)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*portal.PlanOutput)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64, portal.PlanInput) error); ok {
-		r1 = rf(ctx, id, input)
+	if rf, ok := ret.Get(1).(func(context.Context, int64, *portal.PlanInput, ...func(*portal.Options)) error); ok {
+		r1 = rf(ctx, id, input, opts...)
 	} else {
 		r1 = ret.Error(1)
 	}
