@@ -12,7 +12,7 @@ const (
 	pathCatalogue  = "/portal-api/catalogues/%d"
 )
 
-//go:generate mockery --name CataloguesService --filename catagogues_service.go
+//go:generate mockery --name CataloguesService --filename catalogues_service.go
 type CataloguesService interface {
 	CreateCatalogue(ctx context.Context, input CreateCatalogueInput) (*CreateCatalogueOutput, error)
 	GetCatalogue(ctx context.Context, id int64) (*GetCatalogueOutput, error)
