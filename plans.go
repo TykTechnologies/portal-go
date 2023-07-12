@@ -15,17 +15,18 @@ const (
 
 //go:generate mockery --name PlansService --filename plans_service.go
 type PlansService interface {
-	CreatePlan(ctx context.Context, input *CreatePlanInput, opts ...func(*Options)) (*CreatePlanOutput, error)
-	GetPlan(ctx context.Context, id int64, opts ...func(*Options)) (*GetPlanOutput, error)
-	ListPlans(ctx context.Context, options *ListPlansOptions, opts ...func(*Options)) (*ListPlansOutput, error)
-	UpdatePlan(ctx context.Context, id int64, input *UpdatePlanInput, opts ...func(*Options)) (*UpdatePlanOutput, error)
+	CreatePlan(ctx context.Context, input *CreatePlanInput, opts ...Option) (*CreatePlanOutput, error)
+	GetPlan(ctx context.Context, id int64, opts ...Option) (*GetPlanOutput, error)
+	ListPlans(ctx context.Context, options *ListPlansInput, opts ...Option) (*ListPlansOutput, error)
+	UpdatePlan(ctx context.Context, id int64, input *UpdatePlanInput, opts ...Option) (*UpdatePlanOutput, error)
 }
 
 type plansService struct {
 	client *Client
 }
 
-func (p plansService) CreatePlan(ctx context.Context, input *CreatePlanInput, opts ...func(*Options)) (*CreatePlanOutput, error) {
+// CreatePlan ...
+func (p plansService) CreatePlan(ctx context.Context, input *CreatePlanInput, opts ...Option) (*CreatePlanOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -38,7 +39,7 @@ func (p plansService) CreatePlan(ctx context.Context, input *CreatePlanInput, op
 
 	var plan Plan
 
-	if err := resp.Parse(&plan); err != nil {
+	if err := resp.Unmarshal(&plan); err != nil {
 		return nil, err
 	}
 
@@ -47,14 +48,15 @@ func (p plansService) CreatePlan(ctx context.Context, input *CreatePlanInput, op
 	}, nil
 }
 
-func (p plansService) GetPlan(ctx context.Context, id int64, opts ...func(*Options)) (*GetPlanOutput, error) {
+// GetPlan ...
+func (p plansService) GetPlan(ctx context.Context, id int64, opts ...Option) (*GetPlanOutput, error) {
 	resp, err := p.client.doGet(fmt.Sprintf(pathPlan, id), nil)
 	if err != nil {
 		return nil, err
 	}
 
 	var plan Plan
-	if err := resp.Parse(&plan); err != nil {
+	if err := resp.Unmarshal(&plan); err != nil {
 		return nil, err
 	}
 
@@ -63,7 +65,8 @@ func (p plansService) GetPlan(ctx context.Context, id int64, opts ...func(*Optio
 	}, nil
 }
 
-func (p plansService) ListPlans(ctx context.Context, options *ListPlansOptions, opts ...func(*Options)) (*ListPlansOutput, error) {
+// ListPlans ...
+func (p plansService) ListPlans(ctx context.Context, options *ListPlansInput, opts ...Option) (*ListPlansOutput, error) {
 	resp, err := p.client.doGet(pathPlans, nil)
 	if err != nil {
 		return nil, err
@@ -71,7 +74,7 @@ func (p plansService) ListPlans(ctx context.Context, options *ListPlansOptions, 
 
 	var plans []Plan
 
-	if err := resp.Parse(&plans); err != nil {
+	if err := resp.Unmarshal(&plans); err != nil {
 		return nil, err
 	}
 
@@ -80,7 +83,8 @@ func (p plansService) ListPlans(ctx context.Context, options *ListPlansOptions, 
 	}, nil
 }
 
-func (p plansService) UpdatePlan(ctx context.Context, id int64, input *UpdatePlanInput, opts ...func(*Options)) (*UpdatePlanOutput, error) {
+// UpdatePlan ...
+func (p plansService) UpdatePlan(ctx context.Context, id int64, input *UpdatePlanInput, opts ...Option) (*UpdatePlanOutput, error) {
 	// TODO: review this
 	if input.Configuration != nil && input.Configuration.ID == nil {
 		return nil, errors.New("configuration id must not be nil")
@@ -98,7 +102,7 @@ func (p plansService) UpdatePlan(ctx context.Context, id int64, input *UpdatePla
 
 	var plan Plan
 
-	if err := resp.Parse(&plan); err != nil {
+	if err := resp.Unmarshal(&plan); err != nil {
 		return nil, err
 	}
 
@@ -124,20 +128,24 @@ type PlanConfiguration struct {
 	ID       *int64 `json:"ID,omitempty"`
 }
 
-type ListPlansOptions struct{}
+type ListPlansInput struct{}
 
 type ListPlansOutput struct {
 	Data []Plan
 }
 
 type Plan struct {
-	ID                        int64
-	Name                      string
-	Quota                     string
-	DisplayName               string
-	RateLimit                 string
-	AutoApproveAccessRequests bool
-	ReferenceID               string
+	AuthType                  string `json:"AuthType"`
+	AutoApproveAccessRequests bool   `json:"AutoApproveAccessRequests"`
+	Catalogues                any    `json:"Catalogues"`
+	Description               string `json:"Description"`
+	DisplayName               string `json:"DisplayName"`
+	ID                        int64  `json:"ID"`
+	JWTScope                  string `json:"JWTScope"`
+	Name                      string `json:"Name"`
+	Quota                     string `json:"Quota"`
+	RateLimit                 string `json:"RateLimit"`
+	ReferenceID               string `json:"ReferenceID"`
 }
 
 type PlanOutput struct {

@@ -14,17 +14,17 @@ const (
 
 //go:generate mockery --name ProductsService --filename products_service.go
 type ProductsService interface {
-	CreateProduct(ctx context.Context, input *CreateProductInput, opts ...func(*Options)) (*CreateProductOutput, error)
-	GetProduct(ctx context.Context, id int64, opts ...func(*Options)) (*GetProductOutput, error)
-	ListProducts(ctx context.Context, options *ListProductsOptions, opts ...func(*Options)) (*ListProductsOutput, error)
-	UpdateProduct(ctx context.Context, id int64, input *UpdateProductInput, opts ...func(*Options)) (*UpdateProductOutput, error)
+	CreateProduct(ctx context.Context, input *CreateProductInput, opts ...Option) (*CreateProductOutput, error)
+	GetProduct(ctx context.Context, id int64, opts ...Option) (*GetProductOutput, error)
+	ListProducts(ctx context.Context, options *ListProductsInput, opts ...Option) (*ListProductsOutput, error)
+	UpdateProduct(ctx context.Context, id int64, input *UpdateProductInput, opts ...Option) (*UpdateProductOutput, error)
 }
 
 type productsService struct {
 	client *Client
 }
 
-func (p productsService) CreateProduct(ctx context.Context, input *CreateProductInput, opts ...func(*Options)) (*CreateProductOutput, error) {
+func (p productsService) CreateProduct(ctx context.Context, input *CreateProductInput, opts ...Option) (*CreateProductOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -37,7 +37,7 @@ func (p productsService) CreateProduct(ctx context.Context, input *CreateProduct
 
 	var product Product
 
-	if err := resp.Parse(&product); err != nil {
+	if err := resp.Unmarshal(&product); err != nil {
 		return nil, err
 	}
 
@@ -46,14 +46,14 @@ func (p productsService) CreateProduct(ctx context.Context, input *CreateProduct
 	}, nil
 }
 
-func (p productsService) GetProduct(ctx context.Context, id int64, opts ...func(*Options)) (*GetProductOutput, error) {
+func (p productsService) GetProduct(ctx context.Context, id int64, opts ...Option) (*GetProductOutput, error) {
 	resp, err := p.client.doGet(fmt.Sprintf(pathProduct, id), nil)
 	if err != nil {
 		return nil, err
 	}
 
 	var product Product
-	if err := resp.Parse(&product); err != nil {
+	if err := resp.Unmarshal(&product); err != nil {
 		return nil, err
 	}
 
@@ -62,7 +62,7 @@ func (p productsService) GetProduct(ctx context.Context, id int64, opts ...func(
 	}, nil
 }
 
-func (p productsService) ListProducts(ctx context.Context, options *ListProductsOptions, opts ...func(*Options)) (*ListProductsOutput, error) {
+func (p productsService) ListProducts(ctx context.Context, options *ListProductsInput, opts ...Option) (*ListProductsOutput, error) {
 	resp, err := p.client.doGet(pathProducts, nil)
 	if err != nil {
 		return nil, err
@@ -70,7 +70,7 @@ func (p productsService) ListProducts(ctx context.Context, options *ListProducts
 
 	var products []Product
 
-	if err := resp.Parse(&products); err != nil {
+	if err := resp.Unmarshal(&products); err != nil {
 		return nil, err
 	}
 
@@ -79,7 +79,7 @@ func (p productsService) ListProducts(ctx context.Context, options *ListProducts
 	}, nil
 }
 
-func (p productsService) UpdateProduct(ctx context.Context, id int64, input *UpdateProductInput, opts ...func(*Options)) (*UpdateProductOutput, error) {
+func (p productsService) UpdateProduct(ctx context.Context, id int64, input *UpdateProductInput, opts ...Option) (*UpdateProductOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -92,7 +92,7 @@ func (p productsService) UpdateProduct(ctx context.Context, id int64, input *Upd
 
 	var product Product
 
-	if err := resp.Parse(&product); err != nil {
+	if err := resp.Unmarshal(&product); err != nil {
 		return nil, err
 	}
 
@@ -111,22 +111,41 @@ type UpdateProductInput = ProductInput
 
 type CreateProductInput = ProductInput
 
-type ListProductsOptions struct{}
+type ListProductsInput struct{}
 
 type ListProductsOutput struct {
 	Data []Product
 }
 
 type Product struct {
-	ID          int64
-	Name        string
-	DisplayName string
-	ReferenceID string
-	Feature     bool
-	DCREnabled  bool
-	AuthType    string
-	Scopes      string
-	Path        string
+	APIDetails  []APIDetails `json:"APIDetails"`
+	AuthType    string       `json:"AuthType"`
+	Catalogues  any          `json:"Catalogues"`
+	Content     string       `json:"Content"`
+	DCREnabled  bool         `json:"DCREnabled"`
+	Description string       `json:"Description"`
+	DisplayName string       `json:"DisplayName"`
+	Feature     bool         `json:"Feature"`
+	ID          int          `json:"ID"`
+	Logo        string       `json:"Logo"`
+	Name        string       `json:"Name"`
+	Path        string       `json:"Path"`
+	ReferenceID string       `json:"ReferenceID"`
+	Scopes      string       `json:"Scopes"`
+	Tags        any          `json:"Tags"`
+	Templates   any          `json:"Templates"`
+}
+
+type APIDetails struct {
+	APIID       string `json:"APIID"`
+	APIType     string `json:"APIType"`
+	Description string `json:"Description"`
+	ListenPath  string `json:"ListenPath"`
+	Name        string `json:"Name"`
+	OASDocument string `json:"OASDocument"`
+	OASURL      string `json:"OASUrl"`
+	Status      bool   `json:"Status"`
+	TargetURL   string `json:"TargetURL"`
 }
 
 type ProductOutput struct {

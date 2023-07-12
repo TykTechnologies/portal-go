@@ -16,18 +16,18 @@ const (
 
 //go:generate mockery --name ProvidersService --filename providers_service.go
 type ProvidersService interface {
-	CreateProvider(ctx context.Context, input *CreateProviderInput, opts ...func(*Options)) (*CreateProviderOutput, error)
-	GetProvider(ctx context.Context, id int64, opts ...func(*Options)) (*GetProviderOutput, error)
-	ListProviders(ctx context.Context, options *ListProvidersOptions, opts ...func(*Options)) (*ListProvidersOutput, error)
-	UpdateProvider(ctx context.Context, id int64, input *UpdateProviderInput, opts ...func(*Options)) (*UpdateProviderOutput, error)
-	SyncProvider(ctx context.Context, id int64, opts ...func(*Options)) (*SyncProviderOutput, error)
+	CreateProvider(ctx context.Context, input *CreateProviderInput, opts ...Option) (*CreateProviderOutput, error)
+	GetProvider(ctx context.Context, id int64, opts ...Option) (*GetProviderOutput, error)
+	ListProviders(ctx context.Context, options *ListProvidersInput, opts ...Option) (*ListProvidersOutput, error)
+	UpdateProvider(ctx context.Context, id int64, input *UpdateProviderInput, opts ...Option) (*UpdateProviderOutput, error)
+	SyncProvider(ctx context.Context, id int64, opts ...Option) (*SyncProviderOutput, error)
 }
 
 type providersService struct {
 	client *Client
 }
 
-func (p providersService) CreateProvider(ctx context.Context, input *CreateProviderInput, opts ...func(*Options)) (*CreateProviderOutput, error) {
+func (p providersService) CreateProvider(ctx context.Context, input *CreateProviderInput, opts ...Option) (*CreateProviderOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func (p providersService) CreateProvider(ctx context.Context, input *CreateProvi
 
 	var provider Provider
 
-	if err := resp.Parse(&provider); err != nil {
+	if err := resp.Unmarshal(&provider); err != nil {
 		return nil, err
 	}
 
@@ -49,14 +49,14 @@ func (p providersService) CreateProvider(ctx context.Context, input *CreateProvi
 	}, nil
 }
 
-func (p providersService) GetProvider(ctx context.Context, id int64, opts ...func(*Options)) (*GetProviderOutput, error) {
+func (p providersService) GetProvider(ctx context.Context, id int64, opts ...Option) (*GetProviderOutput, error) {
 	resp, err := p.client.doGet(fmt.Sprintf(pathProvider, id), nil)
 	if err != nil {
 		return nil, err
 	}
 
 	var provider Provider
-	if err := resp.Parse(&provider); err != nil {
+	if err := resp.Unmarshal(&provider); err != nil {
 		return nil, err
 	}
 
@@ -65,7 +65,7 @@ func (p providersService) GetProvider(ctx context.Context, id int64, opts ...fun
 	}, nil
 }
 
-func (p providersService) ListProviders(ctx context.Context, options *ListProvidersOptions, opts ...func(*Options)) (*ListProvidersOutput, error) {
+func (p providersService) ListProviders(ctx context.Context, options *ListProvidersInput, opts ...Option) (*ListProvidersOutput, error) {
 	resp, err := p.client.doGet(pathProviders, nil)
 	if err != nil {
 		return nil, err
@@ -73,7 +73,7 @@ func (p providersService) ListProviders(ctx context.Context, options *ListProvid
 
 	var providers []Provider
 
-	if err := resp.Parse(&providers); err != nil {
+	if err := resp.Unmarshal(&providers); err != nil {
 		return nil, err
 	}
 
@@ -82,7 +82,7 @@ func (p providersService) ListProviders(ctx context.Context, options *ListProvid
 	}, nil
 }
 
-func (p providersService) UpdateProvider(ctx context.Context, id int64, input *UpdateProviderInput, opts ...func(*Options)) (*UpdateProviderOutput, error) {
+func (p providersService) UpdateProvider(ctx context.Context, id int64, input *UpdateProviderInput, opts ...Option) (*UpdateProviderOutput, error) {
 	// TODO: review this
 	if input.Configuration != nil && input.Configuration.ID == nil {
 		return nil, errors.New("configuration id must not be nil")
@@ -100,7 +100,7 @@ func (p providersService) UpdateProvider(ctx context.Context, id int64, input *U
 
 	var provider Provider
 
-	if err := resp.Parse(&provider); err != nil {
+	if err := resp.Unmarshal(&provider); err != nil {
 		return nil, err
 	}
 
@@ -109,7 +109,7 @@ func (p providersService) UpdateProvider(ctx context.Context, id int64, input *U
 	}, nil
 }
 
-func (p providersService) SyncProvider(ctx context.Context, id int64, opts ...func(*Options)) (*SyncProviderOutput, error) {
+func (p providersService) SyncProvider(ctx context.Context, id int64, opts ...Option) (*SyncProviderOutput, error) {
 	resp, err := p.client.doPut(fmt.Sprintf(pathProviderSync, id), nil, nil)
 	if err != nil {
 		return nil, err
@@ -117,7 +117,7 @@ func (p providersService) SyncProvider(ctx context.Context, id int64, opts ...fu
 
 	var msg SyncStatus
 
-	if err := resp.Parse(&msg); err != nil {
+	if err := resp.Unmarshal(&msg); err != nil {
 		return nil, err
 	}
 
@@ -126,7 +126,7 @@ func (p providersService) SyncProvider(ctx context.Context, id int64, opts ...fu
 	}, nil
 }
 
-func (p providersService) SyncProviders(ctx context.Context, opts ...func(*Options)) (*SyncProviderOutput, error) {
+func (p providersService) SyncProviders(ctx context.Context, opts ...Option) (*SyncProviderOutput, error) {
 	resp, err := p.client.doPut(fmt.Sprintf(pathProviderSync, "all"), nil, nil)
 	if err != nil {
 		return nil, err
@@ -134,7 +134,7 @@ func (p providersService) SyncProviders(ctx context.Context, opts ...func(*Optio
 
 	var msg SyncStatus
 
-	if err := resp.Parse(&msg); err != nil {
+	if err := resp.Unmarshal(&msg); err != nil {
 		return nil, err
 	}
 
@@ -147,34 +147,33 @@ type ProviderInput struct {
 	ID            *int64 `json:",omitempty"`
 	Type          string
 	Name          string
-	Configuration *ProviderConfig `json:",omitempty"`
+	Configuration *ProviderConfiguration `json:",omitempty"`
 }
 
 type UpdateProviderInput = ProviderInput
 
 type CreateProviderInput = ProviderInput
 
-type ProviderConfig struct {
-	ProviderID *int64 `json:"ProviderID,omitempty"`
-	MetaData   string
-	ID         *int64 `json:"ID,omitempty"`
-}
-
-type ListProvidersOptions struct{}
+type ListProvidersInput struct{}
 
 type ListProvidersOutput struct {
 	Data []Provider
 }
 
 type Provider struct {
-	ID            int64
-	Name          string
-	CreatedAt     string
-	UpdatedAt     string
-	Type          string
-	Status        string
-	LastSynced    string
-	Configuration ProviderConfig
+	Configuration *ProviderConfiguration `json:"Configuration,omitempty"`
+	CreatedAt     string                 `json:"CreatedAt"`
+	ID            int64                  `json:"ID"`
+	LastSynced    string                 `json:"LastSynced"`
+	Name          string                 `json:"Name"`
+	Status        string                 `json:"Status"`
+	Type          string                 `json:"Type"`
+	UpdatedAt     string                 `json:"UpdatedAt"`
+}
+
+type ProviderConfiguration struct {
+	ID       *int64 `json:"ID,omitempty"`
+	MetaData string `json:"MetaData"`
 }
 
 type ProviderOutput struct {

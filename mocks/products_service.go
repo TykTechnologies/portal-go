@@ -15,7 +15,7 @@ type ProductsService struct {
 }
 
 // CreateProduct provides a mock function with given fields: ctx, input, opts
-func (_m *ProductsService) CreateProduct(ctx context.Context, input *portal.ProductInput, opts ...func(*portal.Options)) (*portal.ProductOutput, error) {
+func (_m *ProductsService) CreateProduct(ctx context.Context, input *portal.ProductInput, opts ...portal.Option) (*portal.ProductOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -27,10 +27,10 @@ func (_m *ProductsService) CreateProduct(ctx context.Context, input *portal.Prod
 
 	var r0 *portal.ProductOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.ProductInput, ...func(*portal.Options)) (*portal.ProductOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.ProductInput, ...portal.Option) (*portal.ProductOutput, error)); ok {
 		return rf(ctx, input, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.ProductInput, ...func(*portal.Options)) *portal.ProductOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.ProductInput, ...portal.Option) *portal.ProductOutput); ok {
 		r0 = rf(ctx, input, opts...)
 	} else {
 		if ret.Get(0) != nil {
@@ -38,7 +38,7 @@ func (_m *ProductsService) CreateProduct(ctx context.Context, input *portal.Prod
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *portal.ProductInput, ...func(*portal.Options)) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *portal.ProductInput, ...portal.Option) error); ok {
 		r1 = rf(ctx, input, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -48,7 +48,7 @@ func (_m *ProductsService) CreateProduct(ctx context.Context, input *portal.Prod
 }
 
 // GetProduct provides a mock function with given fields: ctx, id, opts
-func (_m *ProductsService) GetProduct(ctx context.Context, id int64, opts ...func(*portal.Options)) (*portal.ProductOutput, error) {
+func (_m *ProductsService) GetProduct(ctx context.Context, id int64, opts ...portal.Option) (*portal.ProductOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -60,10 +60,10 @@ func (_m *ProductsService) GetProduct(ctx context.Context, id int64, opts ...fun
 
 	var r0 *portal.ProductOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64, ...func(*portal.Options)) (*portal.ProductOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, ...portal.Option) (*portal.ProductOutput, error)); ok {
 		return rf(ctx, id, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64, ...func(*portal.Options)) *portal.ProductOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, ...portal.Option) *portal.ProductOutput); ok {
 		r0 = rf(ctx, id, opts...)
 	} else {
 		if ret.Get(0) != nil {
@@ -71,7 +71,7 @@ func (_m *ProductsService) GetProduct(ctx context.Context, id int64, opts ...fun
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64, ...func(*portal.Options)) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64, ...portal.Option) error); ok {
 		r1 = rf(ctx, id, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -81,7 +81,7 @@ func (_m *ProductsService) GetProduct(ctx context.Context, id int64, opts ...fun
 }
 
 // ListProducts provides a mock function with given fields: ctx, options, opts
-func (_m *ProductsService) ListProducts(ctx context.Context, options *portal.ListProductsOptions, opts ...func(*portal.Options)) (*portal.ListProductsOutput, error) {
+func (_m *ProductsService) ListProducts(ctx context.Context, options *portal.ListProductsInput, opts ...portal.Option) (*portal.ListProductsOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -93,10 +93,10 @@ func (_m *ProductsService) ListProducts(ctx context.Context, options *portal.Lis
 
 	var r0 *portal.ListProductsOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListProductsOptions, ...func(*portal.Options)) (*portal.ListProductsOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListProductsInput, ...portal.Option) (*portal.ListProductsOutput, error)); ok {
 		return rf(ctx, options, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListProductsOptions, ...func(*portal.Options)) *portal.ListProductsOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListProductsInput, ...portal.Option) *portal.ListProductsOutput); ok {
 		r0 = rf(ctx, options, opts...)
 	} else {
 		if ret.Get(0) != nil {
@@ -104,7 +104,7 @@ func (_m *ProductsService) ListProducts(ctx context.Context, options *portal.Lis
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *portal.ListProductsOptions, ...func(*portal.Options)) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *portal.ListProductsInput, ...portal.Option) error); ok {
 		r1 = rf(ctx, options, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -114,7 +114,7 @@ func (_m *ProductsService) ListProducts(ctx context.Context, options *portal.Lis
 }
 
 // UpdateProduct provides a mock function with given fields: ctx, id, input, opts
-func (_m *ProductsService) UpdateProduct(ctx context.Context, id int64, input *portal.ProductInput, opts ...func(*portal.Options)) (*portal.ProductOutput, error) {
+func (_m *ProductsService) UpdateProduct(ctx context.Context, id int64, input *portal.ProductInput, opts ...portal.Option) (*portal.ProductOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -126,10 +126,10 @@ func (_m *ProductsService) UpdateProduct(ctx context.Context, id int64, input *p
 
 	var r0 *portal.ProductOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.ProductInput, ...func(*portal.Options)) (*portal.ProductOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.ProductInput, ...portal.Option) (*portal.ProductOutput, error)); ok {
 		return rf(ctx, id, input, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.ProductInput, ...func(*portal.Options)) *portal.ProductOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.ProductInput, ...portal.Option) *portal.ProductOutput); ok {
 		r0 = rf(ctx, id, input, opts...)
 	} else {
 		if ret.Get(0) != nil {
@@ -137,7 +137,7 @@ func (_m *ProductsService) UpdateProduct(ctx context.Context, id int64, input *p
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64, *portal.ProductInput, ...func(*portal.Options)) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64, *portal.ProductInput, ...portal.Option) error); ok {
 		r1 = rf(ctx, id, input, opts...)
 	} else {
 		r1 = ret.Error(1)

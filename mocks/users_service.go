@@ -15,7 +15,7 @@ type UsersService struct {
 }
 
 // CreateUser provides a mock function with given fields: ctx, input, opts
-func (_m *UsersService) CreateUser(ctx context.Context, input *portal.UserInput, opts ...func(*portal.Options)) (*portal.UserOutput, error) {
+func (_m *UsersService) CreateUser(ctx context.Context, input *portal.UserInput, opts ...portal.Option) (*portal.UserOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -27,10 +27,10 @@ func (_m *UsersService) CreateUser(ctx context.Context, input *portal.UserInput,
 
 	var r0 *portal.UserOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.UserInput, ...func(*portal.Options)) (*portal.UserOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.UserInput, ...portal.Option) (*portal.UserOutput, error)); ok {
 		return rf(ctx, input, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.UserInput, ...func(*portal.Options)) *portal.UserOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.UserInput, ...portal.Option) *portal.UserOutput); ok {
 		r0 = rf(ctx, input, opts...)
 	} else {
 		if ret.Get(0) != nil {
@@ -38,7 +38,7 @@ func (_m *UsersService) CreateUser(ctx context.Context, input *portal.UserInput,
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *portal.UserInput, ...func(*portal.Options)) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *portal.UserInput, ...portal.Option) error); ok {
 		r1 = rf(ctx, input, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -48,7 +48,7 @@ func (_m *UsersService) CreateUser(ctx context.Context, input *portal.UserInput,
 }
 
 // GetUser provides a mock function with given fields: ctx, id, opts
-func (_m *UsersService) GetUser(ctx context.Context, id int64, opts ...func(*portal.Options)) (*portal.UserOutput, error) {
+func (_m *UsersService) GetUser(ctx context.Context, id int64, opts ...portal.Option) (*portal.UserOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -60,10 +60,10 @@ func (_m *UsersService) GetUser(ctx context.Context, id int64, opts ...func(*por
 
 	var r0 *portal.UserOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64, ...func(*portal.Options)) (*portal.UserOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, ...portal.Option) (*portal.UserOutput, error)); ok {
 		return rf(ctx, id, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64, ...func(*portal.Options)) *portal.UserOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, ...portal.Option) *portal.UserOutput); ok {
 		r0 = rf(ctx, id, opts...)
 	} else {
 		if ret.Get(0) != nil {
@@ -71,7 +71,7 @@ func (_m *UsersService) GetUser(ctx context.Context, id int64, opts ...func(*por
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64, ...func(*portal.Options)) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64, ...portal.Option) error); ok {
 		r1 = rf(ctx, id, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -81,7 +81,7 @@ func (_m *UsersService) GetUser(ctx context.Context, id int64, opts ...func(*por
 }
 
 // ListUsers provides a mock function with given fields: ctx, options, opts
-func (_m *UsersService) ListUsers(ctx context.Context, options *portal.ListUsersOptions, opts ...func(*portal.Options)) (*portal.ListUsersOutput, error) {
+func (_m *UsersService) ListUsers(ctx context.Context, options *portal.ListUsersInput, opts ...portal.Option) (*portal.ListUsersOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -93,10 +93,10 @@ func (_m *UsersService) ListUsers(ctx context.Context, options *portal.ListUsers
 
 	var r0 *portal.ListUsersOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListUsersOptions, ...func(*portal.Options)) (*portal.ListUsersOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListUsersInput, ...portal.Option) (*portal.ListUsersOutput, error)); ok {
 		return rf(ctx, options, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListUsersOptions, ...func(*portal.Options)) *portal.ListUsersOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListUsersInput, ...portal.Option) *portal.ListUsersOutput); ok {
 		r0 = rf(ctx, options, opts...)
 	} else {
 		if ret.Get(0) != nil {
@@ -104,7 +104,7 @@ func (_m *UsersService) ListUsers(ctx context.Context, options *portal.ListUsers
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *portal.ListUsersOptions, ...func(*portal.Options)) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *portal.ListUsersInput, ...portal.Option) error); ok {
 		r1 = rf(ctx, options, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -114,7 +114,7 @@ func (_m *UsersService) ListUsers(ctx context.Context, options *portal.ListUsers
 }
 
 // UpdateUser provides a mock function with given fields: ctx, id, input, opts
-func (_m *UsersService) UpdateUser(ctx context.Context, id int64, input *portal.UserInput, opts ...func(*portal.Options)) (*portal.UserOutput, error) {
+func (_m *UsersService) UpdateUser(ctx context.Context, id int64, input *portal.UserInput, opts ...portal.Option) (*portal.UserOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -126,10 +126,10 @@ func (_m *UsersService) UpdateUser(ctx context.Context, id int64, input *portal.
 
 	var r0 *portal.UserOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.UserInput, ...func(*portal.Options)) (*portal.UserOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.UserInput, ...portal.Option) (*portal.UserOutput, error)); ok {
 		return rf(ctx, id, input, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.UserInput, ...func(*portal.Options)) *portal.UserOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.UserInput, ...portal.Option) *portal.UserOutput); ok {
 		r0 = rf(ctx, id, input, opts...)
 	} else {
 		if ret.Get(0) != nil {
@@ -137,7 +137,7 @@ func (_m *UsersService) UpdateUser(ctx context.Context, id int64, input *portal.
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64, *portal.UserInput, ...func(*portal.Options)) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64, *portal.UserInput, ...portal.Option) error); ok {
 		r1 = rf(ctx, id, input, opts...)
 	} else {
 		r1 = ret.Error(1)

@@ -15,7 +15,7 @@ type CataloguesService struct {
 }
 
 // CreateCatalogue provides a mock function with given fields: ctx, input, opts
-func (_m *CataloguesService) CreateCatalogue(ctx context.Context, input *portal.CatalogueInput, opts ...func(*portal.Options)) (*portal.CatalogueOutput, error) {
+func (_m *CataloguesService) CreateCatalogue(ctx context.Context, input *portal.CatalogueInput, opts ...portal.Option) (*portal.CatalogueOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -27,10 +27,10 @@ func (_m *CataloguesService) CreateCatalogue(ctx context.Context, input *portal.
 
 	var r0 *portal.CatalogueOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.CatalogueInput, ...func(*portal.Options)) (*portal.CatalogueOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.CatalogueInput, ...portal.Option) (*portal.CatalogueOutput, error)); ok {
 		return rf(ctx, input, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.CatalogueInput, ...func(*portal.Options)) *portal.CatalogueOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.CatalogueInput, ...portal.Option) *portal.CatalogueOutput); ok {
 		r0 = rf(ctx, input, opts...)
 	} else {
 		if ret.Get(0) != nil {
@@ -38,7 +38,7 @@ func (_m *CataloguesService) CreateCatalogue(ctx context.Context, input *portal.
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *portal.CatalogueInput, ...func(*portal.Options)) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *portal.CatalogueInput, ...portal.Option) error); ok {
 		r1 = rf(ctx, input, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -48,7 +48,7 @@ func (_m *CataloguesService) CreateCatalogue(ctx context.Context, input *portal.
 }
 
 // GetCatalogue provides a mock function with given fields: ctx, id, opts
-func (_m *CataloguesService) GetCatalogue(ctx context.Context, id int64, opts ...func(*portal.Options)) (*portal.CatalogueOutput, error) {
+func (_m *CataloguesService) GetCatalogue(ctx context.Context, id int64, opts ...portal.Option) (*portal.CatalogueOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -60,10 +60,10 @@ func (_m *CataloguesService) GetCatalogue(ctx context.Context, id int64, opts ..
 
 	var r0 *portal.CatalogueOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64, ...func(*portal.Options)) (*portal.CatalogueOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, ...portal.Option) (*portal.CatalogueOutput, error)); ok {
 		return rf(ctx, id, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64, ...func(*portal.Options)) *portal.CatalogueOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, ...portal.Option) *portal.CatalogueOutput); ok {
 		r0 = rf(ctx, id, opts...)
 	} else {
 		if ret.Get(0) != nil {
@@ -71,7 +71,7 @@ func (_m *CataloguesService) GetCatalogue(ctx context.Context, id int64, opts ..
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64, ...func(*portal.Options)) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64, ...portal.Option) error); ok {
 		r1 = rf(ctx, id, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -81,7 +81,7 @@ func (_m *CataloguesService) GetCatalogue(ctx context.Context, id int64, opts ..
 }
 
 // ListCatalogues provides a mock function with given fields: ctx, options, opts
-func (_m *CataloguesService) ListCatalogues(ctx context.Context, options *portal.ListCataloguesOptions, opts ...func(*portal.Options)) (*portal.ListCataloguesOutput, error) {
+func (_m *CataloguesService) ListCatalogues(ctx context.Context, options *portal.ListCataloguesInput, opts ...portal.Option) (*portal.ListCataloguesOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -93,10 +93,10 @@ func (_m *CataloguesService) ListCatalogues(ctx context.Context, options *portal
 
 	var r0 *portal.ListCataloguesOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListCataloguesOptions, ...func(*portal.Options)) (*portal.ListCataloguesOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListCataloguesInput, ...portal.Option) (*portal.ListCataloguesOutput, error)); ok {
 		return rf(ctx, options, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListCataloguesOptions, ...func(*portal.Options)) *portal.ListCataloguesOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListCataloguesInput, ...portal.Option) *portal.ListCataloguesOutput); ok {
 		r0 = rf(ctx, options, opts...)
 	} else {
 		if ret.Get(0) != nil {
@@ -104,7 +104,7 @@ func (_m *CataloguesService) ListCatalogues(ctx context.Context, options *portal
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *portal.ListCataloguesOptions, ...func(*portal.Options)) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *portal.ListCataloguesInput, ...portal.Option) error); ok {
 		r1 = rf(ctx, options, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -114,7 +114,7 @@ func (_m *CataloguesService) ListCatalogues(ctx context.Context, options *portal
 }
 
 // UpdateCatalogue provides a mock function with given fields: ctx, id, input, opts
-func (_m *CataloguesService) UpdateCatalogue(ctx context.Context, id int64, input *portal.CatalogueInput, opts ...func(*portal.Options)) (*portal.CatalogueOutput, error) {
+func (_m *CataloguesService) UpdateCatalogue(ctx context.Context, id int64, input *portal.CatalogueInput, opts ...portal.Option) (*portal.CatalogueOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -126,10 +126,10 @@ func (_m *CataloguesService) UpdateCatalogue(ctx context.Context, id int64, inpu
 
 	var r0 *portal.CatalogueOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.CatalogueInput, ...func(*portal.Options)) (*portal.CatalogueOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.CatalogueInput, ...portal.Option) (*portal.CatalogueOutput, error)); ok {
 		return rf(ctx, id, input, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.CatalogueInput, ...func(*portal.Options)) *portal.CatalogueOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.CatalogueInput, ...portal.Option) *portal.CatalogueOutput); ok {
 		r0 = rf(ctx, id, input, opts...)
 	} else {
 		if ret.Get(0) != nil {
@@ -137,7 +137,7 @@ func (_m *CataloguesService) UpdateCatalogue(ctx context.Context, id int64, inpu
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64, *portal.CatalogueInput, ...func(*portal.Options)) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64, *portal.CatalogueInput, ...portal.Option) error); ok {
 		r1 = rf(ctx, id, input, opts...)
 	} else {
 		r1 = ret.Error(1)

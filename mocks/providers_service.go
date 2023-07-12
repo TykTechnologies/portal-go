@@ -15,7 +15,7 @@ type ProvidersService struct {
 }
 
 // CreateProvider provides a mock function with given fields: ctx, input, opts
-func (_m *ProvidersService) CreateProvider(ctx context.Context, input *portal.ProviderInput, opts ...func(*portal.Options)) (*portal.ProviderOutput, error) {
+func (_m *ProvidersService) CreateProvider(ctx context.Context, input *portal.ProviderInput, opts ...portal.Option) (*portal.ProviderOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -27,10 +27,10 @@ func (_m *ProvidersService) CreateProvider(ctx context.Context, input *portal.Pr
 
 	var r0 *portal.ProviderOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.ProviderInput, ...func(*portal.Options)) (*portal.ProviderOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.ProviderInput, ...portal.Option) (*portal.ProviderOutput, error)); ok {
 		return rf(ctx, input, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.ProviderInput, ...func(*portal.Options)) *portal.ProviderOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.ProviderInput, ...portal.Option) *portal.ProviderOutput); ok {
 		r0 = rf(ctx, input, opts...)
 	} else {
 		if ret.Get(0) != nil {
@@ -38,7 +38,7 @@ func (_m *ProvidersService) CreateProvider(ctx context.Context, input *portal.Pr
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *portal.ProviderInput, ...func(*portal.Options)) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *portal.ProviderInput, ...portal.Option) error); ok {
 		r1 = rf(ctx, input, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -48,7 +48,7 @@ func (_m *ProvidersService) CreateProvider(ctx context.Context, input *portal.Pr
 }
 
 // GetProvider provides a mock function with given fields: ctx, id, opts
-func (_m *ProvidersService) GetProvider(ctx context.Context, id int64, opts ...func(*portal.Options)) (*portal.ProviderOutput, error) {
+func (_m *ProvidersService) GetProvider(ctx context.Context, id int64, opts ...portal.Option) (*portal.ProviderOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -60,10 +60,10 @@ func (_m *ProvidersService) GetProvider(ctx context.Context, id int64, opts ...f
 
 	var r0 *portal.ProviderOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64, ...func(*portal.Options)) (*portal.ProviderOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, ...portal.Option) (*portal.ProviderOutput, error)); ok {
 		return rf(ctx, id, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64, ...func(*portal.Options)) *portal.ProviderOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, ...portal.Option) *portal.ProviderOutput); ok {
 		r0 = rf(ctx, id, opts...)
 	} else {
 		if ret.Get(0) != nil {
@@ -71,7 +71,7 @@ func (_m *ProvidersService) GetProvider(ctx context.Context, id int64, opts ...f
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64, ...func(*portal.Options)) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64, ...portal.Option) error); ok {
 		r1 = rf(ctx, id, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -81,7 +81,7 @@ func (_m *ProvidersService) GetProvider(ctx context.Context, id int64, opts ...f
 }
 
 // ListProviders provides a mock function with given fields: ctx, options, opts
-func (_m *ProvidersService) ListProviders(ctx context.Context, options *portal.ListProvidersOptions, opts ...func(*portal.Options)) (*portal.ListProvidersOutput, error) {
+func (_m *ProvidersService) ListProviders(ctx context.Context, options *portal.ListProvidersInput, opts ...portal.Option) (*portal.ListProvidersOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -93,10 +93,10 @@ func (_m *ProvidersService) ListProviders(ctx context.Context, options *portal.L
 
 	var r0 *portal.ListProvidersOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListProvidersOptions, ...func(*portal.Options)) (*portal.ListProvidersOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListProvidersInput, ...portal.Option) (*portal.ListProvidersOutput, error)); ok {
 		return rf(ctx, options, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListProvidersOptions, ...func(*portal.Options)) *portal.ListProvidersOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListProvidersInput, ...portal.Option) *portal.ListProvidersOutput); ok {
 		r0 = rf(ctx, options, opts...)
 	} else {
 		if ret.Get(0) != nil {
@@ -104,7 +104,7 @@ func (_m *ProvidersService) ListProviders(ctx context.Context, options *portal.L
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *portal.ListProvidersOptions, ...func(*portal.Options)) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *portal.ListProvidersInput, ...portal.Option) error); ok {
 		r1 = rf(ctx, options, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -114,7 +114,7 @@ func (_m *ProvidersService) ListProviders(ctx context.Context, options *portal.L
 }
 
 // SyncProvider provides a mock function with given fields: ctx, id, opts
-func (_m *ProvidersService) SyncProvider(ctx context.Context, id int64, opts ...func(*portal.Options)) (*portal.SyncProviderOutput, error) {
+func (_m *ProvidersService) SyncProvider(ctx context.Context, id int64, opts ...portal.Option) (*portal.SyncProviderOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -126,10 +126,10 @@ func (_m *ProvidersService) SyncProvider(ctx context.Context, id int64, opts ...
 
 	var r0 *portal.SyncProviderOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64, ...func(*portal.Options)) (*portal.SyncProviderOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, ...portal.Option) (*portal.SyncProviderOutput, error)); ok {
 		return rf(ctx, id, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64, ...func(*portal.Options)) *portal.SyncProviderOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, ...portal.Option) *portal.SyncProviderOutput); ok {
 		r0 = rf(ctx, id, opts...)
 	} else {
 		if ret.Get(0) != nil {
@@ -137,7 +137,7 @@ func (_m *ProvidersService) SyncProvider(ctx context.Context, id int64, opts ...
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64, ...func(*portal.Options)) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64, ...portal.Option) error); ok {
 		r1 = rf(ctx, id, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -147,7 +147,7 @@ func (_m *ProvidersService) SyncProvider(ctx context.Context, id int64, opts ...
 }
 
 // UpdateProvider provides a mock function with given fields: ctx, id, input, opts
-func (_m *ProvidersService) UpdateProvider(ctx context.Context, id int64, input *portal.ProviderInput, opts ...func(*portal.Options)) (*portal.ProviderOutput, error) {
+func (_m *ProvidersService) UpdateProvider(ctx context.Context, id int64, input *portal.ProviderInput, opts ...portal.Option) (*portal.ProviderOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -159,10 +159,10 @@ func (_m *ProvidersService) UpdateProvider(ctx context.Context, id int64, input 
 
 	var r0 *portal.ProviderOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.ProviderInput, ...func(*portal.Options)) (*portal.ProviderOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.ProviderInput, ...portal.Option) (*portal.ProviderOutput, error)); ok {
 		return rf(ctx, id, input, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.ProviderInput, ...func(*portal.Options)) *portal.ProviderOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.ProviderInput, ...portal.Option) *portal.ProviderOutput); ok {
 		r0 = rf(ctx, id, input, opts...)
 	} else {
 		if ret.Get(0) != nil {
@@ -170,7 +170,7 @@ func (_m *ProvidersService) UpdateProvider(ctx context.Context, id int64, input 
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64, *portal.ProviderInput, ...func(*portal.Options)) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64, *portal.ProviderInput, ...portal.Option) error); ok {
 		r1 = rf(ctx, id, input, opts...)
 	} else {
 		r1 = ret.Error(1)

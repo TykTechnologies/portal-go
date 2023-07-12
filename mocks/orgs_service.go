@@ -15,7 +15,7 @@ type OrgsService struct {
 }
 
 // CreateOrg provides a mock function with given fields: ctx, input, opts
-func (_m *OrgsService) CreateOrg(ctx context.Context, input *portal.OrgInput, opts ...func(*portal.Options)) (*portal.OrgOutput, error) {
+func (_m *OrgsService) CreateOrg(ctx context.Context, input *portal.OrgInput, opts ...portal.Option) (*portal.OrgOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -27,10 +27,10 @@ func (_m *OrgsService) CreateOrg(ctx context.Context, input *portal.OrgInput, op
 
 	var r0 *portal.OrgOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.OrgInput, ...func(*portal.Options)) (*portal.OrgOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.OrgInput, ...portal.Option) (*portal.OrgOutput, error)); ok {
 		return rf(ctx, input, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.OrgInput, ...func(*portal.Options)) *portal.OrgOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.OrgInput, ...portal.Option) *portal.OrgOutput); ok {
 		r0 = rf(ctx, input, opts...)
 	} else {
 		if ret.Get(0) != nil {
@@ -38,7 +38,7 @@ func (_m *OrgsService) CreateOrg(ctx context.Context, input *portal.OrgInput, op
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *portal.OrgInput, ...func(*portal.Options)) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *portal.OrgInput, ...portal.Option) error); ok {
 		r1 = rf(ctx, input, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -48,7 +48,7 @@ func (_m *OrgsService) CreateOrg(ctx context.Context, input *portal.OrgInput, op
 }
 
 // GetOrg provides a mock function with given fields: ctx, id, opts
-func (_m *OrgsService) GetOrg(ctx context.Context, id int64, opts ...func(*portal.Options)) (*portal.OrgOutput, error) {
+func (_m *OrgsService) GetOrg(ctx context.Context, id int64, opts ...portal.Option) (*portal.OrgOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -60,10 +60,10 @@ func (_m *OrgsService) GetOrg(ctx context.Context, id int64, opts ...func(*porta
 
 	var r0 *portal.OrgOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64, ...func(*portal.Options)) (*portal.OrgOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, ...portal.Option) (*portal.OrgOutput, error)); ok {
 		return rf(ctx, id, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64, ...func(*portal.Options)) *portal.OrgOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, ...portal.Option) *portal.OrgOutput); ok {
 		r0 = rf(ctx, id, opts...)
 	} else {
 		if ret.Get(0) != nil {
@@ -71,7 +71,7 @@ func (_m *OrgsService) GetOrg(ctx context.Context, id int64, opts ...func(*porta
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64, ...func(*portal.Options)) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64, ...portal.Option) error); ok {
 		r1 = rf(ctx, id, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -81,7 +81,7 @@ func (_m *OrgsService) GetOrg(ctx context.Context, id int64, opts ...func(*porta
 }
 
 // ListOrgs provides a mock function with given fields: ctx, options, opts
-func (_m *OrgsService) ListOrgs(ctx context.Context, options *portal.ListOrgsOptions, opts ...func(*portal.Options)) (*portal.ListOrgsOutput, error) {
+func (_m *OrgsService) ListOrgs(ctx context.Context, options *portal.ListOrgsInput, opts ...portal.Option) (*portal.ListOrgsOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -93,10 +93,10 @@ func (_m *OrgsService) ListOrgs(ctx context.Context, options *portal.ListOrgsOpt
 
 	var r0 *portal.ListOrgsOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListOrgsOptions, ...func(*portal.Options)) (*portal.ListOrgsOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListOrgsInput, ...portal.Option) (*portal.ListOrgsOutput, error)); ok {
 		return rf(ctx, options, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListOrgsOptions, ...func(*portal.Options)) *portal.ListOrgsOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListOrgsInput, ...portal.Option) *portal.ListOrgsOutput); ok {
 		r0 = rf(ctx, options, opts...)
 	} else {
 		if ret.Get(0) != nil {
@@ -104,7 +104,7 @@ func (_m *OrgsService) ListOrgs(ctx context.Context, options *portal.ListOrgsOpt
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *portal.ListOrgsOptions, ...func(*portal.Options)) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *portal.ListOrgsInput, ...portal.Option) error); ok {
 		r1 = rf(ctx, options, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -114,7 +114,7 @@ func (_m *OrgsService) ListOrgs(ctx context.Context, options *portal.ListOrgsOpt
 }
 
 // UpdateOrg provides a mock function with given fields: ctx, id, input, opts
-func (_m *OrgsService) UpdateOrg(ctx context.Context, id int64, input *portal.OrgInput, opts ...func(*portal.Options)) (*portal.OrgOutput, error) {
+func (_m *OrgsService) UpdateOrg(ctx context.Context, id int64, input *portal.OrgInput, opts ...portal.Option) (*portal.OrgOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -126,10 +126,10 @@ func (_m *OrgsService) UpdateOrg(ctx context.Context, id int64, input *portal.Or
 
 	var r0 *portal.OrgOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.OrgInput, ...func(*portal.Options)) (*portal.OrgOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.OrgInput, ...portal.Option) (*portal.OrgOutput, error)); ok {
 		return rf(ctx, id, input, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.OrgInput, ...func(*portal.Options)) *portal.OrgOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.OrgInput, ...portal.Option) *portal.OrgOutput); ok {
 		r0 = rf(ctx, id, input, opts...)
 	} else {
 		if ret.Get(0) != nil {
@@ -137,7 +137,7 @@ func (_m *OrgsService) UpdateOrg(ctx context.Context, id int64, input *portal.Or
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64, *portal.OrgInput, ...func(*portal.Options)) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64, *portal.OrgInput, ...portal.Option) error); ok {
 		r1 = rf(ctx, id, input, opts...)
 	} else {
 		r1 = ret.Error(1)

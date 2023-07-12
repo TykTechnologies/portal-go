@@ -14,17 +14,17 @@ const (
 
 //go:generate mockery --name CataloguesService --filename catalogues_service.go
 type CataloguesService interface {
-	CreateCatalogue(ctx context.Context, input *CreateCatalogueInput, opts ...func(*Options)) (*CreateCatalogueOutput, error)
-	GetCatalogue(ctx context.Context, id int64, opts ...func(*Options)) (*GetCatalogueOutput, error)
-	ListCatalogues(ctx context.Context, options *ListCataloguesOptions, opts ...func(*Options)) (*ListCataloguesOutput, error)
-	UpdateCatalogue(ctx context.Context, id int64, input *UpdateCatalogueInput, opts ...func(*Options)) (*UpdateCatalogueOutput, error)
+	CreateCatalogue(ctx context.Context, input *CreateCatalogueInput, opts ...Option) (*CreateCatalogueOutput, error)
+	GetCatalogue(ctx context.Context, id int64, opts ...Option) (*GetCatalogueOutput, error)
+	ListCatalogues(ctx context.Context, options *ListCataloguesInput, opts ...Option) (*ListCataloguesOutput, error)
+	UpdateCatalogue(ctx context.Context, id int64, input *UpdateCatalogueInput, opts ...Option) (*UpdateCatalogueOutput, error)
 }
 
 type cataloguesService struct {
 	client *Client
 }
 
-func (p cataloguesService) CreateCatalogue(ctx context.Context, input *CreateCatalogueInput, opts ...func(*Options)) (*CreateCatalogueOutput, error) {
+func (p cataloguesService) CreateCatalogue(ctx context.Context, input *CreateCatalogueInput, opts ...Option) (*CreateCatalogueOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -37,7 +37,7 @@ func (p cataloguesService) CreateCatalogue(ctx context.Context, input *CreateCat
 
 	var catalogue Catalogue
 
-	if err := resp.Parse(&catalogue); err != nil {
+	if err := resp.Unmarshal(&catalogue); err != nil {
 		return nil, err
 	}
 
@@ -46,14 +46,14 @@ func (p cataloguesService) CreateCatalogue(ctx context.Context, input *CreateCat
 	}, nil
 }
 
-func (p cataloguesService) GetCatalogue(ctx context.Context, id int64, opts ...func(*Options)) (*GetCatalogueOutput, error) {
+func (p cataloguesService) GetCatalogue(ctx context.Context, id int64, opts ...Option) (*GetCatalogueOutput, error) {
 	resp, err := p.client.doGet(fmt.Sprintf(pathCatalogue, id), nil)
 	if err != nil {
 		return nil, err
 	}
 
 	var catalogue Catalogue
-	if err := resp.Parse(&catalogue); err != nil {
+	if err := resp.Unmarshal(&catalogue); err != nil {
 		return nil, err
 	}
 
@@ -62,7 +62,7 @@ func (p cataloguesService) GetCatalogue(ctx context.Context, id int64, opts ...f
 	}, nil
 }
 
-func (p cataloguesService) ListCatalogues(ctx context.Context, options *ListCataloguesOptions, opts ...func(*Options)) (*ListCataloguesOutput, error) {
+func (p cataloguesService) ListCatalogues(ctx context.Context, options *ListCataloguesInput, opts ...Option) (*ListCataloguesOutput, error) {
 	resp, err := p.client.doGet(pathCatalogues, nil)
 	if err != nil {
 		return nil, err
@@ -70,7 +70,7 @@ func (p cataloguesService) ListCatalogues(ctx context.Context, options *ListCata
 
 	var catalogues []Catalogue
 
-	if err := resp.Parse(&catalogues); err != nil {
+	if err := resp.Unmarshal(&catalogues); err != nil {
 		return nil, err
 	}
 
@@ -79,7 +79,7 @@ func (p cataloguesService) ListCatalogues(ctx context.Context, options *ListCata
 	}, nil
 }
 
-func (p cataloguesService) UpdateCatalogue(ctx context.Context, id int64, input *UpdateCatalogueInput, opts ...func(*Options)) (*UpdateCatalogueOutput, error) {
+func (p cataloguesService) UpdateCatalogue(ctx context.Context, id int64, input *UpdateCatalogueInput, opts ...Option) (*UpdateCatalogueOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -92,7 +92,7 @@ func (p cataloguesService) UpdateCatalogue(ctx context.Context, id int64, input 
 
 	var catalogue Catalogue
 
-	if err := resp.Parse(&catalogue); err != nil {
+	if err := resp.Unmarshal(&catalogue); err != nil {
 		return nil, err
 	}
 
@@ -111,7 +111,7 @@ type UpdateCatalogueInput = CatalogueInput
 
 type CreateCatalogueInput = CatalogueInput
 
-type ListCataloguesOptions struct{}
+type ListCataloguesInput struct{}
 
 type ListCataloguesOutput struct {
 	Data []Catalogue

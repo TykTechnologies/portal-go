@@ -14,17 +14,17 @@ const (
 
 //go:generate mockery --name UsersService --filename users_service.go
 type UsersService interface {
-	CreateUser(ctx context.Context, input *CreateUserInput, opts ...func(*Options)) (*CreateUserOutput, error)
-	GetUser(ctx context.Context, id int64, opts ...func(*Options)) (*GetUserOutput, error)
-	ListUsers(ctx context.Context, options *ListUsersOptions, opts ...func(*Options)) (*ListUsersOutput, error)
-	UpdateUser(ctx context.Context, id int64, input *UpdateUserInput, opts ...func(*Options)) (*UpdateUserOutput, error)
+	CreateUser(ctx context.Context, input *CreateUserInput, opts ...Option) (*CreateUserOutput, error)
+	GetUser(ctx context.Context, id int64, opts ...Option) (*GetUserOutput, error)
+	ListUsers(ctx context.Context, options *ListUsersInput, opts ...Option) (*ListUsersOutput, error)
+	UpdateUser(ctx context.Context, id int64, input *UpdateUserInput, opts ...Option) (*UpdateUserOutput, error)
 }
 
 type usersService struct {
 	client *Client
 }
 
-func (p usersService) CreateUser(ctx context.Context, input *CreateUserInput, opts ...func(*Options)) (*CreateUserOutput, error) {
+func (p usersService) CreateUser(ctx context.Context, input *CreateUserInput, opts ...Option) (*CreateUserOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -37,7 +37,7 @@ func (p usersService) CreateUser(ctx context.Context, input *CreateUserInput, op
 
 	var user User
 
-	if err := resp.Parse(&user); err != nil {
+	if err := resp.Unmarshal(&user); err != nil {
 		return nil, err
 	}
 
@@ -46,14 +46,14 @@ func (p usersService) CreateUser(ctx context.Context, input *CreateUserInput, op
 	}, nil
 }
 
-func (p usersService) GetUser(ctx context.Context, id int64, opts ...func(*Options)) (*GetUserOutput, error) {
+func (p usersService) GetUser(ctx context.Context, id int64, opts ...Option) (*GetUserOutput, error) {
 	resp, err := p.client.doGet(fmt.Sprintf(pathUser, id), nil)
 	if err != nil {
 		return nil, err
 	}
 
 	var user User
-	if err := resp.Parse(&user); err != nil {
+	if err := resp.Unmarshal(&user); err != nil {
 		return nil, err
 	}
 
@@ -62,7 +62,7 @@ func (p usersService) GetUser(ctx context.Context, id int64, opts ...func(*Optio
 	}, nil
 }
 
-func (p usersService) ListUsers(ctx context.Context, options *ListUsersOptions, opts ...func(*Options)) (*ListUsersOutput, error) {
+func (p usersService) ListUsers(ctx context.Context, options *ListUsersInput, opts ...Option) (*ListUsersOutput, error) {
 	resp, err := p.client.doGet(pathUsers, nil)
 	if err != nil {
 		return nil, err
@@ -70,7 +70,7 @@ func (p usersService) ListUsers(ctx context.Context, options *ListUsersOptions, 
 
 	var users []User
 
-	if err := resp.Parse(&users); err != nil {
+	if err := resp.Unmarshal(&users); err != nil {
 		return nil, err
 	}
 
@@ -79,7 +79,7 @@ func (p usersService) ListUsers(ctx context.Context, options *ListUsersOptions, 
 	}, nil
 }
 
-func (p usersService) UpdateUser(ctx context.Context, id int64, input *UpdateUserInput, opts ...func(*Options)) (*UpdateUserOutput, error) {
+func (p usersService) UpdateUser(ctx context.Context, id int64, input *UpdateUserInput, opts ...Option) (*UpdateUserOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -92,7 +92,7 @@ func (p usersService) UpdateUser(ctx context.Context, id int64, input *UpdateUse
 
 	var user User
 
-	if err := resp.Parse(&user); err != nil {
+	if err := resp.Unmarshal(&user); err != nil {
 		return nil, err
 	}
 
@@ -111,7 +111,7 @@ type UpdateUserInput = UserInput
 
 type CreateUserInput = UserInput
 
-type ListUsersOptions struct{}
+type ListUsersInput struct{}
 
 type ListUsersOutput struct {
 	Users []User

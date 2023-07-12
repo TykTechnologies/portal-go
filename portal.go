@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -12,26 +13,48 @@ import (
 )
 
 const (
-	headerAuthorization      = "Authorization"
-	headerAccept             = "Accept"
-	headerContentType        = "Content-Type"
-	defaultBaseURL           = "http://localhost:3001"
-	defaultConnectionTimeout = 30 * time.Second
+	headerAuthorization   = "Authorization"
+	headerAccept          = "Accept"
+	headerContentType     = "Content-Type"
+	defaultBaseURL        = "http://localhost:3001"
+	defaultConnectTimeout = 60000
+	defaultReadTimeout    = 60000
 )
 
 type Config struct {
-	Token             string
-	Debug             bool
-	Insecure          bool
-	BaseURL           string
-	ConnectionTimeout time.Duration
-	HTTPClient        HTTPClient
+	Token          string
+	Debug          bool
+	Insecure       bool
+	BaseURL        string
+	ConnectTimeout time.Duration
+	ReadTimeout    time.Duration
+	HTTPClient     HTTPClient
 }
 
+type Option func(*Options)
+
 type Options struct {
-	HTTPClient     *http.Client
-	DialTimeout    time.Duration
-	RequestTimeout time.Duration
+	HTTPClient     HTTPClient
+	ConnectTimeout time.Duration
+	ReadTimeout    time.Duration
+}
+
+func WithDialTimeout(d time.Duration) Option {
+	return func(o *Options) {
+		o.ConnectTimeout = d
+	}
+}
+
+func WithRequesTimeout(d time.Duration) Option {
+	return func(o *Options) {
+		o.ConnectTimeout = d
+	}
+}
+
+func WithHTTPClient(c HTTPClient) Option {
+	return func(o *Options) {
+		o.HTTPClient = c
+	}
 }
 
 type Client struct {
@@ -105,8 +128,8 @@ func newClient(config *Config) (*Client, error) {
 		config.BaseURL = defaultBaseURL
 	}
 
-	if config.ConnectionTimeout == 0 {
-		config.ConnectionTimeout = defaultConnectionTimeout
+	if config.ConnectTimeout == 0 {
+		config.ConnectTimeout = defaultConnectTimeout
 	}
 
 	client := &Client{
@@ -123,7 +146,7 @@ func newClient(config *Config) (*Client, error) {
 	return client, nil
 }
 
-func (c Client) newRequest(method string, path string, body io.Reader, params url.Values) (*http.Request, error) {
+func (c Client) newRequest(method string, path string, body io.Reader, params url.Values, opts ...Option) (*http.Request, error) {
 	fullURL, err := url.JoinPath(c.config.BaseURL, path)
 	if err != nil {
 		return nil, err
@@ -143,24 +166,24 @@ func (c Client) newRequest(method string, path string, body io.Reader, params ur
 	return req, nil
 }
 
-func (c Client) newGetRequest(path string, params url.Values) (*http.Request, error) {
+func (c Client) newGetRequest(path string, params url.Values, opts ...Option) (*http.Request, error) {
 	return c.newRequest(http.MethodGet, path, nil, params)
 }
 
-func (c Client) newPostRequest(path string, body io.Reader, params url.Values) (*http.Request, error) {
+func (c Client) newPostRequest(path string, body io.Reader, params url.Values, opts ...Option) (*http.Request, error) {
 	return c.newRequest(http.MethodPost, path, body, params)
 }
 
-func (c Client) newPutRequest(path string, body io.Reader, params url.Values) (*http.Request, error) {
+func (c Client) newPutRequest(path string, body io.Reader, params url.Values, opts ...Option) (*http.Request, error) {
 	return c.newRequest(http.MethodPut, path, body, params)
 }
 
-func (c Client) newDeleteRequest(path string, body io.Reader, params url.Values) (*http.Request, error) {
+func (c Client) newDeleteRequest(path string, body io.Reader, params url.Values, opts ...Option) (*http.Request, error) {
 	return c.newRequest(http.MethodDelete, path, body, params)
 }
 
-func (c Client) doGet(path string, params url.Values) (*apiResponse, error) {
-	req, err := c.newGetRequest(path, params)
+func (c Client) doGet(path string, params url.Values, opts ...Option) (*internalResponse, error) {
+	req, err := c.newGetRequest(path, params, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -173,23 +196,8 @@ func (c Client) doGet(path string, params url.Values) (*apiResponse, error) {
 	return resp, nil
 }
 
-func (c Client) doPost(path string, body io.Reader, params url.Values) (*apiResponse, error) {
-	req, err := c.newPostRequest(path, body, params)
-
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := c.performRequest(req)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp, nil
-}
-
-func (c Client) doDelete(path string, body io.Reader, params url.Values) (*apiResponse, error) {
-	req, err := c.newDeleteRequest(path, body, params)
+func (c Client) doPost(path string, body io.Reader, params url.Values, opts ...Option) (*internalResponse, error) {
+	req, err := c.newPostRequest(path, body, params, opts...)
 
 	if err != nil {
 		return nil, err
@@ -203,8 +211,8 @@ func (c Client) doDelete(path string, body io.Reader, params url.Values) (*apiRe
 	return resp, nil
 }
 
-func (c Client) doPut(path string, body io.Reader, params url.Values) (*apiResponse, error) {
-	req, err := c.newPutRequest(path, body, params)
+func (c Client) doDelete(path string, body io.Reader, params url.Values, opts ...Option) (*internalResponse, error) {
+	req, err := c.newDeleteRequest(path, body, params, opts...)
 
 	if err != nil {
 		return nil, err
@@ -218,43 +226,60 @@ func (c Client) doPut(path string, body io.Reader, params url.Values) (*apiRespo
 	return resp, nil
 }
 
-func (c Client) performRequest(req *http.Request) (*apiResponse, error) {
+func (c Client) doPut(path string, body io.Reader, params url.Values, opts ...Option) (*internalResponse, error) {
+	req, err := c.newPutRequest(path, body, params, opts...)
+
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.performRequest(req, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func (c Client) performRequest(req *http.Request, opts ...Option) (*internalResponse, error) {
 	var httpClient HTTPClient = &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: c.config.Insecure,
 			},
 			DialContext: (&net.Dialer{
-				Timeout: c.config.ConnectionTimeout,
+				Timeout: c.config.ConnectTimeout * time.Millisecond,
 			}).DialContext,
 		},
+		Timeout: c.config.ReadTimeout * time.Millisecond,
 	}
 
 	if c.config.HTTPClient != nil {
 		httpClient = c.config.HTTPClient
 	}
 
-	resp, err := httpClient.Do(req)
+	httpResp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 
-	defer resp.Body.Close()
+	defer httpResp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(httpResp.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	if resp.StatusCode >= 299 {
-		return nil, handleAPIError(resp.StatusCode, apiError{
-			Body: body,
-		})
+	if err := checkError(httpResp.StatusCode, body); err != nil {
+		return nil, err
 	}
 
-	return &apiResponse{
-		Body: body,
-	}, nil
+	resp := internalResponse{
+		Response: httpResp,
+		body:     body,
+	}
+
+	return &resp, nil
 }
 
 var (
@@ -262,37 +287,45 @@ var (
 	ErrForbidden = errors.New("forbidden")
 )
 
-func handleAPIError(code int, apiErr apiError) error {
-	if code == 400 || code == 422 {
-		var e Error
-		if err := json.Unmarshal(apiErr.Body, &e); err != nil {
-			return err
-		}
-
-		return e
+func checkError(code int, body []byte) error {
+	if code >= 200 && code < 300 {
+		return nil
 	}
 
-	return apiErr
+	var e Error
+	if err := json.Unmarshal(body, &e); err != nil {
+		return err
+	}
+
+	return e
 }
 
-type apiResponse struct {
-	Body []byte
+type internalResponse struct {
+	*http.Response
+	body []byte
 }
 
-func (a apiResponse) Parse(v interface{}) error {
-	return json.Unmarshal(a.Body, &v)
+func (a internalResponse) Unmarshal(v interface{}) error {
+	return json.Unmarshal(a.body, &v)
 }
 
-type apiError struct {
-	Body []byte
+type internalError struct {
+	internalResponse
 }
 
-func (e apiError) Error() string {
-	return "API error"
+func (e internalError) Error() string {
+	return fmt.Sprintf(
+		"%v %v %v",
+		e.internalResponse.Response.Request.Method,
+		e.internalResponse.Response.Request.URL,
+		e.internalResponse.Response.StatusCode,
+	)
 }
 
 type Error struct {
-	Errors []string `json:"errors"`
+	Kind    string
+	Err     interface{}
+	Message string
 }
 
 func (e Error) Error() string {
