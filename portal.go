@@ -58,13 +58,22 @@ func WithHTTPClient(c HTTPClient) Option {
 }
 
 type Client struct {
-	config     *Config
-	providers  ProvidersService
-	plans      PlansService
-	users      UsersService
-	orgs       OrgsService
-	products   ProductsService
-	catalogues CataloguesService
+	config         *Config
+	providers      ProvidersService
+	plans          PlansService
+	users          UsersService
+	orgs           OrgsService
+	products       ProductsService
+	catalogues     CataloguesService
+	accessRequests AccessRequestsService
+}
+
+func (c Client) AccessRequests() AccessRequestsService {
+	return c.accessRequests
+}
+
+func (c *Client) SetAccessRequests(ar AccessRequestsService) {
+	c.accessRequests = ar
 }
 
 func (c Client) Catalogues() CataloguesService {
@@ -142,6 +151,7 @@ func newClient(config *Config) (*Client, error) {
 	client.orgs = &orgsService{client: client}
 	client.products = &productsService{client: client}
 	client.catalogues = &cataloguesService{client: client}
+	client.accessRequests = &accessRequestsService{client: client}
 
 	return client, nil
 }
