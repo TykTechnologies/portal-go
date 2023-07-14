@@ -31,33 +31,58 @@ type Config struct {
 	HTTPClient     HTTPClient
 }
 
-type Option func(*Options)
-
-type Options struct {
-	HTTPClient     HTTPClient
-	ConnectTimeout time.Duration
-	ReadTimeout    time.Duration
-}
+type Option func(*Client)
 
 func WithDialTimeout(d time.Duration) Option {
-	return func(o *Options) {
-		o.ConnectTimeout = d
+	return func(o *Client) {
+		o.connectTimeout = d
 	}
 }
 
-func WithRequesTimeout(d time.Duration) Option {
-	return func(o *Options) {
-		o.ConnectTimeout = d
+func WithReadTimeout(d time.Duration) Option {
+	return func(o *Client) {
+		o.readTimeout = d
 	}
 }
 
 func WithHTTPClient(c HTTPClient) Option {
-	return func(o *Options) {
-		o.HTTPClient = c
+	return func(o *Client) {
+		o.httpClient = c
+	}
+}
+
+func WithBaseURL(url string) Option {
+	return func(o *Client) {
+		o.baseURL = url
+	}
+}
+
+func WithToken(value string) Option {
+	return func(o *Client) {
+		o.token = value
+	}
+}
+
+func WithNoVeriySSL(value bool) Option {
+	return func(o *Client) {
+		o.noVerifySSL = value
+	}
+}
+
+func WithConnectTimeout(value time.Duration) Option {
+	return func(o *Client) {
+		o.connectTimeout = value
 	}
 }
 
 type Client struct {
+	httpClient     HTTPClient
+	connectTimeout time.Duration
+	readTimeout    time.Duration
+	token          string
+	debug          bool
+	noVerifySSL    bool
+	baseURL        string
 	config         *Config
 	providers      ProvidersService
 	plans          PlansService
@@ -124,25 +149,27 @@ func (c *Client) SetPlans(plans PlansService) {
 	c.plans = plans
 }
 
-func New(config *Config) (*Client, error) {
-	return newClient(config)
+func (c *Client) apply(opts ...Option) {
+	for _, opt := range opts {
+		opt(c)
+	}
 }
 
-func newClient(config *Config) (*Client, error) {
-	if config == nil {
-		return nil, errors.New("config should not be empty")
+func New(opts ...Option) (*Client, error) {
+	return newClient(opts...)
+}
+
+func newClient(opts ...Option) (*Client, error) {
+	client := &Client{}
+
+	client.apply(opts...)
+
+	if client.baseURL == "" {
+		client.baseURL = defaultBaseURL
 	}
 
-	if config.BaseURL == "" {
-		config.BaseURL = defaultBaseURL
-	}
-
-	if config.ConnectTimeout == 0 {
-		config.ConnectTimeout = defaultConnectTimeout
-	}
-
-	client := &Client{
-		config: config,
+	if client.connectTimeout == 0 {
+		client.connectTimeout = defaultConnectTimeout
 	}
 
 	client.providers = &providersService{client: client}
