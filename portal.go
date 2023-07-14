@@ -21,16 +21,6 @@ const (
 	defaultReadTimeout    = 60000
 )
 
-type Config struct {
-	Token          string
-	Debug          bool
-	Insecure       bool
-	BaseURL        string
-	ConnectTimeout time.Duration
-	ReadTimeout    time.Duration
-	HTTPClient     HTTPClient
-}
-
 type Option func(*Client)
 
 func WithDialTimeout(d time.Duration) Option {
@@ -63,9 +53,9 @@ func WithToken(value string) Option {
 	}
 }
 
-func WithNoVeriySSL(value bool) Option {
+func WithInsecure(value bool) Option {
 	return func(o *Client) {
-		o.noVerifySSL = value
+		o.insecure = value
 	}
 }
 
@@ -81,9 +71,8 @@ type Client struct {
 	readTimeout    time.Duration
 	token          string
 	debug          bool
-	noVerifySSL    bool
+	insecure       bool
 	baseURL        string
-	config         *Config
 	providers      ProvidersService
 	plans          PlansService
 	users          UsersService
@@ -159,17 +148,20 @@ func New(opts ...Option) (*Client, error) {
 	return newClient(opts...)
 }
 
+func (c Client) validate() error {
+	return nil
+}
+
 func newClient(opts ...Option) (*Client, error) {
-	client := &Client{}
+	client := &Client{
+		baseURL:        defaultBaseURL,
+		connectTimeout: defaultConnectTimeout,
+	}
 
 	client.apply(opts...)
 
-	if client.baseURL == "" {
-		client.baseURL = defaultBaseURL
-	}
-
-	if client.connectTimeout == 0 {
-		client.connectTimeout = defaultConnectTimeout
+	if err := client.validate(); err != nil {
+		return nil, err
 	}
 
 	client.providers = &providersService{client: client}
@@ -184,17 +176,19 @@ func newClient(opts ...Option) (*Client, error) {
 }
 
 func (c Client) newRequest(method string, path string, body io.Reader, params url.Values, opts ...Option) (*http.Request, error) {
-	fullURL, err := url.JoinPath(c.config.BaseURL, path)
+	newClient := c.copy(opts...)
+
+	newPath, err := url.JoinPath(newClient.baseURL, path)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := http.NewRequest(method, fullURL, body)
+	req, err := http.NewRequest(method, newPath, body)
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Add(headerAuthorization, c.config.Token)
+	req.Header.Add(headerAuthorization, newClient.token)
 	req.Header.Add(headerAccept, "application/json")
 	req.Header.Add(headerContentType, "application/json")
 
@@ -278,21 +272,31 @@ func (c Client) doPut(path string, body io.Reader, params url.Values, opts ...Op
 	return resp, nil
 }
 
+func (c Client) copy(opts ...Option) Client {
+	newClient := c
+
+	newClient.apply(opts...)
+
+	return newClient
+}
+
 func (c Client) performRequest(req *http.Request, opts ...Option) (*internalResponse, error) {
+	newClient := c.copy(opts...)
+
 	var httpClient HTTPClient = &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: c.config.Insecure,
+				InsecureSkipVerify: newClient.insecure,
 			},
 			DialContext: (&net.Dialer{
-				Timeout: c.config.ConnectTimeout * time.Millisecond,
+				Timeout: newClient.connectTimeout * time.Millisecond,
 			}).DialContext,
 		},
-		Timeout: c.config.ReadTimeout * time.Millisecond,
+		Timeout: newClient.readTimeout * time.Millisecond,
 	}
 
-	if c.config.HTTPClient != nil {
-		httpClient = c.config.HTTPClient
+	if newClient.httpClient != nil {
+		httpClient = newClient.httpClient
 	}
 
 	httpResp, err := httpClient.Do(req)
