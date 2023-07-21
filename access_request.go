@@ -31,7 +31,7 @@ func (p accessRequestsService) CreateAccessRequest(ctx context.Context, input *C
 		return nil, err
 	}
 
-	resp, err := p.client.doPost(pathAccessRequests, bytes.NewReader(payload), nil)
+	resp, err := p.client.doPost(ctx, pathAccessRequests, bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (p accessRequestsService) CreateAccessRequest(ctx context.Context, input *C
 
 // GetPlan ...
 func (p accessRequestsService) GetAccessRequest(ctx context.Context, id int64, opts ...Option) (*GetAccessRequestOutput, error) {
-	resp, err := p.client.doGet(fmt.Sprintf(pathAccessRequest, id), nil)
+	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathAccessRequest, id), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (p accessRequestsService) GetAccessRequest(ctx context.Context, id int64, o
 
 // ListPlans ...
 func (p accessRequestsService) ListAccessRequests(ctx context.Context, options *ListAccessRequestsInput, opts ...Option) (*ListAccessRequestsOutput, error) {
-	resp, err := p.client.doGet(pathAccessRequests, nil)
+	resp, err := p.client.doGet(ctx, pathAccessRequests, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func (p accessRequestsService) UpdateAccessRequest(ctx context.Context, id int64
 		return nil, err
 	}
 
-	resp, err := p.client.doPut(fmt.Sprintf(pathAccessRequest, id), bytes.NewReader(payload), nil)
+	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathAccessRequest, id), bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
 	}

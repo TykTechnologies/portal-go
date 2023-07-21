@@ -30,7 +30,7 @@ func (p productsService) CreateProduct(ctx context.Context, input *CreateProduct
 		return nil, err
 	}
 
-	resp, err := p.client.doPost(pathProducts, bytes.NewReader(payload), nil)
+	resp, err := p.client.doPost(ctx, pathProducts, bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (p productsService) CreateProduct(ctx context.Context, input *CreateProduct
 }
 
 func (p productsService) GetProduct(ctx context.Context, id int64, opts ...Option) (*GetProductOutput, error) {
-	resp, err := p.client.doGet(fmt.Sprintf(pathProduct, id), nil)
+	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathProduct, id), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (p productsService) GetProduct(ctx context.Context, id int64, opts ...Optio
 }
 
 func (p productsService) ListProducts(ctx context.Context, options *ListProductsInput, opts ...Option) (*ListProductsOutput, error) {
-	resp, err := p.client.doGet(pathProducts, nil)
+	resp, err := p.client.doGet(ctx, pathProducts, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +85,7 @@ func (p productsService) UpdateProduct(ctx context.Context, id int64, input *Upd
 		return nil, err
 	}
 
-	resp, err := p.client.doPut(fmt.Sprintf(pathProduct, id), bytes.NewReader(payload), nil)
+	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathProduct, id), bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
 	}

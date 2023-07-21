@@ -1,6 +1,7 @@
 package portal
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"errors"
@@ -66,20 +67,22 @@ func WithConnectTimeout(value time.Duration) Option {
 }
 
 type Client struct {
-	httpClient     HTTPClient
-	connectTimeout time.Duration
-	readTimeout    time.Duration
-	token          string
-	debug          bool
-	insecure       bool
-	baseURL        string
-	providers      ProvidersService
-	plans          PlansService
-	users          UsersService
-	orgs           OrgsService
-	products       ProductsService
-	catalogues     CataloguesService
-	accessRequests AccessRequestsService
+	httpClient      HTTPClient
+	connectTimeout  time.Duration
+	readTimeout     time.Duration
+	token           string
+	debug           bool
+	insecure        bool
+	baseURL         string
+	providers       ProvidersService
+	plans           PlansService
+	users           UsersService
+	orgs            OrgsService
+	products        ProductsService
+	catalogues      CataloguesService
+	accessRequests  AccessRequestsService
+	maxRetries      int
+	minRetryBackoff time.Duration
 }
 
 func (c Client) AccessRequests() AccessRequestsService {
@@ -158,6 +161,14 @@ func newClient(opts ...Option) (*Client, error) {
 		connectTimeout: defaultConnectTimeout,
 	}
 
+	if client.maxRetries == 0 {
+		client.maxRetries = 3
+	}
+
+	if client.minRetryBackoff == 0 {
+		client.minRetryBackoff = 100 * time.Millisecond
+	}
+
 	client.apply(opts...)
 
 	if err := client.validate(); err != nil {
@@ -213,13 +224,13 @@ func (c Client) newDeleteRequest(path string, body io.Reader, params url.Values,
 	return c.newRequest(http.MethodDelete, path, body, params)
 }
 
-func (c Client) doGet(path string, params url.Values, opts ...Option) (*internalResponse, error) {
+func (c Client) doGet(ctx context.Context, path string, params url.Values, opts ...Option) (*internalResponse, error) {
 	req, err := c.newGetRequest(path, params, opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.performRequest(req)
+	resp, err := c.performRequest(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -227,14 +238,14 @@ func (c Client) doGet(path string, params url.Values, opts ...Option) (*internal
 	return resp, nil
 }
 
-func (c Client) doPost(path string, body io.Reader, params url.Values, opts ...Option) (*internalResponse, error) {
+func (c Client) doPost(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*internalResponse, error) {
 	req, err := c.newPostRequest(path, body, params, opts...)
 
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.performRequest(req)
+	resp, err := c.performRequest(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -242,14 +253,14 @@ func (c Client) doPost(path string, body io.Reader, params url.Values, opts ...O
 	return resp, nil
 }
 
-func (c Client) doDelete(path string, body io.Reader, params url.Values, opts ...Option) (*internalResponse, error) {
+func (c Client) doDelete(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*internalResponse, error) {
 	req, err := c.newDeleteRequest(path, body, params, opts...)
 
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.performRequest(req)
+	resp, err := c.performRequest(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -257,14 +268,14 @@ func (c Client) doDelete(path string, body io.Reader, params url.Values, opts ..
 	return resp, nil
 }
 
-func (c Client) doPut(path string, body io.Reader, params url.Values, opts ...Option) (*internalResponse, error) {
+func (c Client) doPut(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*internalResponse, error) {
 	req, err := c.newPutRequest(path, body, params, opts...)
 
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.performRequest(req, opts...)
+	resp, err := c.performRequest(ctx, req, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -280,7 +291,11 @@ func (c Client) copy(opts ...Option) Client {
 	return newClient
 }
 
-func (c Client) performRequest(req *http.Request, opts ...Option) (*internalResponse, error) {
+func (c Client) performRequest(ctx context.Context, req *http.Request, opts ...Option) (*internalResponse, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
 	newClient := c.copy(opts...)
 
 	var httpClient HTTPClient = &http.Client{
@@ -299,28 +314,61 @@ func (c Client) performRequest(req *http.Request, opts ...Option) (*internalResp
 		httpClient = newClient.httpClient
 	}
 
-	httpResp, err := httpClient.Do(req)
-	if err != nil {
+	var (
+		attempt  int
+		httpResp *http.Response
+		err      error
+		respC    = make(chan internalResponse, 0)
+		errC     = make(chan error)
+	)
+
+	backoff := c.minRetryBackoff
+
+	go func() {
+		for attempt = 0; attempt < c.maxRetries; attempt++ {
+			httpResp, err = httpClient.Do(req)
+			if err != nil {
+				retry := shouldRetry(err)
+				if retry && attempt < c.maxRetries-1 {
+					time.Sleep(backoff)
+					backoff *= 2
+					continue
+				}
+
+				errC <- err
+				return
+			}
+
+			break
+		}
+
+		defer httpResp.Body.Close()
+
+		body, err := io.ReadAll(httpResp.Body)
+		if err != nil {
+			errC <- err
+			return
+		}
+
+		if err := checkError(httpResp.StatusCode, body); err != nil {
+			errC <- err
+			return
+		}
+
+		respC <- internalResponse{
+			Response: httpResp,
+			body:     body,
+		}
+	}()
+
+	select {
+	case <-ctx.Done():
+		return nil, context.DeadlineExceeded
+	case err := <-errC:
 		return nil, err
+	case resp := <-respC:
+		return &resp, nil
 	}
-
-	defer httpResp.Body.Close()
-
-	body, err := io.ReadAll(httpResp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := checkError(httpResp.StatusCode, body); err != nil {
-		return nil, err
-	}
-
-	resp := internalResponse{
-		Response: httpResp,
-		body:     body,
-	}
-
-	return &resp, nil
 }
 
 var (
@@ -399,4 +447,8 @@ func Int64Value(s *int64) int64 {
 	}
 
 	return *s
+}
+
+func shouldRetry(err error) bool {
+	return false
 }

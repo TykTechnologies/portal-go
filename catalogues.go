@@ -30,7 +30,7 @@ func (p cataloguesService) CreateCatalogue(ctx context.Context, input *CreateCat
 		return nil, err
 	}
 
-	resp, err := p.client.doPost(pathCatalogues, bytes.NewReader(payload), nil)
+	resp, err := p.client.doPost(ctx, pathCatalogues, bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (p cataloguesService) CreateCatalogue(ctx context.Context, input *CreateCat
 }
 
 func (p cataloguesService) GetCatalogue(ctx context.Context, id int64, opts ...Option) (*GetCatalogueOutput, error) {
-	resp, err := p.client.doGet(fmt.Sprintf(pathCatalogue, id), nil)
+	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathCatalogue, id), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (p cataloguesService) GetCatalogue(ctx context.Context, id int64, opts ...O
 }
 
 func (p cataloguesService) ListCatalogues(ctx context.Context, options *ListCataloguesInput, opts ...Option) (*ListCataloguesOutput, error) {
-	resp, err := p.client.doGet(pathCatalogues, nil)
+	resp, err := p.client.doGet(ctx, pathCatalogues, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +85,7 @@ func (p cataloguesService) UpdateCatalogue(ctx context.Context, id int64, input 
 		return nil, err
 	}
 
-	resp, err := p.client.doPut(fmt.Sprintf(pathCatalogue, id), bytes.NewReader(payload), nil)
+	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathCatalogue, id), bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
 	}

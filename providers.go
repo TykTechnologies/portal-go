@@ -18,6 +18,7 @@ const (
 type ProvidersService interface {
 	CreateProvider(ctx context.Context, input *CreateProviderInput, opts ...Option) (*CreateProviderOutput, error)
 	GetProvider(ctx context.Context, id int64, opts ...Option) (*GetProviderOutput, error)
+	DeleteProvider(ctx context.Context, id int64, opts ...Option) (*DeleteProviderOutput, error)
 	ListProviders(ctx context.Context, options *ListProvidersInput, opts ...Option) (*ListProvidersOutput, error)
 	UpdateProvider(ctx context.Context, id int64, input *UpdateProviderInput, opts ...Option) (*UpdateProviderOutput, error)
 	SyncProvider(ctx context.Context, id int64, opts ...Option) (*SyncProviderOutput, error)
@@ -33,7 +34,7 @@ func (p providersService) CreateProvider(ctx context.Context, input *CreateProvi
 		return nil, err
 	}
 
-	resp, err := p.client.doPost(pathProviders, bytes.NewReader(payload), nil)
+	resp, err := p.client.doPost(ctx, pathProviders, bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +51,7 @@ func (p providersService) CreateProvider(ctx context.Context, input *CreateProvi
 }
 
 func (p providersService) GetProvider(ctx context.Context, id int64, opts ...Option) (*GetProviderOutput, error) {
-	resp, err := p.client.doGet(fmt.Sprintf(pathProvider, id), nil)
+	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathProvider, id), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -65,8 +66,17 @@ func (p providersService) GetProvider(ctx context.Context, id int64, opts ...Opt
 	}, nil
 }
 
+func (p providersService) DeleteProvider(ctx context.Context, id int64, opts ...Option) (*DeleteProviderOutput, error) {
+	_, err := p.client.doDelete(ctx, fmt.Sprintf(pathProvider, id), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return &GetProviderOutput{}, nil
+}
+
 func (p providersService) ListProviders(ctx context.Context, options *ListProvidersInput, opts ...Option) (*ListProvidersOutput, error) {
-	resp, err := p.client.doGet(pathProviders, nil)
+	resp, err := p.client.doGet(ctx, pathProviders, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +103,7 @@ func (p providersService) UpdateProvider(ctx context.Context, id int64, input *U
 		return nil, err
 	}
 
-	resp, err := p.client.doPut(fmt.Sprintf(pathProvider, id), bytes.NewReader(payload), nil)
+	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathProvider, id), bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +120,7 @@ func (p providersService) UpdateProvider(ctx context.Context, id int64, input *U
 }
 
 func (p providersService) SyncProvider(ctx context.Context, id int64, opts ...Option) (*SyncProviderOutput, error) {
-	resp, err := p.client.doPut(fmt.Sprintf(pathProviderSync, id), nil, nil)
+	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathProviderSync, id), nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +137,7 @@ func (p providersService) SyncProvider(ctx context.Context, id int64, opts ...Op
 }
 
 func (p providersService) SyncProviders(ctx context.Context, opts ...Option) (*SyncProviderOutput, error) {
-	resp, err := p.client.doPut(fmt.Sprintf(pathProviderSync, "all"), nil, nil)
+	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathProviderSync, "all"), nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -187,6 +197,8 @@ type SyncProviderOutput struct {
 type UpdateProviderOutput = ProviderOutput
 
 type GetProviderOutput = ProviderOutput
+
+type DeleteProviderOutput = ProviderOutput
 
 type CreateProviderOutput = ProviderOutput
 

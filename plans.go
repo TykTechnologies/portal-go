@@ -32,7 +32,7 @@ func (p plansService) CreatePlan(ctx context.Context, input *CreatePlanInput, op
 		return nil, err
 	}
 
-	resp, err := p.client.doPost(pathPlans, bytes.NewReader(payload), nil)
+	resp, err := p.client.doPost(ctx, pathPlans, bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (p plansService) CreatePlan(ctx context.Context, input *CreatePlanInput, op
 
 // GetPlan ...
 func (p plansService) GetPlan(ctx context.Context, id int64, opts ...Option) (*GetPlanOutput, error) {
-	resp, err := p.client.doGet(fmt.Sprintf(pathPlan, id), nil)
+	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathPlan, id), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (p plansService) GetPlan(ctx context.Context, id int64, opts ...Option) (*G
 
 // ListPlans ...
 func (p plansService) ListPlans(ctx context.Context, options *ListPlansInput, opts ...Option) (*ListPlansOutput, error) {
-	resp, err := p.client.doGet(pathPlans, nil)
+	resp, err := p.client.doGet(ctx, pathPlans, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +95,7 @@ func (p plansService) UpdatePlan(ctx context.Context, id int64, input *UpdatePla
 		return nil, err
 	}
 
-	resp, err := p.client.doPut(fmt.Sprintf(pathPlan, id), bytes.NewReader(payload), nil)
+	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathPlan, id), bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
 	}

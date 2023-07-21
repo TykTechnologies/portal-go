@@ -30,7 +30,7 @@ func (p usersService) CreateUser(ctx context.Context, input *CreateUserInput, op
 		return nil, err
 	}
 
-	resp, err := p.client.doPost(pathUsers, bytes.NewReader(payload), nil)
+	resp, err := p.client.doPost(ctx, pathUsers, bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (p usersService) CreateUser(ctx context.Context, input *CreateUserInput, op
 }
 
 func (p usersService) GetUser(ctx context.Context, id int64, opts ...Option) (*GetUserOutput, error) {
-	resp, err := p.client.doGet(fmt.Sprintf(pathUser, id), nil)
+	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathUser, id), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (p usersService) GetUser(ctx context.Context, id int64, opts ...Option) (*G
 }
 
 func (p usersService) ListUsers(ctx context.Context, options *ListUsersInput, opts ...Option) (*ListUsersOutput, error) {
-	resp, err := p.client.doGet(pathUsers, nil)
+	resp, err := p.client.doGet(ctx, pathUsers, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +85,7 @@ func (p usersService) UpdateUser(ctx context.Context, id int64, input *UpdateUse
 		return nil, err
 	}
 
-	resp, err := p.client.doPut(fmt.Sprintf(pathUser, id), bytes.NewReader(payload), nil)
+	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathUser, id), bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
 	}

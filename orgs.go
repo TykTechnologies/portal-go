@@ -30,7 +30,7 @@ func (p orgsService) CreateOrg(ctx context.Context, input *CreateOrgInput, opts 
 		return nil, err
 	}
 
-	resp, err := p.client.doPost(pathOrgs, bytes.NewReader(payload), nil)
+	resp, err := p.client.doPost(ctx, pathOrgs, bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (p orgsService) CreateOrg(ctx context.Context, input *CreateOrgInput, opts 
 }
 
 func (p orgsService) GetOrg(ctx context.Context, id int64, opts ...Option) (*GetOrgOutput, error) {
-	resp, err := p.client.doGet(fmt.Sprintf(pathOrg, id), nil)
+	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathOrg, id), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (p orgsService) GetOrg(ctx context.Context, id int64, opts ...Option) (*Get
 }
 
 func (p orgsService) ListOrgs(ctx context.Context, options *ListOrgsInput, opts ...Option) (*ListOrgsOutput, error) {
-	resp, err := p.client.doGet(pathOrgs, nil)
+	resp, err := p.client.doGet(ctx, pathOrgs, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +85,7 @@ func (p orgsService) UpdateOrg(ctx context.Context, id int64, input *UpdateOrgIn
 		return nil, err
 	}
 
-	resp, err := p.client.doPut(fmt.Sprintf(pathOrg, id), bytes.NewReader(payload), nil)
+	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathOrg, id), bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
 	}
