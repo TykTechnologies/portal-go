@@ -28,8 +28,6 @@ jobs:
           # Only support last 2 versions (https://go.dev/doc/devel/release#policy)
     steps:
       - uses: actions/checkout@v3
-        with:
-          path: ${{ env.GOPATH }}/src/github.com/${{ github.repository }}
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
