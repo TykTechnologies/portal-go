@@ -10,6 +10,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -23,6 +24,12 @@ const (
 )
 
 type Option func(*Client)
+
+func WithSkipValidation() Option {
+	return func(c *Client) {
+		c.skipValidation = true
+	}
+}
 
 func WithDialTimeout(d time.Duration) Option {
 	return func(o *Client) {
@@ -74,15 +81,18 @@ type Client struct {
 	debug           bool
 	insecure        bool
 	baseURL         string
-	providers       ProvidersService
-	plans           PlansService
-	users           UsersService
-	orgs            OrgsService
-	products        ProductsService
-	catalogues      CataloguesService
-	accessRequests  AccessRequestsService
 	maxRetries      int
 	minRetryBackoff time.Duration
+	skipValidation  bool
+
+	pages          PagesService
+	providers      ProvidersService
+	plans          PlansService
+	users          UsersService
+	orgs           OrgsService
+	products       ProductsService
+	catalogues     CataloguesService
+	accessRequests AccessRequestsService
 }
 
 func (c Client) AccessRequests() AccessRequestsService {
@@ -141,6 +151,14 @@ func (c *Client) SetPlans(plans PlansService) {
 	c.plans = plans
 }
 
+func (c Client) Pages() PagesService {
+	return c.pages
+}
+
+func (c *Client) SetPages(pages PagesService) {
+	c.pages = pages
+}
+
 func (c *Client) apply(opts ...Option) {
 	for _, opt := range opts {
 		opt(c)
@@ -182,6 +200,7 @@ func newClient(opts ...Option) (*Client, error) {
 	client.products = &productsService{client: client}
 	client.catalogues = &cataloguesService{client: client}
 	client.accessRequests = &accessRequestsService{client: client}
+	client.pages = &pagesService{client: client}
 
 	return client, nil
 }
@@ -240,7 +259,6 @@ func (c Client) doGet(ctx context.Context, path string, params url.Values, opts 
 
 func (c Client) doPost(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*internalResponse, error) {
 	req, err := c.newPostRequest(path, body, params, opts...)
-
 	if err != nil {
 		return nil, err
 	}
@@ -255,7 +273,6 @@ func (c Client) doPost(ctx context.Context, path string, body io.Reader, params 
 
 func (c Client) doDelete(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*internalResponse, error) {
 	req, err := c.newDeleteRequest(path, body, params, opts...)
-
 	if err != nil {
 		return nil, err
 	}
@@ -270,7 +287,6 @@ func (c Client) doDelete(ctx context.Context, path string, body io.Reader, param
 
 func (c Client) doPut(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*internalResponse, error) {
 	req, err := c.newPutRequest(path, body, params, opts...)
-
 	if err != nil {
 		return nil, err
 	}
@@ -412,13 +428,11 @@ func (e internalError) Error() string {
 }
 
 type Error struct {
-	Kind    string
-	Err     interface{}
-	Message string
+	Errors []string
 }
 
 func (e Error) Error() string {
-	return "API error"
+	return strings.Join(e.Errors, "\n")
 }
 
 type HTTPClient interface {

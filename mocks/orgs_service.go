@@ -5,7 +5,7 @@ package mocks
 import (
 	context "context"
 
-	portal "github.com/edsonmichaque/portal-go"
+	edp "github.com/edsonmichaque/edp-go"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -15,7 +15,7 @@ type OrgsService struct {
 }
 
 // CreateOrg provides a mock function with given fields: ctx, input, opts
-func (_m *OrgsService) CreateOrg(ctx context.Context, input *portal.OrgInput, opts ...portal.Option) (*portal.OrgOutput, error) {
+func (_m *OrgsService) CreateOrg(ctx context.Context, input *edp.OrgInput, opts ...edp.Option) (*edp.OrgOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -25,20 +25,20 @@ func (_m *OrgsService) CreateOrg(ctx context.Context, input *portal.OrgInput, op
 	_ca = append(_ca, _va...)
 	ret := _m.Called(_ca...)
 
-	var r0 *portal.OrgOutput
+	var r0 *edp.OrgOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.OrgInput, ...portal.Option) (*portal.OrgOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *edp.OrgInput, ...edp.Option) (*edp.OrgOutput, error)); ok {
 		return rf(ctx, input, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.OrgInput, ...portal.Option) *portal.OrgOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *edp.OrgInput, ...edp.Option) *edp.OrgOutput); ok {
 		r0 = rf(ctx, input, opts...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*portal.OrgOutput)
+			r0 = ret.Get(0).(*edp.OrgOutput)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *portal.OrgInput, ...portal.Option) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *edp.OrgInput, ...edp.Option) error); ok {
 		r1 = rf(ctx, input, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -47,8 +47,41 @@ func (_m *OrgsService) CreateOrg(ctx context.Context, input *portal.OrgInput, op
 	return r0, r1
 }
 
-// GetOrg provides a mock function with given fields: ctx, id, opts
-func (_m *OrgsService) GetOrg(ctx context.Context, id int64, opts ...portal.Option) (*portal.OrgOutput, error) {
+// CreateTeam provides a mock function with given fields: ctx, orgId, input, opts
+func (_m *OrgsService) CreateTeam(ctx context.Context, orgId int64, input *edp.TeamInput, opts ...edp.Option) (*edp.TeamOutput, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, orgId, input)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	var r0 *edp.TeamOutput
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *edp.TeamInput, ...edp.Option) (*edp.TeamOutput, error)); ok {
+		return rf(ctx, orgId, input, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *edp.TeamInput, ...edp.Option) *edp.TeamOutput); ok {
+		r0 = rf(ctx, orgId, input, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*edp.TeamOutput)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int64, *edp.TeamInput, ...edp.Option) error); ok {
+		r1 = rf(ctx, orgId, input, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// DeleteOrg provides a mock function with given fields: ctx, id, opts
+func (_m *OrgsService) DeleteOrg(ctx context.Context, id int64, opts ...edp.Option) (*edp.OrgOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -58,20 +91,20 @@ func (_m *OrgsService) GetOrg(ctx context.Context, id int64, opts ...portal.Opti
 	_ca = append(_ca, _va...)
 	ret := _m.Called(_ca...)
 
-	var r0 *portal.OrgOutput
+	var r0 *edp.OrgOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64, ...portal.Option) (*portal.OrgOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, ...edp.Option) (*edp.OrgOutput, error)); ok {
 		return rf(ctx, id, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64, ...portal.Option) *portal.OrgOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, ...edp.Option) *edp.OrgOutput); ok {
 		r0 = rf(ctx, id, opts...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*portal.OrgOutput)
+			r0 = ret.Get(0).(*edp.OrgOutput)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64, ...portal.Option) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64, ...edp.Option) error); ok {
 		r1 = rf(ctx, id, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -80,8 +113,107 @@ func (_m *OrgsService) GetOrg(ctx context.Context, id int64, opts ...portal.Opti
 	return r0, r1
 }
 
+// DeleteTeam provides a mock function with given fields: ctx, orgId, teamId, opts
+func (_m *OrgsService) DeleteTeam(ctx context.Context, orgId int64, teamId int64, opts ...edp.Option) (*edp.TeamOutput, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, orgId, teamId)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	var r0 *edp.TeamOutput
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64, int64, ...edp.Option) (*edp.TeamOutput, error)); ok {
+		return rf(ctx, orgId, teamId, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int64, int64, ...edp.Option) *edp.TeamOutput); ok {
+		r0 = rf(ctx, orgId, teamId, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*edp.TeamOutput)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int64, int64, ...edp.Option) error); ok {
+		r1 = rf(ctx, orgId, teamId, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetOrg provides a mock function with given fields: ctx, id, opts
+func (_m *OrgsService) GetOrg(ctx context.Context, id int64, opts ...edp.Option) (*edp.OrgOutput, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, id)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	var r0 *edp.OrgOutput
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64, ...edp.Option) (*edp.OrgOutput, error)); ok {
+		return rf(ctx, id, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int64, ...edp.Option) *edp.OrgOutput); ok {
+		r0 = rf(ctx, id, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*edp.OrgOutput)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int64, ...edp.Option) error); ok {
+		r1 = rf(ctx, id, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetTeam provides a mock function with given fields: ctx, orgId, teamId, opts
+func (_m *OrgsService) GetTeam(ctx context.Context, orgId int64, teamId int64, opts ...edp.Option) (*edp.TeamOutput, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, orgId, teamId)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	var r0 *edp.TeamOutput
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64, int64, ...edp.Option) (*edp.TeamOutput, error)); ok {
+		return rf(ctx, orgId, teamId, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int64, int64, ...edp.Option) *edp.TeamOutput); ok {
+		r0 = rf(ctx, orgId, teamId, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*edp.TeamOutput)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int64, int64, ...edp.Option) error); ok {
+		r1 = rf(ctx, orgId, teamId, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // ListOrgs provides a mock function with given fields: ctx, options, opts
-func (_m *OrgsService) ListOrgs(ctx context.Context, options *portal.ListOrgsInput, opts ...portal.Option) (*portal.ListOrgsOutput, error) {
+func (_m *OrgsService) ListOrgs(ctx context.Context, options *edp.ListOrgsInput, opts ...edp.Option) (*edp.ListOrgsOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -91,20 +223,20 @@ func (_m *OrgsService) ListOrgs(ctx context.Context, options *portal.ListOrgsInp
 	_ca = append(_ca, _va...)
 	ret := _m.Called(_ca...)
 
-	var r0 *portal.ListOrgsOutput
+	var r0 *edp.ListOrgsOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListOrgsInput, ...portal.Option) (*portal.ListOrgsOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *edp.ListOrgsInput, ...edp.Option) (*edp.ListOrgsOutput, error)); ok {
 		return rf(ctx, options, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListOrgsInput, ...portal.Option) *portal.ListOrgsOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *edp.ListOrgsInput, ...edp.Option) *edp.ListOrgsOutput); ok {
 		r0 = rf(ctx, options, opts...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*portal.ListOrgsOutput)
+			r0 = ret.Get(0).(*edp.ListOrgsOutput)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *portal.ListOrgsInput, ...portal.Option) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *edp.ListOrgsInput, ...edp.Option) error); ok {
 		r1 = rf(ctx, options, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -113,8 +245,41 @@ func (_m *OrgsService) ListOrgs(ctx context.Context, options *portal.ListOrgsInp
 	return r0, r1
 }
 
+// ListTeams provides a mock function with given fields: ctx, orgId, options, opts
+func (_m *OrgsService) ListTeams(ctx context.Context, orgId int64, options *edp.ListTeamsInput, opts ...edp.Option) (*edp.ListTeamsOutput, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, orgId, options)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	var r0 *edp.ListTeamsOutput
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *edp.ListTeamsInput, ...edp.Option) (*edp.ListTeamsOutput, error)); ok {
+		return rf(ctx, orgId, options, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *edp.ListTeamsInput, ...edp.Option) *edp.ListTeamsOutput); ok {
+		r0 = rf(ctx, orgId, options, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*edp.ListTeamsOutput)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int64, *edp.ListTeamsInput, ...edp.Option) error); ok {
+		r1 = rf(ctx, orgId, options, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // UpdateOrg provides a mock function with given fields: ctx, id, input, opts
-func (_m *OrgsService) UpdateOrg(ctx context.Context, id int64, input *portal.OrgInput, opts ...portal.Option) (*portal.OrgOutput, error) {
+func (_m *OrgsService) UpdateOrg(ctx context.Context, id int64, input *edp.OrgInput, opts ...edp.Option) (*edp.OrgOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -124,21 +289,54 @@ func (_m *OrgsService) UpdateOrg(ctx context.Context, id int64, input *portal.Or
 	_ca = append(_ca, _va...)
 	ret := _m.Called(_ca...)
 
-	var r0 *portal.OrgOutput
+	var r0 *edp.OrgOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.OrgInput, ...portal.Option) (*portal.OrgOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *edp.OrgInput, ...edp.Option) (*edp.OrgOutput, error)); ok {
 		return rf(ctx, id, input, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.OrgInput, ...portal.Option) *portal.OrgOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *edp.OrgInput, ...edp.Option) *edp.OrgOutput); ok {
 		r0 = rf(ctx, id, input, opts...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*portal.OrgOutput)
+			r0 = ret.Get(0).(*edp.OrgOutput)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64, *portal.OrgInput, ...portal.Option) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64, *edp.OrgInput, ...edp.Option) error); ok {
 		r1 = rf(ctx, id, input, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// UpdateTeam provides a mock function with given fields: ctx, orgId, teamId, input, opts
+func (_m *OrgsService) UpdateTeam(ctx context.Context, orgId int64, teamId int64, input *edp.TeamInput, opts ...edp.Option) (*edp.TeamOutput, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, orgId, teamId, input)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	var r0 *edp.TeamOutput
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64, int64, *edp.TeamInput, ...edp.Option) (*edp.TeamOutput, error)); ok {
+		return rf(ctx, orgId, teamId, input, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int64, int64, *edp.TeamInput, ...edp.Option) *edp.TeamOutput); ok {
+		r0 = rf(ctx, orgId, teamId, input, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*edp.TeamOutput)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int64, int64, *edp.TeamInput, ...edp.Option) error); ok {
+		r1 = rf(ctx, orgId, teamId, input, opts...)
 	} else {
 		r1 = ret.Error(1)
 	}

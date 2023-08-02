@@ -102,9 +102,16 @@ func (p cataloguesService) UpdateCatalogue(ctx context.Context, id int64, input 
 }
 
 type CatalogueInput struct {
-	ID   *int64 `json:",omitempty"`
-	Type string
-	Name string
+	ID               *int64  `json:"ID,omitempty"`
+	Name             string  `json:"Name,omitempty"`
+	NameWithSlug     string  `json:"NameWithSlug,omitempty"`
+	Plans            []int64 `json:"Plans,omitempty"`
+	Products         []int64 `json:"Products,omitempty"`
+	VisibilityStatus string  `json:"VisibilityStatus,omitempty"`
+	OrgCatalogues    []struct {
+		OrganisationID int `json:"OrganisationID,omitempty"`
+		TeamID         int `json:"TeamID,omitempty"`
+	} `json:"OrgCatalogues,omitempty"`
 }
 
 type UpdateCatalogueInput = CatalogueInput
@@ -118,10 +125,15 @@ type ListCataloguesOutput struct {
 }
 
 type Catalogue struct {
-	ID               int64
-	Name             string
-	NameWithSlug     string
-	VisibilityStatus string
+	CreatedAt        string   `json:"CreatedAt,omitempty"`
+	ID               int64    `json:"ID,omitempty"`
+	Name             string   `json:"Name,omitempty"`
+	OrgCatalogues    []any    `json:"OrgCatalogues,omitempty"`
+	Plans            any      `json:"Plans,omitempty"`
+	Products         []string `json:"Products,omitempty"`
+	UpdatedAt        string   `json:"UpdatedAt,omitempty"`
+	VisibilityStatus string   `json:"VisibilityStatus,omitempty"`
+	NameWithSlug     string   `json:"NameWithSlug,omitempty,omitempty"`
 }
 
 type CatalogueOutput struct {

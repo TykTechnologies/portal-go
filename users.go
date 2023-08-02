@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 )
 
@@ -18,6 +19,7 @@ type UsersService interface {
 	GetUser(ctx context.Context, id int64, opts ...Option) (*GetUserOutput, error)
 	ListUsers(ctx context.Context, options *ListUsersInput, opts ...Option) (*ListUsersOutput, error)
 	UpdateUser(ctx context.Context, id int64, input *UpdateUserInput, opts ...Option) (*UpdateUserOutput, error)
+	DeleteUser(ctx context.Context, id int64, opts ...Option) (*DeleteUserOutput, error)
 }
 
 type usersService struct {
@@ -28,6 +30,12 @@ func (p usersService) CreateUser(ctx context.Context, input *CreateUserInput, op
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
+	}
+
+	if !p.client.skipValidation {
+		if err := input.validate(); err != nil {
+			return nil, err
+		}
 	}
 
 	resp, err := p.client.doPost(ctx, pathUsers, bytes.NewReader(payload), nil)
@@ -80,6 +88,8 @@ func (p usersService) ListUsers(ctx context.Context, options *ListUsersInput, op
 }
 
 func (p usersService) UpdateUser(ctx context.Context, id int64, input *UpdateUserInput, opts ...Option) (*UpdateUserOutput, error) {
+	input.ID = nil
+
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -101,15 +111,42 @@ func (p usersService) UpdateUser(ctx context.Context, id int64, input *UpdateUse
 	}, nil
 }
 
-type UserInput struct {
-	ID   *int64 `json:",omitempty"`
-	Type string
-	Name string
+func (p usersService) DeleteUser(ctx context.Context, id int64, opts ...Option) (*DeleteUserOutput, error) {
+	_, err := p.client.doDelete(ctx, fmt.Sprintf(pathUser, id), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return &GetUserOutput{}, nil
 }
 
-type UpdateUserInput = UserInput
+type UserInput struct {
+	ID             *int64 `json:"ID,omitempty"`
+	Active         bool   `json:"Active,omitempty"`
+	Email          string `json:"Email,omitempty"`
+	First          string `json:"First,omitempty"`
+	Last           string `json:"Last,omitempty"`
+	OrganisationID int64  `json:"OrganisationID,omitempty"`
+	Role           string `json:"Role,omitempty"`
+	Provider       string `json:"Provider,omitempty"`
+	ResetPassword  bool   `json:"ResetPassword,omitempty"`
+}
+
+func (u UserInput) validate() error {
+	if u.Email == "" {
+		return errors.New("email is required")
+	}
+
+	if u.First == "" {
+		return errors.New("first is required")
+	}
+
+	return nil
+}
 
 type CreateUserInput = UserInput
+
+type UpdateUserInput = UserInput
 
 type ListUsersInput struct{}
 
@@ -118,14 +155,21 @@ type ListUsersOutput struct {
 }
 
 type User struct {
-	ID             int64
-	Active         bool
-	Email          string
-	First          string
-	Last           string
-	OrganisationID int64
-	Provider       string
-	Role           string
+	Active            bool     `json:"Active,omitempty"`
+	Email             string   `json:"Email,omitempty"`
+	First             string   `json:"First,omitempty"`
+	Last              string   `json:"Last,omitempty"`
+	OrganisationID    int64    `json:"OrganisationID,omitempty"`
+	Role              string   `json:"Role,omitempty"`
+	Provider          string   `json:"Provider,omitempty"`
+	JWTToken          string   `json:"JWTToken,omitempty"`
+	APITokenCreatedAt string   `json:"APITokenCreatedAt,omitempty"`
+	Organisation      string   `json:"Organisation,omitempty"`
+	ResetPassword     bool     `json:"ResetPassword,omitempty"`
+	Teams             []string `json:"Teams,omitempty"`
+	ID                int64    `json:"ID,omitempty"`
+	CreatedAt         string   `json:"CreatedAt,omitempty"`
+	UpdatedAt         string   `json:"UpdatedAt,omitempty"`
 }
 
 type UserOutput struct {
@@ -137,3 +181,5 @@ type UpdateUserOutput = UserOutput
 type GetUserOutput = UserOutput
 
 type CreateUserOutput = UserOutput
+
+type DeleteUserOutput = UserOutput

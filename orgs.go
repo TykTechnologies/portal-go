@@ -4,12 +4,15 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 )
 
 const (
-	pathOrgs = "/portal-api/organisations"
-	pathOrg  = "/portal-api/organitations/%d"
+	pathOrgs     = "/portal-api/organisations"
+	pathOrg      = "/portal-api/organisations/%d"
+	pathOrgTeams = "/portal-api/organisations/%d/teams"
+	pathOrgTeam  = "/portal-api/organisations/%d/teams/%d"
 )
 
 //go:generate mockery --name OrgsService --filename orgs_service.go
@@ -18,6 +21,12 @@ type OrgsService interface {
 	GetOrg(ctx context.Context, id int64, opts ...Option) (*GetOrgOutput, error)
 	ListOrgs(ctx context.Context, options *ListOrgsInput, opts ...Option) (*ListOrgsOutput, error)
 	UpdateOrg(ctx context.Context, id int64, input *UpdateOrgInput, opts ...Option) (*UpdateOrgOutput, error)
+	DeleteOrg(ctx context.Context, id int64, opts ...Option) (*DeleteOrgOutput, error)
+	CreateTeam(ctx context.Context, orgId int64, input *TeamInput, opts ...Option) (*TeamOutput, error)
+	GetTeam(ctx context.Context, orgId, teamId int64, opts ...Option) (*TeamOutput, error)
+	ListTeams(ctx context.Context, orgId int64, options *ListTeamsInput, opts ...Option) (*ListTeamsOutput, error)
+	UpdateTeam(ctx context.Context, orgId, teamId int64, input *TeamInput, opts ...Option) (*TeamOutput, error)
+	DeleteTeam(ctx context.Context, orgId, teamId int64, opts ...Option) (*TeamOutput, error)
 }
 
 type orgsService struct {
@@ -27,6 +36,10 @@ type orgsService struct {
 func (p orgsService) CreateOrg(ctx context.Context, input *CreateOrgInput, opts ...Option) (*CreateOrgOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
+		return nil, err
+	}
+
+	if err := input.validate(); err != nil {
 		return nil, err
 	}
 
@@ -101,16 +114,121 @@ func (p orgsService) UpdateOrg(ctx context.Context, id int64, input *UpdateOrgIn
 	}, nil
 }
 
+func (p orgsService) DeleteOrg(ctx context.Context, id int64, opts ...Option) (*DeleteOrgOutput, error) {
+	_, err := p.client.doDelete(ctx, fmt.Sprintf(pathOrg, id), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return &GetOrgOutput{}, nil
+}
+
+func (p orgsService) CreateTeam(ctx context.Context, orgId int64, input *TeamInput, opts ...Option) (*TeamOutput, error) {
+	payload, err := json.Marshal(input)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := input.validate(); err != nil {
+		return nil, err
+	}
+
+	resp, err := p.client.doPost(ctx, fmt.Sprintf(pathOrgTeams, orgId), bytes.NewReader(payload), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var org Team
+
+	if err := resp.Unmarshal(&org); err != nil {
+		return nil, err
+	}
+
+	return &TeamOutput{
+		Data: &org,
+	}, nil
+}
+
+func (p orgsService) GetTeam(ctx context.Context, orgId, teamId int64, opts ...Option) (*TeamOutput, error) {
+	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathOrgTeam, orgId, teamId), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var org Team
+	if err := resp.Unmarshal(&org); err != nil {
+		return nil, err
+	}
+
+	return &TeamOutput{
+		Data: &org,
+	}, nil
+}
+
+func (p orgsService) ListTeams(ctx context.Context, orgId int64, options *ListTeamsInput, opts ...Option) (*ListTeamsOutput, error) {
+	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathOrgTeams, orgId), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var orgs []Team
+
+	if err := resp.Unmarshal(&orgs); err != nil {
+		return nil, err
+	}
+
+	return &ListTeamsOutput{
+		Data: orgs,
+	}, nil
+}
+
+func (p orgsService) UpdateTeam(ctx context.Context, orgId, teamId int64, input *TeamInput, opts ...Option) (*TeamOutput, error) {
+	payload, err := json.Marshal(input)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathOrgTeam, orgId, teamId), bytes.NewReader(payload), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var org Team
+
+	if err := resp.Unmarshal(&org); err != nil {
+		return nil, err
+	}
+
+	return &TeamOutput{
+		Data: &org,
+	}, nil
+}
+
+func (p orgsService) DeleteTeam(ctx context.Context, orgId, teamId int64, opts ...Option) (*TeamOutput, error) {
+	_, err := p.client.doDelete(ctx, fmt.Sprintf(pathOrgTeam, orgId, teamId), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return &TeamOutput{}, nil
+}
+
 type OrgInput struct {
 	ID   *int64 `json:"ID,omitempty"`
 	Type string `json:"Type,omitempty"`
 	Name string `json:"Name,omitempty"`
 }
 
+func (o OrgInput) validate() error {
+	if o.Name == "" {
+		return errors.New("name is required")
+	}
+
+	return nil
+}
+
 type UpdateOrgInput = OrgInput
-
 type CreateOrgInput = OrgInput
-
 type ListOrgsInput struct{}
 
 type ListOrgsOutput struct {
@@ -122,55 +240,88 @@ type OrgOutput struct {
 }
 
 type UpdateOrgOutput = OrgOutput
-
 type GetOrgOutput = OrgOutput
-
 type CreateOrgOutput = OrgOutput
+type DeleteOrgOutput = OrgOutput
 
 type Org struct {
-	ID        int64     `json:"ID"`
-	Name      string    `json:"Name"`
-	Teams     []OrgTeam `json:"Teams,omitempty"`
-	Users     []OrgUser `json:"Users,omitempty"`
-	UpdatedAt string    `json:"UpdatedAt,omitempty"`
-	CreatedAt string    `json:"CreatedAt,omitempty"`
+	ID        int64       `json:"ID,omitempty"`
+	Name      string      `json:"Name,omitempty"`
+	Teams     interface{} `json:"Teams,omitempty"`
+	Users     interface{} `json:"Users,omitempty"`
+	UpdatedAt string      `json:"UpdatedAt,omitempty"`
+	CreatedAt string      `json:"CreatedAt,omitempty"`
 }
 
 type OrgTeam struct {
-	Default        bool   `json:"Default"`
-	ID             int64  `json:"ID"`
-	Name           string `json:"Name"`
-	Organisation   string `json:"Organisation"`
-	OrganisationID string `json:"OrganisationID"`
-	Users          []User `json:"Users"`
+	Default        bool   `json:"Default,omitempty"`
+	ID             int64  `json:"ID,omitempty"`
+	Name           string `json:"Name,omitempty"`
+	Organisation   string `json:"Organisation,omitempty"`
+	OrganisationID string `json:"OrganisationID,omitempty"`
+	Users          []User `json:"Users,omitempty"`
 }
 
 type OrgCart struct {
-	CatalogueOrders string `json:"CatalogueOrders"`
-	ID              int64  `json:"ID"`
-	ProviderID      any    `json:"ProviderID"`
+	CatalogueOrders string `json:"CatalogueOrders,omitempty"`
+	ID              int64  `json:"ID,omitempty"`
+	ProviderID      any    `json:"ProviderID,omitempty"`
 }
 
 type OrgUser struct {
-	APIToken          string   `json:"APIToken"`
-	APITokenCreatedAt string   `json:"APITokenCreatedAt"`
-	Active            bool     `json:"Active"`
-	Cart              OrgCart  `json:"Cart"`
-	ConfirmedAt       string   `json:"ConfirmedAt"`
-	Email             string   `json:"Email"`
-	EncryptedPassword string   `json:"EncryptedPassword"`
-	First             string   `json:"First"`
-	ID                int64    `json:"ID"`
-	Joined            string   `json:"Joined"`
-	Last              string   `json:"Last"`
-	Organisation      string   `json:"Organisation"`
-	Password          string   `json:"Password"`
-	Provider          string   `json:"Provider"`
-	ProviderID        int      `json:"ProviderID"`
-	ResetPassword     bool     `json:"ResetPassword"`
-	Role              string   `json:"Role"`
-	SSOKey            string   `json:"SSOKey"`
-	Teams             []string `json:"Teams"`
-	UID               string   `json:"UID"`
-	UserID            string   `json:"UserID"`
+	APIToken          string   `json:"APIToken,omitempty"`
+	APITokenCreatedAt string   `json:"APITokenCreatedAt,omitempty"`
+	Active            bool     `json:"Active,omitempty"`
+	Cart              OrgCart  `json:"Cart,omitempty"`
+	ConfirmedAt       string   `json:"ConfirmedAt,omitempty"`
+	Email             string   `json:"Email,omitempty"`
+	EncryptedPassword string   `json:"EncryptedPassword,omitempty"`
+	First             string   `json:"First,omitempty"`
+	ID                int64    `json:"ID,omitempty"`
+	Joined            string   `json:"Joined,omitempty"`
+	Last              string   `json:"Last,omitempty"`
+	Organisation      string   `json:"Organisation,omitempty"`
+	Password          string   `json:"Password,omitempty"`
+	Provider          string   `json:"Provider,omitempty"`
+	ProviderID        int      `json:"ProviderID,omitempty"`
+	ResetPassword     bool     `json:"ResetPassword,omitempty"`
+	Role              string   `json:"Role,omitempty"`
+	SSOKey            string   `json:"SSOKey,omitempty"`
+	Teams             []string `json:"Teams,omitempty"`
+	UID               string   `json:"UID,omitempty"`
+	UserID            string   `json:"UserID,omitempty"`
 }
+
+type Team struct {
+	ID        int64    `json:"ID,omitempty"`
+	Name      string   `json:"Name,omitempty"`
+	Default   bool     `json:"Default,omitempty"`
+	Users     []string `json:"Users,omitempty"`
+	CreatedAt string   `json:"CreatedAt,omitempty"`
+	UpdatedAt string   `json:"UpdatedAt,omitempty"`
+}
+
+type TeamOutput struct {
+	Data *Team
+}
+
+type ListTeamsOutput struct {
+	Data []Team
+}
+
+type UpdateTeam = TeamOutput
+type GetTeam = TeamOutput
+type CreateTeam = TeamOutput
+type DeleteTeam = TeamOutput
+
+type TeamInput struct {
+	ID    *int64  `json:"ID,omitempty"`
+	Name  string  `json:"Name,omitempty"`
+	Users []int64 `json:"Users,omitempty"`
+}
+
+func (t TeamInput) validate() error {
+	return nil
+}
+
+type ListTeamsInput struct{}

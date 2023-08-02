@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 )
 
@@ -93,13 +92,12 @@ func (p providersService) ListProviders(ctx context.Context, options *ListProvid
 }
 
 func (p providersService) UpdateProvider(ctx context.Context, id int64, input *UpdateProviderInput, opts ...Option) (*UpdateProviderOutput, error) {
-	// TODO: review this
-	if input.Configuration != nil && input.Configuration.ID == nil {
-		return nil, errors.New("configuration id must not be nil")
-	}
-
 	payload, err := json.Marshal(input)
 	if err != nil {
+		return nil, err
+	}
+
+	if err := input.validate(); err != nil {
 		return nil, err
 	}
 
@@ -154,10 +152,18 @@ func (p providersService) SyncProviders(ctx context.Context, opts ...Option) (*S
 }
 
 type ProviderInput struct {
-	ID            *int64 `json:",omitempty"`
-	Type          string
-	Name          string
-	Configuration *ProviderConfiguration `json:",omitempty"`
+	ID            *int64                 `json:"ID,omitempty"`
+	Type          string                 `json:"Type,omitempty"`
+	Name          string                 `json:"Name,omitempty"`
+	Configuration *ProviderConfiguration `json:"Configuration,omitempty"`
+}
+
+func (p ProviderInput) validate() error {
+	/*	if p.Configuration != nil && p.Configuration.ID == nil {
+		return errors.New("configuration id must not be nil")
+	}*/
+
+	return nil
 }
 
 type UpdateProviderInput = ProviderInput
@@ -172,18 +178,18 @@ type ListProvidersOutput struct {
 
 type Provider struct {
 	Configuration *ProviderConfiguration `json:"Configuration,omitempty"`
-	CreatedAt     string                 `json:"CreatedAt"`
-	ID            int64                  `json:"ID"`
-	LastSynced    string                 `json:"LastSynced"`
-	Name          string                 `json:"Name"`
-	Status        string                 `json:"Status"`
-	Type          string                 `json:"Type"`
-	UpdatedAt     string                 `json:"UpdatedAt"`
+	CreatedAt     string                 `json:"CreatedAt,omitempty"`
+	ID            int64                  `json:"ID,omitempty"`
+	LastSynced    string                 `json:"LastSynced,omitempty"`
+	Name          string                 `json:"Name,omitempty"`
+	Status        string                 `json:"Status,omitempty"`
+	Type          string                 `json:"Type,omitempty"`
+	UpdatedAt     string                 `json:"UpdatedAt,omitempty"`
 }
 
 type ProviderConfiguration struct {
 	ID       *int64 `json:"ID,omitempty"`
-	MetaData string `json:"MetaData"`
+	MetaData string `json:"MetaData,omitempty"`
 }
 
 type ProviderOutput struct {
