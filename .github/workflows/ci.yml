@@ -14,11 +14,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     name: Go ${{ matrix.go-version }}
-    env:
-      GOPATH: ${{ github.workspace }}
-    defaults:
-      run:
-        working-directory: ${{ env.GOPATH }}/src/github.com/${{ github.repository }} # yamllint disable-line rule:line-length
     strategy:
       matrix:
         go-version:
