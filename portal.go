@@ -73,10 +73,23 @@ func WithConnectTimeout(value time.Duration) Option {
 	}
 }
 
+func WithUserAgent(ua string) Option {
+	return func(o *Client) {
+		o.userAgent = ua
+	}
+}
+
+func WithDebug(debug bool) Option {
+	return func(o *Client) {
+		o.debug = debug
+	}
+}
+
 type Client struct {
 	httpClient      HTTPClient
 	connectTimeout  time.Duration
 	readTimeout     time.Duration
+	userAgent       string
 	token           string
 	debug           bool
 	insecure        bool
@@ -159,7 +172,7 @@ func (c *Client) SetPages(pages PagesService) {
 	c.pages = pages
 }
 
-func (c *Client) apply(opts ...Option) {
+func (c *Client) Apply(opts ...Option) {
 	for _, opt := range opts {
 		opt(c)
 	}
@@ -170,6 +183,10 @@ func New(opts ...Option) (*Client, error) {
 }
 
 func (c Client) validate() error {
+	if c.token == "" {
+		return fmt.Errorf("token is required")
+	}
+
 	return nil
 }
 
@@ -187,7 +204,7 @@ func newClient(opts ...Option) (*Client, error) {
 		client.minRetryBackoff = 100 * time.Millisecond
 	}
 
-	client.apply(opts...)
+	client.Apply(opts...)
 
 	if err := client.validate(); err != nil {
 		return nil, err
@@ -302,7 +319,7 @@ func (c Client) doPut(ctx context.Context, path string, body io.Reader, params u
 func (c Client) copy(opts ...Option) Client {
 	newClient := c
 
-	newClient.apply(opts...)
+	newClient.Apply(opts...)
 
 	return newClient
 }
@@ -334,7 +351,7 @@ func (c Client) performRequest(ctx context.Context, req *http.Request, opts ...O
 		attempt  int
 		httpResp *http.Response
 		err      error
-		respC    = make(chan internalResponse, 0)
+		respC    = make(chan internalResponse)
 		errC     = make(chan error)
 	)
 
@@ -412,19 +429,6 @@ type internalResponse struct {
 
 func (a internalResponse) Unmarshal(v interface{}) error {
 	return json.Unmarshal(a.body, &v)
-}
-
-type internalError struct {
-	internalResponse
-}
-
-func (e internalError) Error() string {
-	return fmt.Sprintf(
-		"%v %v %v",
-		e.internalResponse.Response.Request.Method,
-		e.internalResponse.Response.Request.URL,
-		e.internalResponse.Response.StatusCode,
-	)
 }
 
 type Error struct {

@@ -133,7 +133,7 @@ type Catalogue struct {
 	Products         []string `json:"Products,omitempty"`
 	UpdatedAt        string   `json:"UpdatedAt,omitempty"`
 	VisibilityStatus string   `json:"VisibilityStatus,omitempty"`
-	NameWithSlug     string   `json:"NameWithSlug,omitempty,omitempty"`
+	NameWithSlug     string   `json:"NameWithSlug,omitempty"`
 }
 
 type CatalogueOutput struct {
