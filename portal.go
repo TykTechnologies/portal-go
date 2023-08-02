@@ -174,6 +174,10 @@ func (c *Client) SetPages(pages PagesService) {
 
 func (c *Client) Apply(opts ...Option) {
 	for _, opt := range opts {
+		if opt == nil {
+			continue
+		}
+
 		opt(c)
 	}
 }
@@ -222,7 +226,7 @@ func newClient(opts ...Option) (*Client, error) {
 	return client, nil
 }
 
-func (c Client) newRequest(method string, path string, body io.Reader, params url.Values, opts ...Option) (*http.Request, error) {
+func (c Client) NewRequest(method string, path string, body io.Reader, params url.Values, opts ...Option) (*http.Request, error) {
 	newClient := c.copy(opts...)
 
 	newPath, err := url.JoinPath(newClient.baseURL, path)
@@ -239,25 +243,29 @@ func (c Client) newRequest(method string, path string, body io.Reader, params ur
 	req.Header.Add(headerAccept, "application/json")
 	req.Header.Add(headerContentType, "application/json")
 
+	if c.userAgent != "" {
+		req.Header.Add("User-Agent", c.userAgent)
+	}
+
 	req.URL.RawQuery = params.Encode()
 
 	return req, nil
 }
 
 func (c Client) newGetRequest(path string, params url.Values, opts ...Option) (*http.Request, error) {
-	return c.newRequest(http.MethodGet, path, nil, params)
+	return c.NewRequest(http.MethodGet, path, nil, params)
 }
 
 func (c Client) newPostRequest(path string, body io.Reader, params url.Values, opts ...Option) (*http.Request, error) {
-	return c.newRequest(http.MethodPost, path, body, params)
+	return c.NewRequest(http.MethodPost, path, body, params)
 }
 
 func (c Client) newPutRequest(path string, body io.Reader, params url.Values, opts ...Option) (*http.Request, error) {
-	return c.newRequest(http.MethodPut, path, body, params)
+	return c.NewRequest(http.MethodPut, path, body, params)
 }
 
 func (c Client) newDeleteRequest(path string, body io.Reader, params url.Values, opts ...Option) (*http.Request, error) {
-	return c.newRequest(http.MethodDelete, path, body, params)
+	return c.NewRequest(http.MethodDelete, path, body, params)
 }
 
 func (c Client) doGet(ctx context.Context, path string, params url.Values, opts ...Option) (*internalResponse, error) {

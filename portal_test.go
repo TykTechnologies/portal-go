@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type server struct {
@@ -144,4 +145,49 @@ func TestOptions(t *testing.T) {
 			assert.Equal(t, v.want.readTimeout, client.readTimeout)
 		})
 	}
+}
+
+func TestNewRequest(t *testing.T) {
+	tt := map[string]struct {
+		opt    []Option
+		method string
+		path   string
+		want   *http.Request
+		err    bool
+	}{
+		"with base url": {
+			method: "GET",
+			path:   "/path",
+			want: &http.Request{
+				Method: "GET",
+			},
+			opt: []Option{WithBaseURL("http://example.com"), WithToken("random token")},
+		},
+		"with token": {
+			path: "/path",
+			want: &http.Request{
+				Method: "GET",
+			},
+			opt: []Option{WithToken("random token")},
+		},
+	}
+
+	t.Parallel()
+
+	for k, v := range tt {
+		t.Run(k, func(t *testing.T) {
+			client, err := New(v.opt...)
+			require.NoError(t, err)
+
+			resp, err := client.NewRequest(v.method, v.path, nil, nil, nil)
+			require.NoError(t, err)
+
+			assertRequest(t, v.want, resp)
+
+		})
+	}
+}
+
+func assertRequest(t *testing.T, want, got *http.Request) {
+	assert.Equal(t, want.Method, got.Method, "wanted method %v but got %v", want.Method, got.Method)
 }
