@@ -227,9 +227,11 @@ func (o OrgInput) validate() error {
 	return nil
 }
 
-type UpdateOrgInput = OrgInput
-type CreateOrgInput = OrgInput
-type ListOrgsInput struct{}
+type (
+	UpdateOrgInput = OrgInput
+	CreateOrgInput = OrgInput
+	ListOrgsInput  struct{}
+)
 
 type ListOrgsOutput struct {
 	Data []Org
@@ -239,10 +241,12 @@ type OrgOutput struct {
 	Data *Org
 }
 
-type UpdateOrgOutput = OrgOutput
-type GetOrgOutput = OrgOutput
-type CreateOrgOutput = OrgOutput
-type DeleteOrgOutput = OrgOutput
+type (
+	UpdateOrgOutput = OrgOutput
+	GetOrgOutput    = OrgOutput
+	CreateOrgOutput = OrgOutput
+	DeleteOrgOutput = OrgOutput
+)
 
 type Org struct {
 	ID        int64       `json:"ID,omitempty"`
@@ -309,10 +313,12 @@ type ListTeamsOutput struct {
 	Data []Team
 }
 
-type UpdateTeam = TeamOutput
-type GetTeam = TeamOutput
-type CreateTeam = TeamOutput
-type DeleteTeam = TeamOutput
+type (
+	UpdateTeam = TeamOutput
+	GetTeam    = TeamOutput
+	CreateTeam = TeamOutput
+	DeleteTeam = TeamOutput
+)
 
 type TeamInput struct {
 	ID    *int64  `json:"ID,omitempty"`

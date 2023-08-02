@@ -183,7 +183,6 @@ func TestNewRequest(t *testing.T) {
 			require.NoError(t, err)
 
 			assertRequest(t, v.want, resp)
-
 		})
 	}
 }
