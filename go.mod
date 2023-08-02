@@ -1,4 +1,4 @@
-module github.com/edsonmichaque/edp-go
+module github.com/TykTechnologies/portal-go
 
 go 1.20
 
