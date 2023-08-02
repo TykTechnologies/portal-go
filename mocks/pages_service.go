@@ -5,7 +5,7 @@ package mocks
 import (
 	context "context"
 
-	edp "github.com/edsonmichaque/edp-go"
+	portal "github.com/TykTechnologies/portal-go"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -15,7 +15,7 @@ type PagesService struct {
 }
 
 // CreatePage provides a mock function with given fields: ctx, input, opts
-func (_m *PagesService) CreatePage(ctx context.Context, input *edp.PageInput, opts ...edp.Option) (*edp.PageOutput, error) {
+func (_m *PagesService) CreatePage(ctx context.Context, input *portal.PageInput, opts ...portal.Option) (*portal.PageOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -25,20 +25,20 @@ func (_m *PagesService) CreatePage(ctx context.Context, input *edp.PageInput, op
 	_ca = append(_ca, _va...)
 	ret := _m.Called(_ca...)
 
-	var r0 *edp.PageOutput
+	var r0 *portal.PageOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *edp.PageInput, ...edp.Option) (*edp.PageOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.PageInput, ...portal.Option) (*portal.PageOutput, error)); ok {
 		return rf(ctx, input, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *edp.PageInput, ...edp.Option) *edp.PageOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.PageInput, ...portal.Option) *portal.PageOutput); ok {
 		r0 = rf(ctx, input, opts...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*edp.PageOutput)
+			r0 = ret.Get(0).(*portal.PageOutput)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *edp.PageInput, ...edp.Option) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *portal.PageInput, ...portal.Option) error); ok {
 		r1 = rf(ctx, input, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -48,7 +48,7 @@ func (_m *PagesService) CreatePage(ctx context.Context, input *edp.PageInput, op
 }
 
 // GetPage provides a mock function with given fields: ctx, id, opts
-func (_m *PagesService) GetPage(ctx context.Context, id int64, opts ...edp.Option) (*edp.PageOutput, error) {
+func (_m *PagesService) GetPage(ctx context.Context, id int64, opts ...portal.Option) (*portal.PageOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -58,20 +58,20 @@ func (_m *PagesService) GetPage(ctx context.Context, id int64, opts ...edp.Optio
 	_ca = append(_ca, _va...)
 	ret := _m.Called(_ca...)
 
-	var r0 *edp.PageOutput
+	var r0 *portal.PageOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64, ...edp.Option) (*edp.PageOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, ...portal.Option) (*portal.PageOutput, error)); ok {
 		return rf(ctx, id, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64, ...edp.Option) *edp.PageOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, ...portal.Option) *portal.PageOutput); ok {
 		r0 = rf(ctx, id, opts...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*edp.PageOutput)
+			r0 = ret.Get(0).(*portal.PageOutput)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64, ...edp.Option) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64, ...portal.Option) error); ok {
 		r1 = rf(ctx, id, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -81,7 +81,7 @@ func (_m *PagesService) GetPage(ctx context.Context, id int64, opts ...edp.Optio
 }
 
 // ListPages provides a mock function with given fields: ctx, options, opts
-func (_m *PagesService) ListPages(ctx context.Context, options *edp.ListPagesInput, opts ...edp.Option) (*edp.ListPagesOutput, error) {
+func (_m *PagesService) ListPages(ctx context.Context, options *portal.ListPagesInput, opts ...portal.Option) (*portal.ListPagesOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -91,20 +91,20 @@ func (_m *PagesService) ListPages(ctx context.Context, options *edp.ListPagesInp
 	_ca = append(_ca, _va...)
 	ret := _m.Called(_ca...)
 
-	var r0 *edp.ListPagesOutput
+	var r0 *portal.ListPagesOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *edp.ListPagesInput, ...edp.Option) (*edp.ListPagesOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListPagesInput, ...portal.Option) (*portal.ListPagesOutput, error)); ok {
 		return rf(ctx, options, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *edp.ListPagesInput, ...edp.Option) *edp.ListPagesOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *portal.ListPagesInput, ...portal.Option) *portal.ListPagesOutput); ok {
 		r0 = rf(ctx, options, opts...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*edp.ListPagesOutput)
+			r0 = ret.Get(0).(*portal.ListPagesOutput)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *edp.ListPagesInput, ...edp.Option) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *portal.ListPagesInput, ...portal.Option) error); ok {
 		r1 = rf(ctx, options, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -114,7 +114,7 @@ func (_m *PagesService) ListPages(ctx context.Context, options *edp.ListPagesInp
 }
 
 // UpdatePage provides a mock function with given fields: ctx, id, input, opts
-func (_m *PagesService) UpdatePage(ctx context.Context, id int64, input *edp.PageInput, opts ...edp.Option) (*edp.PageOutput, error) {
+func (_m *PagesService) UpdatePage(ctx context.Context, id int64, input *portal.PageInput, opts ...portal.Option) (*portal.PageOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -124,20 +124,20 @@ func (_m *PagesService) UpdatePage(ctx context.Context, id int64, input *edp.Pag
 	_ca = append(_ca, _va...)
 	ret := _m.Called(_ca...)
 
-	var r0 *edp.PageOutput
+	var r0 *portal.PageOutput
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64, *edp.PageInput, ...edp.Option) (*edp.PageOutput, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.PageInput, ...portal.Option) (*portal.PageOutput, error)); ok {
 		return rf(ctx, id, input, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64, *edp.PageInput, ...edp.Option) *edp.PageOutput); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.PageInput, ...portal.Option) *portal.PageOutput); ok {
 		r0 = rf(ctx, id, input, opts...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*edp.PageOutput)
+			r0 = ret.Get(0).(*portal.PageOutput)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64, *edp.PageInput, ...edp.Option) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int64, *portal.PageInput, ...portal.Option) error); ok {
 		r1 = rf(ctx, id, input, opts...)
 	} else {
 		r1 = ret.Error(1)

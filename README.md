@@ -2,12 +2,12 @@
 
 A Go client for the Tyk Enterprise Dev Portal  API
 
-[![Build Status](https://github.com/edsonmichaque/edp-go/actions/workflows/ci.yml/badge.svg)](https://github.com/edsonmichaque/edp-go/actions/workflows/ci.yml)
+[![Build Status](https://github.com/TykTechnologies/portal-go/actions/workflows/ci.yml/badge.svg)](https://github.com/TykTechnologies/portal-go/actions/workflows/ci.yml)
 
 ## Installation
 
 ```shell
-go get github.com/edsonmichaque/edp-go
+go get github.com/TykTechnologies/portal-go
 ```
 
 ## Usage
@@ -23,7 +23,7 @@ import (
     "os"
     "strconv"
 
-    "github.com/edsonmichaque/edp-go"
+    "github.com/TykTechnologies/portal-go"
 )
 
 func main() {

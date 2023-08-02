@@ -1,4 +1,7 @@
-package edp
+// Copyright 2023 Tyk Technologies
+// SPDX-License-Identifier: MPL-2.0
+
+package portal
 
 import (
 	"bytes"
