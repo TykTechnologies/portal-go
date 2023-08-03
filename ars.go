@@ -17,7 +17,7 @@ const (
 	pathAccessRequestReject  = "/portal-api/access_requests/%d/reject"
 )
 
-//go:generate mockery --name ARsService --filename ars_service.go
+//go:generate mockery --name ARsService --filename ars.go
 type ARsService interface {
 	ListARs(ctx context.Context, opts ...Option) (*ListARsOutput, error)
 	GetAR(ctx context.Context, id int64, opts ...Option) (*AROutput, error)

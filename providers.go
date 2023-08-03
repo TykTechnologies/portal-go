@@ -16,7 +16,7 @@ const (
 	pathProviderSync = "/portal-api/providers/%v/synchronize"
 )
 
-//go:generate mockery --name ProvidersService --filename providers_service.go
+//go:generate mockery --name ProvidersService --filename providers.go
 type ProvidersService interface {
 	CreateProvider(ctx context.Context, input *CreateProviderInput, opts ...Option) (*CreateProviderOutput, error)
 	GetProvider(ctx context.Context, id int64, opts ...Option) (*GetProviderOutput, error)
