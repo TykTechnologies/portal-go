@@ -16,20 +16,20 @@ const (
 	pathPlan  = "/portal-api/plans/%d"
 )
 
-//go:generate mockery --name PlansService --filename plans.go
-type PlansService interface {
+//go:generate mockery --name Plans --filename plans.go
+type Plans interface {
 	CreatePlan(ctx context.Context, input *CreatePlanInput, opts ...Option) (*CreatePlanOutput, error)
 	GetPlan(ctx context.Context, id int64, opts ...Option) (*GetPlanOutput, error)
 	ListPlans(ctx context.Context, options *ListPlansInput, opts ...Option) (*ListPlansOutput, error)
 	UpdatePlan(ctx context.Context, id int64, input *UpdatePlanInput, opts ...Option) (*UpdatePlanOutput, error)
 }
 
-type plansService struct {
+type plans struct {
 	client *Client
 }
 
 // CreatePlan ...
-func (p plansService) CreatePlan(ctx context.Context, input *CreatePlanInput, opts ...Option) (*CreatePlanOutput, error) {
+func (p plans) CreatePlan(ctx context.Context, input *CreatePlanInput, opts ...Option) (*CreatePlanOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (p plansService) CreatePlan(ctx context.Context, input *CreatePlanInput, op
 }
 
 // GetPlan ...
-func (p plansService) GetPlan(ctx context.Context, id int64, opts ...Option) (*GetPlanOutput, error) {
+func (p plans) GetPlan(ctx context.Context, id int64, opts ...Option) (*GetPlanOutput, error) {
 	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathPlan, id), nil)
 	if err != nil {
 		return nil, err
@@ -69,7 +69,7 @@ func (p plansService) GetPlan(ctx context.Context, id int64, opts ...Option) (*G
 }
 
 // ListPlans ...
-func (p plansService) ListPlans(ctx context.Context, options *ListPlansInput, opts ...Option) (*ListPlansOutput, error) {
+func (p plans) ListPlans(ctx context.Context, options *ListPlansInput, opts ...Option) (*ListPlansOutput, error) {
 	resp, err := p.client.doGet(ctx, pathPlans, nil)
 	if err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func (p plansService) ListPlans(ctx context.Context, options *ListPlansInput, op
 }
 
 // UpdatePlan ...
-func (p plansService) UpdatePlan(ctx context.Context, id int64, input *UpdatePlanInput, opts ...Option) (*UpdatePlanOutput, error) {
+func (p plans) UpdatePlan(ctx context.Context, id int64, input *UpdatePlanInput, opts ...Option) (*UpdatePlanOutput, error) {
 	// TODO: review this
 	if input.Configuration != nil && input.Configuration.ID == nil {
 		return nil, errors.New("configuration id must not be nil")

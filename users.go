@@ -16,8 +16,8 @@ const (
 	pathUser  = "/portal-api/users/%d"
 )
 
-//go:generate mockery --name UsersService --filename users.go
-type UsersService interface {
+//go:generate mockery --name Users --filename users.go
+type Users interface {
 	CreateUser(ctx context.Context, input *CreateUserInput, opts ...Option) (*CreateUserOutput, error)
 	GetUser(ctx context.Context, id int64, opts ...Option) (*GetUserOutput, error)
 	ListUsers(ctx context.Context, options *ListUsersInput, opts ...Option) (*ListUsersOutput, error)
@@ -25,11 +25,11 @@ type UsersService interface {
 	DeleteUser(ctx context.Context, id int64, opts ...Option) (*DeleteUserOutput, error)
 }
 
-type usersService struct {
+type users struct {
 	client *Client
 }
 
-func (p usersService) CreateUser(ctx context.Context, input *CreateUserInput, opts ...Option) (*CreateUserOutput, error) {
+func (p users) CreateUser(ctx context.Context, input *CreateUserInput, opts ...Option) (*CreateUserOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (p usersService) CreateUser(ctx context.Context, input *CreateUserInput, op
 	}, nil
 }
 
-func (p usersService) GetUser(ctx context.Context, id int64, opts ...Option) (*GetUserOutput, error) {
+func (p users) GetUser(ctx context.Context, id int64, opts ...Option) (*GetUserOutput, error) {
 	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathUser, id), nil)
 	if err != nil {
 		return nil, err
@@ -73,7 +73,7 @@ func (p usersService) GetUser(ctx context.Context, id int64, opts ...Option) (*G
 	}, nil
 }
 
-func (p usersService) ListUsers(ctx context.Context, options *ListUsersInput, opts ...Option) (*ListUsersOutput, error) {
+func (p users) ListUsers(ctx context.Context, options *ListUsersInput, opts ...Option) (*ListUsersOutput, error) {
 	resp, err := p.client.doGet(ctx, pathUsers, nil)
 	if err != nil {
 		return nil, err
@@ -90,7 +90,7 @@ func (p usersService) ListUsers(ctx context.Context, options *ListUsersInput, op
 	}, nil
 }
 
-func (p usersService) UpdateUser(ctx context.Context, id int64, input *UpdateUserInput, opts ...Option) (*UpdateUserOutput, error) {
+func (p users) UpdateUser(ctx context.Context, id int64, input *UpdateUserInput, opts ...Option) (*UpdateUserOutput, error) {
 	input.ID = nil
 
 	payload, err := json.Marshal(input)
@@ -114,7 +114,7 @@ func (p usersService) UpdateUser(ctx context.Context, id int64, input *UpdateUse
 	}, nil
 }
 
-func (p usersService) DeleteUser(ctx context.Context, id int64, opts ...Option) (*DeleteUserOutput, error) {
+func (p users) DeleteUser(ctx context.Context, id int64, opts ...Option) (*DeleteUserOutput, error) {
 	_, err := p.client.doDelete(ctx, fmt.Sprintf(pathUser, id), nil, nil)
 	if err != nil {
 		return nil, err

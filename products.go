@@ -15,19 +15,19 @@ const (
 	pathProduct  = "/portal-api/products/%d"
 )
 
-//go:generate mockery --name ProductsService --filename products.go
-type ProductsService interface {
+//go:generate mockery --name Products --filename products.go
+type Products interface {
 	CreateProduct(ctx context.Context, input *CreateProductInput, opts ...Option) (*CreateProductOutput, error)
 	GetProduct(ctx context.Context, id int64, opts ...Option) (*GetProductOutput, error)
 	ListProducts(ctx context.Context, options *ListProductsInput, opts ...Option) (*ListProductsOutput, error)
 	UpdateProduct(ctx context.Context, id int64, input *UpdateProductInput, opts ...Option) (*UpdateProductOutput, error)
 }
 
-type productsService struct {
+type products struct {
 	client *Client
 }
 
-func (p productsService) CreateProduct(ctx context.Context, input *CreateProductInput, opts ...Option) (*CreateProductOutput, error) {
+func (p products) CreateProduct(ctx context.Context, input *CreateProductInput, opts ...Option) (*CreateProductOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -49,7 +49,7 @@ func (p productsService) CreateProduct(ctx context.Context, input *CreateProduct
 	}, nil
 }
 
-func (p productsService) GetProduct(ctx context.Context, id int64, opts ...Option) (*GetProductOutput, error) {
+func (p products) GetProduct(ctx context.Context, id int64, opts ...Option) (*GetProductOutput, error) {
 	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathProduct, id), nil)
 	if err != nil {
 		return nil, err
@@ -65,7 +65,7 @@ func (p productsService) GetProduct(ctx context.Context, id int64, opts ...Optio
 	}, nil
 }
 
-func (p productsService) ListProducts(ctx context.Context, options *ListProductsInput, opts ...Option) (*ListProductsOutput, error) {
+func (p products) ListProducts(ctx context.Context, options *ListProductsInput, opts ...Option) (*ListProductsOutput, error) {
 	resp, err := p.client.doGet(ctx, pathProducts, nil)
 	if err != nil {
 		return nil, err
@@ -82,7 +82,7 @@ func (p productsService) ListProducts(ctx context.Context, options *ListProducts
 	}, nil
 }
 
-func (p productsService) UpdateProduct(ctx context.Context, id int64, input *UpdateProductInput, opts ...Option) (*UpdateProductOutput, error) {
+func (p products) UpdateProduct(ctx context.Context, id int64, input *UpdateProductInput, opts ...Option) (*UpdateProductOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err

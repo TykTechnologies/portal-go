@@ -15,19 +15,19 @@ const (
 	pathPage  = "/portal-api/pages/%d"
 )
 
-//go:generate mockery --name PagesService --filename pages.go
-type PagesService interface {
+//go:generate mockery --name Pages --filename pages.go
+type Pages interface {
 	CreatePage(ctx context.Context, input *CreatePageInput, opts ...Option) (*CreatePageOutput, error)
 	GetPage(ctx context.Context, id int64, opts ...Option) (*GetPageOutput, error)
 	ListPages(ctx context.Context, options *ListPagesInput, opts ...Option) (*ListPagesOutput, error)
 	UpdatePage(ctx context.Context, id int64, input *UpdatePageInput, opts ...Option) (*UpdatePageOutput, error)
 }
 
-type pagesService struct {
+type pages struct {
 	client *Client
 }
 
-func (p pagesService) CreatePage(ctx context.Context, input *CreatePageInput, opts ...Option) (*CreatePageOutput, error) {
+func (p pages) CreatePage(ctx context.Context, input *CreatePageInput, opts ...Option) (*CreatePageOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -49,7 +49,7 @@ func (p pagesService) CreatePage(ctx context.Context, input *CreatePageInput, op
 	}, nil
 }
 
-func (p pagesService) GetPage(ctx context.Context, id int64, opts ...Option) (*GetPageOutput, error) {
+func (p pages) GetPage(ctx context.Context, id int64, opts ...Option) (*GetPageOutput, error) {
 	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathPage, id), nil)
 	if err != nil {
 		return nil, err
@@ -65,7 +65,7 @@ func (p pagesService) GetPage(ctx context.Context, id int64, opts ...Option) (*G
 	}, nil
 }
 
-func (p pagesService) ListPages(ctx context.Context, options *ListPagesInput, opts ...Option) (*ListPagesOutput, error) {
+func (p pages) ListPages(ctx context.Context, options *ListPagesInput, opts ...Option) (*ListPagesOutput, error) {
 	resp, err := p.client.doGet(ctx, pathPages, nil)
 	if err != nil {
 		return nil, err
@@ -82,7 +82,7 @@ func (p pagesService) ListPages(ctx context.Context, options *ListPagesInput, op
 	}, nil
 }
 
-func (p pagesService) UpdatePage(ctx context.Context, id int64, input *UpdatePageInput, opts ...Option) (*UpdatePageOutput, error) {
+func (p pages) UpdatePage(ctx context.Context, id int64, input *UpdatePageInput, opts ...Option) (*UpdatePageOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err

@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestUserService_Get(t *testing.T) {
+func TestUser_Get(t *testing.T) {
 	srv := NewServer(t)
 	defer srv.Close()
 

@@ -18,8 +18,8 @@ const (
 	pathOrgTeam  = "/portal-api/organisations/%d/teams/%d"
 )
 
-//go:generate mockery --name OrgsService --filename orgs.go
-type OrgsService interface {
+//go:generate mockery --name Orgs --filename orgs.go
+type Orgs interface {
 	CreateOrg(ctx context.Context, input *CreateOrgInput, opts ...Option) (*CreateOrgOutput, error)
 	GetOrg(ctx context.Context, id int64, opts ...Option) (*GetOrgOutput, error)
 	ListOrgs(ctx context.Context, options *ListOrgsInput, opts ...Option) (*ListOrgsOutput, error)
@@ -32,11 +32,11 @@ type OrgsService interface {
 	DeleteTeam(ctx context.Context, orgId, teamId int64, opts ...Option) (*TeamOutput, error)
 }
 
-type orgsService struct {
+type orgs struct {
 	client *Client
 }
 
-func (p orgsService) CreateOrg(ctx context.Context, input *CreateOrgInput, opts ...Option) (*CreateOrgOutput, error) {
+func (p orgs) CreateOrg(ctx context.Context, input *CreateOrgInput, opts ...Option) (*CreateOrgOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func (p orgsService) CreateOrg(ctx context.Context, input *CreateOrgInput, opts 
 	}, nil
 }
 
-func (p orgsService) GetOrg(ctx context.Context, id int64, opts ...Option) (*GetOrgOutput, error) {
+func (p orgs) GetOrg(ctx context.Context, id int64, opts ...Option) (*GetOrgOutput, error) {
 	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathOrg, id), nil)
 	if err != nil {
 		return nil, err
@@ -78,7 +78,7 @@ func (p orgsService) GetOrg(ctx context.Context, id int64, opts ...Option) (*Get
 	}, nil
 }
 
-func (p orgsService) ListOrgs(ctx context.Context, options *ListOrgsInput, opts ...Option) (*ListOrgsOutput, error) {
+func (p orgs) ListOrgs(ctx context.Context, options *ListOrgsInput, opts ...Option) (*ListOrgsOutput, error) {
 	resp, err := p.client.doGet(ctx, pathOrgs, nil)
 	if err != nil {
 		return nil, err
@@ -95,7 +95,7 @@ func (p orgsService) ListOrgs(ctx context.Context, options *ListOrgsInput, opts 
 	}, nil
 }
 
-func (p orgsService) UpdateOrg(ctx context.Context, id int64, input *UpdateOrgInput, opts ...Option) (*UpdateOrgOutput, error) {
+func (p orgs) UpdateOrg(ctx context.Context, id int64, input *UpdateOrgInput, opts ...Option) (*UpdateOrgOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -117,7 +117,7 @@ func (p orgsService) UpdateOrg(ctx context.Context, id int64, input *UpdateOrgIn
 	}, nil
 }
 
-func (p orgsService) DeleteOrg(ctx context.Context, id int64, opts ...Option) (*DeleteOrgOutput, error) {
+func (p orgs) DeleteOrg(ctx context.Context, id int64, opts ...Option) (*DeleteOrgOutput, error) {
 	_, err := p.client.doDelete(ctx, fmt.Sprintf(pathOrg, id), nil, nil)
 	if err != nil {
 		return nil, err
@@ -126,7 +126,7 @@ func (p orgsService) DeleteOrg(ctx context.Context, id int64, opts ...Option) (*
 	return &GetOrgOutput{}, nil
 }
 
-func (p orgsService) CreateTeam(ctx context.Context, orgId int64, input *TeamInput, opts ...Option) (*TeamOutput, error) {
+func (p orgs) CreateTeam(ctx context.Context, orgId int64, input *TeamInput, opts ...Option) (*TeamOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -152,7 +152,7 @@ func (p orgsService) CreateTeam(ctx context.Context, orgId int64, input *TeamInp
 	}, nil
 }
 
-func (p orgsService) GetTeam(ctx context.Context, orgId, teamId int64, opts ...Option) (*TeamOutput, error) {
+func (p orgs) GetTeam(ctx context.Context, orgId, teamId int64, opts ...Option) (*TeamOutput, error) {
 	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathOrgTeam, orgId, teamId), nil)
 	if err != nil {
 		return nil, err
@@ -168,7 +168,7 @@ func (p orgsService) GetTeam(ctx context.Context, orgId, teamId int64, opts ...O
 	}, nil
 }
 
-func (p orgsService) ListTeams(ctx context.Context, orgId int64, options *ListTeamsInput, opts ...Option) (*ListTeamsOutput, error) {
+func (p orgs) ListTeams(ctx context.Context, orgId int64, options *ListTeamsInput, opts ...Option) (*ListTeamsOutput, error) {
 	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathOrgTeams, orgId), nil)
 	if err != nil {
 		return nil, err
@@ -185,7 +185,7 @@ func (p orgsService) ListTeams(ctx context.Context, orgId int64, options *ListTe
 	}, nil
 }
 
-func (p orgsService) UpdateTeam(ctx context.Context, orgId, teamId int64, input *TeamInput, opts ...Option) (*TeamOutput, error) {
+func (p orgs) UpdateTeam(ctx context.Context, orgId, teamId int64, input *TeamInput, opts ...Option) (*TeamOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -207,7 +207,7 @@ func (p orgsService) UpdateTeam(ctx context.Context, orgId, teamId int64, input 
 	}, nil
 }
 
-func (p orgsService) DeleteTeam(ctx context.Context, orgId, teamId int64, opts ...Option) (*TeamOutput, error) {
+func (p orgs) DeleteTeam(ctx context.Context, orgId, teamId int64, opts ...Option) (*TeamOutput, error) {
 	_, err := p.client.doDelete(ctx, fmt.Sprintf(pathOrgTeam, orgId, teamId), nil, nil)
 	if err != nil {
 		return nil, err
