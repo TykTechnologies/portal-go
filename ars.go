@@ -71,7 +71,7 @@ type StatusOutput struct {
 }
 
 // UpdateAccessRequest ...
-func (p arsService) ApproveAR(ctx context.Context, id int64, opts ...Option) (*AROutput, error) {
+func (p arsService) ApproveAR(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error) {
 	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathAccessRequestApprove, id), nil, nil, opts...)
 	if err != nil {
 		return nil, err

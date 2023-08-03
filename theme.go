@@ -9,11 +9,6 @@ type Theme struct {
 	Version string `json:"Version,omitempty"`
 }
 
-type Status struct {
-	Status  string `json:"status,omitempty"`
-	Message string `json:"message,omitempty"`
-}
-
 type Err struct {
 	Status string   `json:"status,omitempty"`
 	Errors []string `json:"errors,omitempty"`
