@@ -13,7 +13,7 @@ const (
 	pathAppAR  = "/portal-api/apps/%v/access-requests/%d"
 )
 
-//go:generate mockery --name AppsService --filename apps_service.go
+//go:generate mockery --name AppsService --filename apps.go
 type AppsService interface {
 	ListARs(ctx context.Context, id int64, opts ...Option) (*ListARsOutput, error)
 }

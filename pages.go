@@ -15,7 +15,7 @@ const (
 	pathPage  = "/portal-api/pages/%d"
 )
 
-//go:generate mockery --name PagesService --filename pages_service.go
+//go:generate mockery --name PagesService --filename pages.go
 type PagesService interface {
 	CreatePage(ctx context.Context, input *CreatePageInput, opts ...Option) (*CreatePageOutput, error)
 	GetPage(ctx context.Context, id int64, opts ...Option) (*GetPageOutput, error)
