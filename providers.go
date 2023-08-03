@@ -16,8 +16,8 @@ const (
 	pathProviderSync = "/portal-api/providers/%v/synchronize"
 )
 
-//go:generate mockery --name ProvidersService --filename providers.go
-type ProvidersService interface {
+//go:generate mockery --name Providers --filename providers.go
+type Providers interface {
 	CreateProvider(ctx context.Context, input *CreateProviderInput, opts ...Option) (*CreateProviderOutput, error)
 	GetProvider(ctx context.Context, id int64, opts ...Option) (*GetProviderOutput, error)
 	DeleteProvider(ctx context.Context, id int64, opts ...Option) (*DeleteProviderOutput, error)
@@ -26,11 +26,11 @@ type ProvidersService interface {
 	SyncProvider(ctx context.Context, id int64, opts ...Option) (*SyncProviderOutput, error)
 }
 
-type providersService struct {
+type providers struct {
 	client *Client
 }
 
-func (p providersService) CreateProvider(ctx context.Context, input *CreateProviderInput, opts ...Option) (*CreateProviderOutput, error) {
+func (p providers) CreateProvider(ctx context.Context, input *CreateProviderInput, opts ...Option) (*CreateProviderOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (p providersService) CreateProvider(ctx context.Context, input *CreateProvi
 	}, nil
 }
 
-func (p providersService) GetProvider(ctx context.Context, id int64, opts ...Option) (*GetProviderOutput, error) {
+func (p providers) GetProvider(ctx context.Context, id int64, opts ...Option) (*GetProviderOutput, error) {
 	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathProvider, id), nil)
 	if err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ func (p providersService) GetProvider(ctx context.Context, id int64, opts ...Opt
 	}, nil
 }
 
-func (p providersService) DeleteProvider(ctx context.Context, id int64, opts ...Option) (*DeleteProviderOutput, error) {
+func (p providers) DeleteProvider(ctx context.Context, id int64, opts ...Option) (*DeleteProviderOutput, error) {
 	_, err := p.client.doDelete(ctx, fmt.Sprintf(pathProvider, id), nil, nil)
 	if err != nil {
 		return nil, err
@@ -77,7 +77,7 @@ func (p providersService) DeleteProvider(ctx context.Context, id int64, opts ...
 	return &GetProviderOutput{}, nil
 }
 
-func (p providersService) ListProviders(ctx context.Context, options *ListProvidersInput, opts ...Option) (*ListProvidersOutput, error) {
+func (p providers) ListProviders(ctx context.Context, options *ListProvidersInput, opts ...Option) (*ListProvidersOutput, error) {
 	resp, err := p.client.doGet(ctx, pathProviders, nil)
 	if err != nil {
 		return nil, err
@@ -94,7 +94,7 @@ func (p providersService) ListProviders(ctx context.Context, options *ListProvid
 	}, nil
 }
 
-func (p providersService) UpdateProvider(ctx context.Context, id int64, input *UpdateProviderInput, opts ...Option) (*UpdateProviderOutput, error) {
+func (p providers) UpdateProvider(ctx context.Context, id int64, input *UpdateProviderInput, opts ...Option) (*UpdateProviderOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -120,7 +120,7 @@ func (p providersService) UpdateProvider(ctx context.Context, id int64, input *U
 	}, nil
 }
 
-func (p providersService) SyncProvider(ctx context.Context, id int64, opts ...Option) (*SyncProviderOutput, error) {
+func (p providers) SyncProvider(ctx context.Context, id int64, opts ...Option) (*SyncProviderOutput, error) {
 	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathProviderSync, id), nil, nil)
 	if err != nil {
 		return nil, err
@@ -137,7 +137,7 @@ func (p providersService) SyncProvider(ctx context.Context, id int64, opts ...Op
 	}, nil
 }
 
-func (p providersService) SyncProviders(ctx context.Context, opts ...Option) (*SyncProviderOutput, error) {
+func (p providers) SyncProviders(ctx context.Context, opts ...Option) (*SyncProviderOutput, error) {
 	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathProviderSync, "all"), nil, nil)
 	if err != nil {
 		return nil, err

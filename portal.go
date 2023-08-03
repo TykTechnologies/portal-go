@@ -101,87 +101,87 @@ type Client struct {
 	minRetryBackoff time.Duration
 	skipValidation  bool
 
-	pages      PagesService
-	providers  ProvidersService
-	plans      PlansService
-	users      UsersService
-	orgs       OrgsService
-	products   ProductsService
-	catalogues CataloguesService
-	ars        ARsService
-	apps       AppsService
+	pages      Pages
+	providers  Providers
+	plans      Plans
+	users      Users
+	orgs       Orgs
+	products   Products
+	catalogues Catalogues
+	ars        ARs
+	apps       Apps
 }
 
-func (c Client) Apps() AppsService {
+func (c Client) Apps() Apps {
 	return c.apps
 }
 
-func (c *Client) SetApps(app AppsService) {
+func (c *Client) SetApps(app Apps) {
 	c.apps = app
 }
 
 
-func (c Client) ARs() ARsService {
+func (c Client) ARs() ARs {
 	return c.ars
 }
 
-func (c *Client) SetARs(ar ARsService) {
+func (c *Client) SetARs(ar ARs) {
 	c.ars = ar
 }
 
-func (c Client) Catalogues() CataloguesService {
+func (c Client) Catalogues() Catalogues {
 	return c.catalogues
 }
 
-func (c *Client) SetCatalogues(catalogues CataloguesService) {
+func (c *Client) SetCatalogues(catalogues Catalogues) {
 	c.catalogues = catalogues
 }
 
-func (c Client) Products() ProductsService {
+func (c Client) Products() Products {
 	return c.products
 }
 
-func (c *Client) SetProducts(products ProductsService) {
+func (c *Client) SetProducts(products Products) {
 	c.products = products
 }
 
-func (c Client) Orgs() OrgsService {
+func (c Client) Orgs() Orgs {
 	return c.orgs
 }
 
-func (c *Client) SetOrgs(orgs OrgsService) {
+func (c *Client) SetOrgs(orgs Orgs) {
 	c.orgs = orgs
 }
 
-func (c Client) Users() UsersService {
+func (c Client) Users() Users {
 	return c.users
 }
 
-func (c *Client) SetUsers(users UsersService) {
+func (c *Client) SetUsers(users Users) {
 	c.users = users
 }
 
-func (c Client) Providers() ProvidersService {
+func (c Client) Providers() Providers {
 	return c.providers
 }
 
-func (c *Client) SetProviders(providers ProvidersService) {
+func (c *Client) SetProviders(providers Providers) {
 	c.providers = providers
 }
 
-func (c Client) Plans() PlansService {
+func (c Client) Plans() Plans {
 	return c.plans
 }
 
-func (c *Client) SetPlans(plans PlansService) {
+func (c *Client) SetPlans(plans Plans) {
 	c.plans = plans
 }
 
-func (c Client) Pages() PagesService {
+func (c Client) Pages() Pages {
 	return c.pages
 }
 
-func (c *Client) SetPages(pages PagesService) {
+func (c *Client) SetPages(pages Pages) {
 	c.pages = pages
 }
 
@@ -227,15 +227,15 @@ func newClient(opts ...Option) (*Client, error) {
 		return nil, err
 	}
 
-	client.providers = &providersService{client: client}
-	client.plans = &plansService{client: client}
-	client.users = &usersService{client: client}
-	client.orgs = &orgsService{client: client}
-	client.products = &productsService{client: client}
-	client.catalogues = &cataloguesService{client: client}
-	client.ars = &arsService{client: client}
-	client.pages = &pagesService{client: client}
-	client.apps = &appsService{client: client}
+	client.providers = &providers{client: client}
+	client.plans = &plans{client: client}
+	client.users = &users{client: client}
+	client.orgs = &orgs{client: client}
+	client.products = &products{client: client}
+	client.catalogues = &catalogues{client: client}
+	client.ars = &ars{client: client}
+	client.pages = &pages{client: client}
+	client.apps = &apps{client: client}
 
 	return client, nil
 }

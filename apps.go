@@ -13,16 +13,16 @@ const (
 	pathAppAR  = "/portal-api/apps/%v/access-requests/%d"
 )
 
-//go:generate mockery --name AppsService --filename apps.go
-type AppsService interface {
+//go:generate mockery --name Apps --filename apps.go
+type Apps interface {
 	ListARs(ctx context.Context, id int64, opts ...Option) (*ListARsOutput, error)
 }
 
-type appsService struct {
+type apps struct {
 	client *Client
 }
 
-func (p appsService) ListARs(ctx context.Context, id int64, opts ...Option) (*ListARsOutput, error) {
+func (p apps) ListARs(ctx context.Context, id int64, opts ...Option) (*ListARsOutput, error) {
 	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathAppARs, id), nil, opts...)
 	if err != nil {
 		return nil, err

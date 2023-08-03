@@ -17,8 +17,8 @@ const (
 	pathAccessRequestReject  = "/portal-api/access_requests/%d/reject"
 )
 
-//go:generate mockery --name ARsService --filename ars.go
-type ARsService interface {
+//go:generate mockery --name ARs --filename ars.go
+type ARs interface {
 	ListARs(ctx context.Context, opts ...Option) (*ListARsOutput, error)
 	GetAR(ctx context.Context, id int64, opts ...Option) (*AROutput, error)
 	ApproveAR(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error)
@@ -26,12 +26,12 @@ type ARsService interface {
 	DeleteAR(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error)
 }
 
-type arsService struct {
+type ars struct {
 	client *Client
 }
 
 // GetAccessRequest ...
-func (p arsService) GetAR(ctx context.Context, id int64, opts ...Option) (*AROutput, error) {
+func (p ars) GetAR(ctx context.Context, id int64, opts ...Option) (*AROutput, error) {
 	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathAccessRequest, id), nil, opts...)
 	if err != nil {
 		return nil, err
@@ -48,7 +48,7 @@ func (p arsService) GetAR(ctx context.Context, id int64, opts ...Option) (*AROut
 }
 
 // ListAccessRequests ...
-func (p arsService) ListARs(ctx context.Context, opts ...Option) (*ListARsOutput, error) {
+func (p ars) ListARs(ctx context.Context, opts ...Option) (*ListARsOutput, error) {
 	resp, err := p.client.doGet(ctx, pathAccessRequests, nil, opts...)
 	if err != nil {
 		return nil, err
@@ -71,7 +71,7 @@ type StatusOutput struct {
 }
 
 // UpdateAccessRequest ...
-func (p arsService) ApproveAR(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error) {
+func (p ars) ApproveAR(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error) {
 	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathAccessRequestApprove, id), nil, nil, opts...)
 	if err != nil {
 		return nil, err
@@ -89,7 +89,7 @@ func (p arsService) ApproveAR(ctx context.Context, id int64, opts ...Option) (*S
 }
 
 // UpdateAccessRequest ...
-func (p arsService) RejectAR(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error) {
+func (p ars) RejectAR(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error) {
 	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathAccessRequestReject, id), nil, nil, opts...)
 	if err != nil {
 		return nil, err
@@ -107,7 +107,7 @@ func (p arsService) RejectAR(ctx context.Context, id int64, opts ...Option) (*St
 }
 
 // UpdateAccessRequest ...
-func (p arsService) DeleteAR(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error) {
+func (p ars) DeleteAR(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error) {
 	resp, err := p.client.doDelete(ctx, fmt.Sprintf(pathAccessRequest, id), nil, nil, opts...)
 	if err != nil {
 		return nil, err
