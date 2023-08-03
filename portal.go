@@ -109,6 +109,15 @@ type Client struct {
 	products   ProductsService
 	catalogues CataloguesService
 	ars        ARsService
+	apps       AppsService
+}
+
+func (c Client) Apps() AppsService {
+	return c.apps
+}
+
+func (c *Client) SetApps(app AppsService) {
+	c.apps = app
 }
 
 func (c Client) ARs() ARsService {
@@ -225,6 +234,7 @@ func newClient(opts ...Option) (*Client, error) {
 	client.catalogues = &cataloguesService{client: client}
 	client.ars = &arsService{client: client}
 	client.pages = &pagesService{client: client}
+	client.apps = &appsService{client: client}
 
 	return client, nil
 }
@@ -480,4 +490,9 @@ func Int64Value(s *int64) int64 {
 
 func shouldRetry(err error) bool {
 	return false
+}
+
+type Status struct {
+	Status  string `json:"status,omitempty"`
+	Message string `json:"message,omitempty"`
 }
