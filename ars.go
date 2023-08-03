@@ -20,6 +20,10 @@ const (
 //go:generate mockery --name ARsService --filename ars_service.go
 type ARsService interface {
 	ListARs(ctx context.Context, opts ...Option) (*ListARsOutput, error)
+	GetAR(ctx context.Context, id int64, opts ...Option) (*AROutput, error)
+	ApproveAR(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error)
+	RejectAR(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error)
+	DeleteAR(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error)
 }
 
 type arsService struct {
@@ -61,56 +65,60 @@ func (p arsService) ListARs(ctx context.Context, opts ...Option) (*ListARsOutput
 	}, nil
 }
 
+type StatusOutput struct {
+	Data     *Status
+	Response *http.Response
+}
+
 // UpdateAccessRequest ...
-func (p arsService) ApproveAR(ctx context.Context, id int64, opts ...Option) (*AROutput, error) {
+func (p arsService) ApproveAR(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error) {
 	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathAccessRequestApprove, id), nil, nil, opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	var ar ARDetails
+	var ar Status
 
 	if err := resp.Unmarshal(&ar); err != nil {
 		return nil, err
 	}
 
-	return &AROutput{
+	return &StatusOutput{
 		Data: &ar,
 	}, nil
 }
 
 // UpdateAccessRequest ...
-func (p arsService) RejectAR(ctx context.Context, id int64, opts ...Option) (*AROutput, error) {
+func (p arsService) RejectAR(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error) {
 	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathAccessRequestReject, id), nil, nil, opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	var ar ARDetails
+	var ar Status
 
 	if err := resp.Unmarshal(&ar); err != nil {
 		return nil, err
 	}
 
-	return &AROutput{
+	return &StatusOutput{
 		Data: &ar,
 	}, nil
 }
 
 // UpdateAccessRequest ...
-func (p arsService) DeleteAR(ctx context.Context, id int64, opts ...Option) (*AROutput, error) {
-	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathAccessRequest, id), nil, nil, opts...)
+func (p arsService) DeleteAR(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error) {
+	resp, err := p.client.doDelete(ctx, fmt.Sprintf(pathAccessRequest, id), nil, nil, opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	var ar ARDetails
-
+	var ar Status
 	if err := resp.Unmarshal(&ar); err != nil {
 		return nil, err
 	}
 
-	return &AROutput{
+	return &StatusOutput{
 		Data: &ar,
 	}, nil
 }
