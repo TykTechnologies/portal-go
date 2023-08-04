@@ -13,7 +13,6 @@ import (
 	"net"
 	"net/http"
 	"net/url"
-	"strings"
 	"time"
 )
 
@@ -119,7 +118,6 @@ func (c Client) Apps() Apps {
 func (c *Client) SetApps(app Apps) {
 	c.apps = app
 }
-
 
 func (c Client) ARs() ARs {
 	return c.ars
@@ -248,7 +246,12 @@ func (c Client) NewRequest(method string, path string, body io.Reader, params ur
 		return nil, err
 	}
 
-	req, err := http.NewRequest(method, newPath, body)
+	var newBody io.Reader = http.NoBody
+	if body != nil {
+		newBody = body
+	}
+
+	req, err := http.NewRequest(method, newPath, newBody)
 	if err != nil {
 		return nil, err
 	}
@@ -282,7 +285,7 @@ func (c Client) newDeleteRequest(path string, body io.Reader, params url.Values,
 	return c.NewRequest(http.MethodDelete, path, body, params)
 }
 
-func (c Client) doGet(ctx context.Context, path string, params url.Values, opts ...Option) (*internalResponse, error) {
+func (c Client) doGet(ctx context.Context, path string, params url.Values, opts ...Option) (*APIResponse, error) {
 	req, err := c.newGetRequest(path, params, opts...)
 	if err != nil {
 		return nil, err
@@ -296,7 +299,7 @@ func (c Client) doGet(ctx context.Context, path string, params url.Values, opts 
 	return resp, nil
 }
 
-func (c Client) doPost(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*internalResponse, error) {
+func (c Client) doPost(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*APIResponse, error) {
 	req, err := c.newPostRequest(path, body, params, opts...)
 	if err != nil {
 		return nil, err
@@ -310,7 +313,7 @@ func (c Client) doPost(ctx context.Context, path string, body io.Reader, params 
 	return resp, nil
 }
 
-func (c Client) doDelete(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*internalResponse, error) {
+func (c Client) doDelete(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*APIResponse, error) {
 	req, err := c.newDeleteRequest(path, body, params, opts...)
 	if err != nil {
 		return nil, err
@@ -324,7 +327,7 @@ func (c Client) doDelete(ctx context.Context, path string, body io.Reader, param
 	return resp, nil
 }
 
-func (c Client) doPut(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*internalResponse, error) {
+func (c Client) doPut(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*APIResponse, error) {
 	req, err := c.newPutRequest(path, body, params, opts...)
 	if err != nil {
 		return nil, err
@@ -346,7 +349,7 @@ func (c Client) copy(opts ...Option) Client {
 	return newClient
 }
 
-func (c Client) performRequest(ctx context.Context, req *http.Request, opts ...Option) (*internalResponse, error) {
+func (c Client) performRequest(ctx context.Context, req *http.Request, opts ...Option) (*APIResponse, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
@@ -373,7 +376,7 @@ func (c Client) performRequest(ctx context.Context, req *http.Request, opts ...O
 		attempt  int
 		httpResp *http.Response
 		err      error
-		respC    = make(chan internalResponse)
+		respC    = make(chan APIResponse)
 		errC     = make(chan error)
 	)
 
@@ -405,14 +408,19 @@ func (c Client) performRequest(ctx context.Context, req *http.Request, opts ...O
 			return
 		}
 
-		if err := checkError(httpResp.StatusCode, body); err != nil {
+		r := &APIResponse{
+			Body:     body,
+			Response: httpResp,
+		}
+
+		if err := checkError(r); err != nil {
 			errC <- err
 			return
 		}
 
-		respC <- internalResponse{
+		respC <- APIResponse{
 			Response: httpResp,
-			body:     body,
+			Body:     body,
 		}
 	}()
 
@@ -431,62 +439,33 @@ var (
 	ErrForbidden = errors.New("forbidden")
 )
 
-func checkError(code int, body []byte) error {
-	if code >= 200 && code < 300 {
+func checkError(resp *APIResponse) error {
+	if code := resp.Response.StatusCode; code >= 200 && code <= 299 {
 		return nil
 	}
 
-	var e Error
-	if err := json.Unmarshal(body, &e); err != nil {
+	e := APIError{
+		APIResponse: resp,
+	}
+
+	if err := json.Unmarshal(resp.Body, &e); err != nil {
 		return err
 	}
 
 	return e
 }
 
-type internalResponse struct {
-	*http.Response
-	body []byte
+type APIResponse struct {
+	Response *http.Response
+	Body     []byte
 }
 
-func (a internalResponse) Unmarshal(v interface{}) error {
-	return json.Unmarshal(a.body, &v)
-}
-
-type Error struct {
-	Errors []string
-}
-
-func (e Error) Error() string {
-	return strings.Join(e.Errors, "\n")
+func (a APIResponse) Unmarshal(v interface{}) error {
+	return json.Unmarshal(a.Body, &v)
 }
 
 type HTTPClient interface {
 	Do(*http.Request) (*http.Response, error)
-}
-
-func String(v string) *string {
-	return &v
-}
-
-func StringValue(s *string) string {
-	if s == nil {
-		return ""
-	}
-
-	return *s
-}
-
-func Int64(v int64) *int64 {
-	return &v
-}
-
-func Int64Value(s *int64) int64 {
-	if s == nil {
-		return 0
-	}
-
-	return *s
 }
 
 func shouldRetry(err error) bool {
