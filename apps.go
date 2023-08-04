@@ -23,6 +23,7 @@ const (
 type Apps interface {
 	CreateApp(ctx context.Context, input *AppInput, opts ...Option) (*AppOutput, error)
 	GetApp(ctx context.Context, id int64, opts ...Option) (*AppOutput, error)
+	// ListApps lists apps
 	ListApps(ctx context.Context, opts ...Option) (*ListAppsOutput, error)
 	ListARs(ctx context.Context, id int64, opts ...Option) (*ListARsOutput, error)
 	ProvisionApp(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error)
@@ -86,6 +87,7 @@ func (p apps) ProvisionApp(ctx context.Context, id int64, opts ...Option) (*Stat
 	}, nil
 }
 
+// ListApps lists apps
 func (p apps) ListApps(ctx context.Context, opts ...Option) (*ListAppsOutput, error) {
 	resp, err := p.client.doGet(ctx, pathApps, nil, opts...)
 	if err != nil {
