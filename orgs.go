@@ -218,7 +218,6 @@ func (p orgs) DeleteTeam(ctx context.Context, orgId, teamId int64, opts ...Optio
 
 type OrgInput struct {
 	ID   *int64 `json:"ID,omitempty"`
-	Type string `json:"Type,omitempty"`
 	Name string `json:"Name,omitempty"`
 }
 
