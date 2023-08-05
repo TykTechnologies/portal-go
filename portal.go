@@ -23,6 +23,7 @@ const (
 	defaultBaseURL        = "http://localhost:3001"
 	defaultConnectTimeout = 60000
 	defaultReadTimeout    = 60000
+	defaultUserAgent      = "ua"
 )
 
 type Option func(*Client)
@@ -258,10 +259,14 @@ func (c Client) NewRequest(method string, path string, body io.Reader, params ur
 
 	req.Header.Add(headerAuthorization, newClient.token)
 	req.Header.Add(headerAccept, "application/json")
-	req.Header.Add(headerContentType, "application/json")
 
+	if body != nil {
+		req.Header.Add(headerContentType, "application/json")
+	}
+
+	req.Header.Set("User-Agent", defaultUserAgent)
 	if c.userAgent != "" {
-		req.Header.Add("User-Agent", c.userAgent)
+		req.Header.Set("User-Agent", c.userAgent)
 	}
 
 	req.URL.RawQuery = params.Encode()
@@ -440,19 +445,20 @@ var (
 )
 
 func checkError(resp *APIResponse) error {
-	if code := resp.Response.StatusCode; code >= 200 && code <= 299 {
+	switch resp.Response.StatusCode {
+	case 200, 201:
 		return nil
-	}
+	default:
+		e := APIError{
+			APIResponse: resp,
+		}
 
-	e := APIError{
-		APIResponse: resp,
-	}
+		if err := json.Unmarshal(resp.Body, &e); err != nil {
+			return err
+		}
+		return e
 
-	if err := json.Unmarshal(resp.Body, &e); err != nil {
-		return err
 	}
-
-	return e
 }
 
 type APIResponse struct {

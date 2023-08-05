@@ -2,7 +2,7 @@
 
 A Go client for the Tyk Enterprise Dev Portal  API
 
-[![Build Status](https://github.com/TykTechnologies/portal-go/actions/workflows/ci.yml/badge.svg)](https://github.com/TykTechnologies/portal-go/actions/workflows/ci.yml)
+[![Build Status](https://github.com/TykTechnologies/portal-go/actions/workflows/ci.yml/badge.svg)](https://github.com/TykTechnologies/portal-go/actions/workflows/ci.yml) [![GoDoc](https://godoc.org/github.com/TykTechnologies/portal-go?status.svg)](https://godoc.org/github.com/TykTechnologies/portal-go) 
 
 ## Installation
 
@@ -28,13 +28,13 @@ import (
 
 func main() {
     // new client
-    client, err := edp.New(
-        edp.WithBaseURL("http://localhost:3000"),
+    client, err := portal.New(
+        portal.WithBaseURL("http://localhost:3000"),
         edp.WithToken("your token"),
     )
 
     // list organisations
-    resp, err := client.Orgs().ListOrgs(context.Background())
+    portal, err := client.Orgs().ListOrgs(context.Background())
     if err != nil {
         fmt.Printf("returned error: %v\n", err)
         os.Exit(1)

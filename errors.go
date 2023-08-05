@@ -21,3 +21,11 @@ func (e APIError) Error() string {
 		e.Errors[0],
 	)
 }
+
+type UnknownError struct {
+	*APIResponse
+}
+
+func (u UnknownError) Error() string {
+	return "unknown error"
+}
