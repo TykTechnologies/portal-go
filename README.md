@@ -30,7 +30,7 @@ func main() {
     // new client
     client, err := portal.New(
         portal.WithBaseURL("http://localhost:3000"),
-        edp.WithToken("your token"),
+        portal.WithToken("your token"),
     )
 
     // list organisations
