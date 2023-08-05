@@ -2,7 +2,9 @@
 
 A Go client for the Tyk Enterprise Dev Portal  API
 
-[![Build Status](https://github.com/TykTechnologies/portal-go/actions/workflows/ci.yml/badge.svg)](https://github.com/TykTechnologies/portal-go/actions/workflows/ci.yml) [![GoDoc](https://godoc.org/github.com/TykTechnologies/portal-go?status.svg)](https://godoc.org/github.com/TykTechnologies/portal-go) 
+[![Build Status](https://github.com/TykTechnologies/portal-go/actions/workflows/ci.yml/badge.svg)](https://github.com/TykTechnologies/portal-go/actions/workflows/ci.yml)
+[![GoDoc](https://godoc.org/github.com/TykTechnologies/portal-go?status.svg)](https://godoc.org/github.com/TykTechnologies/portal-go) 
+[![Go Report Card](https://goreportcard.com/badge/github.com/TykTechnologies/portal-go)](https://goreportcard.com/report/github.com/portal-go)
 
 ## Installation
 
