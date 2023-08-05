@@ -29,8 +29,8 @@ import (
 func main() {
     // new client
     client, err := portal.New(
-        portal.WithBaseURL("http://localhost:3000"),
-        portal.WithToken("your token"),
+        portal.WithBaseURL(os.Getenv("PORTAL_URL")),
+        portal.WithToken(os.Getenv("PORTAL_TOKEN")),
     )
 
     // list organisations
