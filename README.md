@@ -1,4 +1,4 @@
-# Portal Go Client
+# Portal Client for Go
 
 A Go client for the Tyk Enterprise Dev Portal  API
 
