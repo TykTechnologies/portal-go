@@ -21,6 +21,7 @@ func TestApps_Get(t *testing.T) {
 
 	srv.mux.HandleFunc("/portal-api/apps", func(w http.ResponseWriter, r *http.Request) {
 		httpResponse := httpParse(t, "portal-api/apps.txt")
+		defer httpResponse.Body.Close()
 
 		assertMethod(t, "GET", r)
 		assertHeader(t, r, "Authorization", token)

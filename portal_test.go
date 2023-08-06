@@ -5,6 +5,7 @@ package portal
 
 import (
 	"bufio"
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -182,7 +183,7 @@ func TestNewRequest(t *testing.T) {
 			client, err := New(v.opt...)
 			require.NoError(t, err)
 
-			resp, err := client.NewRequest(v.method, v.path, nil, nil, nil)
+			resp, err := client.NewRequest(context.Background(), v.method, v.path, nil, nil, nil)
 			require.NoError(t, err)
 
 			assertRequest(t, v.want, resp)

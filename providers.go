@@ -95,7 +95,12 @@ func (p providers) ListProviders(ctx context.Context, options *ListProvidersInpu
 	}, nil
 }
 
-func (p providers) UpdateProvider(ctx context.Context, id int64, input *UpdateProviderInput, opts ...Option) (*UpdateProviderOutput, error) {
+func (p providers) UpdateProvider(
+	ctx context.Context,
+	id int64,
+	input *UpdateProviderInput,
+	opts ...Option,
+) (*UpdateProviderOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
