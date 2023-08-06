@@ -123,7 +123,7 @@ type ListProductsOutput struct {
 type Product struct {
 	APIDetails  []APIDetails `json:"APIDetails"`
 	AuthType    string       `json:"AuthType"`
-	Catalogues  any          `json:"Catalogues"`
+	Catalogs    any          `json:"Catalogs"`
 	Content     string       `json:"Content"`
 	DCREnabled  bool         `json:"DCREnabled"`
 	Description string       `json:"Description"`

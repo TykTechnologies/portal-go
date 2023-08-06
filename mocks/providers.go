@@ -179,6 +179,39 @@ func (_m *Providers) SyncProvider(ctx context.Context, id int64, opts ...portal.
 	return r0, r1
 }
 
+// SyncProviders provides a mock function with given fields: ctx, opts
+func (_m *Providers) SyncProviders(ctx context.Context, opts ...portal.Option) (*portal.SyncProviderOutput, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	var r0 *portal.SyncProviderOutput
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, ...portal.Option) (*portal.SyncProviderOutput, error)); ok {
+		return rf(ctx, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, ...portal.Option) *portal.SyncProviderOutput); ok {
+		r0 = rf(ctx, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*portal.SyncProviderOutput)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, ...portal.Option) error); ok {
+		r1 = rf(ctx, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // UpdateProvider provides a mock function with given fields: ctx, id, input, opts
 func (_m *Providers) UpdateProvider(ctx context.Context, id int64, input *portal.ProviderInput, opts ...portal.Option) (*portal.ProviderOutput, error) {
 	_va := make([]interface{}, len(opts))

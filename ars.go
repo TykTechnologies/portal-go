@@ -124,7 +124,7 @@ func (p ars) DeleteAR(ctx context.Context, id int64, opts ...Option) (*StatusOut
 }
 
 type ARDetails struct {
-	Catalogue            string        `json:"Catalogue,omitempty"`
+	Catalog              string        `json:"Catalog,omitempty"`
 	Client               string        `json:"Client,omitempty"`
 	CreatedAt            string        `json:"CreatedAt,omitempty"`
 	UpdatedAt            string        `json:"UpdatedAt,omitempty"`
@@ -141,7 +141,7 @@ type ARDetails struct {
 }
 
 type ARSummary struct {
-	Catalogue            string `json:"Catalogue,omitempty"`
+	Catalog              string `json:"Catalog,omitempty"`
 	Client               string `json:"Client,omitempty"`
 	CreatedAt            string `json:"CreatedAt,omitempty"`
 	UpdatedAt            string `json:"UpdatedAt,omitempty"`

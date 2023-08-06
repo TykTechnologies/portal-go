@@ -23,7 +23,6 @@ const (
 type Apps interface {
 	CreateApp(ctx context.Context, input *AppInput, opts ...Option) (*AppOutput, error)
 	GetApp(ctx context.Context, id int64, opts ...Option) (*AppOutput, error)
-	// ListApps lists apps
 	ListApps(ctx context.Context, opts ...Option) (*ListAppsOutput, error)
 	ListARs(ctx context.Context, id int64, opts ...Option) (*ListARsOutput, error)
 	ProvisionApp(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error)

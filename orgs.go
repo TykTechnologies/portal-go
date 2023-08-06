@@ -263,15 +263,15 @@ type OrgTeam struct {
 	Default        bool   `json:"Default,omitempty"`
 	ID             int64  `json:"ID,omitempty"`
 	Name           string `json:"Name,omitempty"`
-	Organisation   string `json:"Organisation,omitempty"`
-	OrganisationID string `json:"OrganisationID,omitempty"`
+	Organization   string `json:"Organization,omitempty"`
+	OrganizationID string `json:"OrganizationID,omitempty"`
 	Users          []User `json:"Users,omitempty"`
 }
 
 type OrgCart struct {
-	CatalogueOrders string `json:"CatalogueOrders,omitempty"`
-	ID              int64  `json:"ID,omitempty"`
-	ProviderID      any    `json:"ProviderID,omitempty"`
+	CatalogOrders string `json:"CatalogOrders,omitempty"`
+	ID            int64  `json:"ID,omitempty"`
+	ProviderID    any    `json:"ProviderID,omitempty"`
 }
 
 type OrgUser struct {
@@ -286,7 +286,7 @@ type OrgUser struct {
 	ID                int64    `json:"ID,omitempty"`
 	Joined            string   `json:"Joined,omitempty"`
 	Last              string   `json:"Last,omitempty"`
-	Organisation      string   `json:"Organisation,omitempty"`
+	Organization      string   `json:"Organization,omitempty"`
 	Password          string   `json:"Password,omitempty"`
 	Provider          string   `json:"Provider,omitempty"`
 	ProviderID        int      `json:"ProviderID,omitempty"`

@@ -107,7 +107,7 @@ type Client struct {
 	users      Users
 	orgs       Orgs
 	products   Products
-	catalogues Catalogues
+	catalogues Catalogs
 	ars        ARs
 	apps       Apps
 }
@@ -128,11 +128,11 @@ func (c *Client) SetARs(ar ARs) {
 	c.ars = ar
 }
 
-func (c Client) Catalogues() Catalogues {
+func (c Client) Catalogs() Catalogs {
 	return c.catalogues
 }
 
-func (c *Client) SetCatalogues(catalogues Catalogues) {
+func (c *Client) SetCatalogs(catalogues Catalogs) {
 	c.catalogues = catalogues
 }
 

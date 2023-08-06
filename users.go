@@ -129,7 +129,7 @@ type UserInput struct {
 	Email          string `json:"Email,omitempty"`
 	First          string `json:"First,omitempty"`
 	Last           string `json:"Last,omitempty"`
-	OrganisationID int64  `json:"OrganisationID,omitempty"`
+	OrganizationID int64  `json:"OrganizationID,omitempty"`
 	Role           string `json:"Role,omitempty"`
 	Provider       string `json:"Provider,omitempty"`
 	ResetPassword  bool   `json:"ResetPassword,omitempty"`
@@ -162,12 +162,12 @@ type User struct {
 	Email             string   `json:"Email,omitempty"`
 	First             string   `json:"First,omitempty"`
 	Last              string   `json:"Last,omitempty"`
-	OrganisationID    int64    `json:"OrganisationID,omitempty"`
+	OrganizationID    int64    `json:"OrganizationID,omitempty"`
 	Role              string   `json:"Role,omitempty"`
 	Provider          string   `json:"Provider,omitempty"`
 	JWTToken          string   `json:"JWTToken,omitempty"`
 	APITokenCreatedAt string   `json:"APITokenCreatedAt,omitempty"`
-	Organisation      string   `json:"Organisation,omitempty"`
+	Organization      string   `json:"Organization,omitempty"`
 	ResetPassword     bool     `json:"ResetPassword,omitempty"`
 	Teams             []string `json:"Teams,omitempty"`
 	ID                int64    `json:"ID,omitempty"`

@@ -140,7 +140,7 @@ type ListPlansOutput struct {
 type Plan struct {
 	AuthType                  string `json:"AuthType"`
 	AutoApproveAccessRequests bool   `json:"AutoApproveAccessRequests"`
-	Catalogues                any    `json:"Catalogues"`
+	Catalogs                  any    `json:"Catalogs"`
 	Description               string `json:"Description"`
 	DisplayName               string `json:"DisplayName"`
 	ID                        int64  `json:"ID"`

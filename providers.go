@@ -23,6 +23,7 @@ type Providers interface {
 	DeleteProvider(ctx context.Context, id int64, opts ...Option) (*DeleteProviderOutput, error)
 	ListProviders(ctx context.Context, options *ListProvidersInput, opts ...Option) (*ListProvidersOutput, error)
 	UpdateProvider(ctx context.Context, id int64, input *UpdateProviderInput, opts ...Option) (*UpdateProviderOutput, error)
+	SyncProviders(ctx context.Context, opts ...Option) (*SyncProviderOutput, error)
 	SyncProvider(ctx context.Context, id int64, opts ...Option) (*SyncProviderOutput, error)
 }
 

@@ -88,36 +88,36 @@ type Theming struct {
 }
 
 type AudienceInput struct {
-	OrganisationID int `json:"OrganisationID,omitempty"`
+	OrganizationID int `json:"OrganizationID,omitempty"`
 	TeamID         int `json:"TeamID,omitempty"`
 }
 
 type Audience struct {
 	ID             int    `json:"ID,omitempty"`
-	OrganisationID int    `json:"OrganisationID,omitempty"`
+	OrganizationID int    `json:"OrganizationID,omitempty"`
 	TeamID         int    `json:"TeamID,omitempty"`
 	CreatedAt      string `json:"CreatedAt,omitempty"`
 	UpdatedAt      string `json:"UpdatedAt,omitempty"`
 }
 
-type CatalogueDetails struct {
-	ID               int            `json:"ID,omitempty"`
-	Name             string         `json:"Name,omitempty"`
-	CreatedAt        string         `json:"CreatedAt,omitempty"`
-	UpdatedAt        string         `json:"UpdatedAt,omitempty"`
-	OrgCatalogues    []OrgCatalogue `json:"OrgCatalogues,omitempty"`
-	Plans            []string       `json:"Plans,omitempty"`
-	Products         []string       `json:"Products,omitempty"`
-	VisibilityStatus string         `json:"VisibilityStatus,omitempty"`
+type CatalogDetails struct {
+	ID               int          `json:"ID,omitempty"`
+	Name             string       `json:"Name,omitempty"`
+	CreatedAt        string       `json:"CreatedAt,omitempty"`
+	UpdatedAt        string       `json:"UpdatedAt,omitempty"`
+	OrgCatalogs      []OrgCatalog `json:"OrgCatalogs,omitempty"`
+	Plans            []string     `json:"Plans,omitempty"`
+	Products         []string     `json:"Products,omitempty"`
+	VisibilityStatus string       `json:"VisibilityStatus,omitempty"`
 }
-type OrgCatalogue struct {
-	Catalogue    string `json:"Catalogue,omitempty"`
+type OrgCatalog struct {
+	Catalog      string `json:"Catalog,omitempty"`
 	ID           int    `json:"ID,omitempty"`
 	Name         string `json:"Name,omitempty"`
-	Organisation string `json:"Organisation,omitempty"`
+	Organization string `json:"Organization,omitempty"`
 }
 
-type CatalogueSummary struct {
+type CatalogSummary struct {
 	ID               int    `json:"ID,omitempty"`
 	Name             string `json:"Name,omitempty"`
 	NameWithSlug     string `json:"NameWithSlug,omitempty"`
