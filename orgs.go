@@ -25,11 +25,11 @@ type Orgs interface {
 	ListOrgs(ctx context.Context, options *ListOrgsInput, opts ...Option) (*ListOrgsOutput, error)
 	UpdateOrg(ctx context.Context, id int64, input *UpdateOrgInput, opts ...Option) (*UpdateOrgOutput, error)
 	DeleteOrg(ctx context.Context, id int64, opts ...Option) (*DeleteOrgOutput, error)
-	CreateTeam(ctx context.Context, orgId int64, input *TeamInput, opts ...Option) (*TeamOutput, error)
-	GetTeam(ctx context.Context, orgId, teamId int64, opts ...Option) (*TeamOutput, error)
-	ListTeams(ctx context.Context, orgId int64, options *ListTeamsInput, opts ...Option) (*ListTeamsOutput, error)
-	UpdateTeam(ctx context.Context, orgId, teamId int64, input *TeamInput, opts ...Option) (*TeamOutput, error)
-	DeleteTeam(ctx context.Context, orgId, teamId int64, opts ...Option) (*TeamOutput, error)
+	CreateTeam(ctx context.Context, orgID int64, input *TeamInput, opts ...Option) (*TeamOutput, error)
+	GetTeam(ctx context.Context, orgID, teamID int64, opts ...Option) (*TeamOutput, error)
+	ListTeams(ctx context.Context, orgID int64, options *ListTeamsInput, opts ...Option) (*ListTeamsOutput, error)
+	UpdateTeam(ctx context.Context, orgID, teamID int64, input *TeamInput, opts ...Option) (*TeamOutput, error)
+	DeleteTeam(ctx context.Context, orgID, teamID int64, opts ...Option) (*TeamOutput, error)
 }
 
 type orgs struct {
@@ -126,7 +126,7 @@ func (p orgs) DeleteOrg(ctx context.Context, id int64, opts ...Option) (*DeleteO
 	return &GetOrgOutput{}, nil
 }
 
-func (p orgs) CreateTeam(ctx context.Context, orgId int64, input *TeamInput, opts ...Option) (*TeamOutput, error) {
+func (p orgs) CreateTeam(ctx context.Context, orgID int64, input *TeamInput, opts ...Option) (*TeamOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -136,7 +136,7 @@ func (p orgs) CreateTeam(ctx context.Context, orgId int64, input *TeamInput, opt
 		return nil, err
 	}
 
-	resp, err := p.client.doPost(ctx, fmt.Sprintf(pathOrgTeams, orgId), bytes.NewReader(payload), nil)
+	resp, err := p.client.doPost(ctx, fmt.Sprintf(pathOrgTeams, orgID), bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -152,8 +152,8 @@ func (p orgs) CreateTeam(ctx context.Context, orgId int64, input *TeamInput, opt
 	}, nil
 }
 
-func (p orgs) GetTeam(ctx context.Context, orgId, teamId int64, opts ...Option) (*TeamOutput, error) {
-	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathOrgTeam, orgId, teamId), nil)
+func (p orgs) GetTeam(ctx context.Context, orgID, teamID int64, opts ...Option) (*TeamOutput, error) {
+	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathOrgTeam, orgID, teamID), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -168,8 +168,8 @@ func (p orgs) GetTeam(ctx context.Context, orgId, teamId int64, opts ...Option) 
 	}, nil
 }
 
-func (p orgs) ListTeams(ctx context.Context, orgId int64, options *ListTeamsInput, opts ...Option) (*ListTeamsOutput, error) {
-	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathOrgTeams, orgId), nil)
+func (p orgs) ListTeams(ctx context.Context, orgID int64, options *ListTeamsInput, opts ...Option) (*ListTeamsOutput, error) {
+	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathOrgTeams, orgID), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -185,13 +185,13 @@ func (p orgs) ListTeams(ctx context.Context, orgId int64, options *ListTeamsInpu
 	}, nil
 }
 
-func (p orgs) UpdateTeam(ctx context.Context, orgId, teamId int64, input *TeamInput, opts ...Option) (*TeamOutput, error) {
+func (p orgs) UpdateTeam(ctx context.Context, orgID, teamID int64, input *TeamInput, opts ...Option) (*TeamOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathOrgTeam, orgId, teamId), bytes.NewReader(payload), nil)
+	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathOrgTeam, orgID, teamID), bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -207,8 +207,8 @@ func (p orgs) UpdateTeam(ctx context.Context, orgId, teamId int64, input *TeamIn
 	}, nil
 }
 
-func (p orgs) DeleteTeam(ctx context.Context, orgId, teamId int64, opts ...Option) (*TeamOutput, error) {
-	_, err := p.client.doDelete(ctx, fmt.Sprintf(pathOrgTeam, orgId, teamId), nil, nil)
+func (p orgs) DeleteTeam(ctx context.Context, orgID, teamID int64, opts ...Option) (*TeamOutput, error) {
+	_, err := p.client.doDelete(ctx, fmt.Sprintf(pathOrgTeam, orgID, teamID), nil, nil)
 	if err != nil {
 		return nil, err
 	}

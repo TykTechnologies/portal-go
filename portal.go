@@ -101,15 +101,15 @@ type Client struct {
 	minRetryBackoff time.Duration
 	skipValidation  bool
 
-	pages      Pages
-	providers  Providers
-	plans      Plans
-	users      Users
-	orgs       Orgs
-	products   Products
-	catalogues Catalogs
-	ars        ARs
-	apps       Apps
+	pages     Pages
+	providers Providers
+	plans     Plans
+	users     Users
+	orgs      Orgs
+	products  Products
+	catalogs  Catalogs
+	ars       ARs
+	apps      Apps
 }
 
 func (c Client) Apps() Apps {
@@ -129,11 +129,11 @@ func (c *Client) SetARs(ar ARs) {
 }
 
 func (c Client) Catalogs() Catalogs {
-	return c.catalogues
+	return c.catalogs
 }
 
-func (c *Client) SetCatalogs(catalogues Catalogs) {
-	c.catalogues = catalogues
+func (c *Client) SetCatalogs(catalogs Catalogs) {
+	c.catalogs = catalogs
 }
 
 func (c Client) Products() Products {
@@ -231,7 +231,7 @@ func newClient(opts ...Option) (*Client, error) {
 	client.users = &users{client: client}
 	client.orgs = &orgs{client: client}
 	client.products = &products{client: client}
-	client.catalogues = &catalogues{client: client}
+	client.catalogs = &catalogs{client: client}
 	client.ars = &ars{client: client}
 	client.pages = &pages{client: client}
 	client.apps = &apps{client: client}
@@ -239,7 +239,13 @@ func newClient(opts ...Option) (*Client, error) {
 	return client, nil
 }
 
-func (c Client) NewRequest(method string, path string, body io.Reader, params url.Values, opts ...Option) (*http.Request, error) {
+func (c Client) NewRequest(
+	ctx context.Context,
+	method string,
+	path string,
+	body io.Reader,
+	params url.Values, opts ...Option,
+) (*http.Request, error) {
 	newClient := c.copy(opts...)
 
 	newPath, err := url.JoinPath(newClient.baseURL, path)
@@ -252,7 +258,7 @@ func (c Client) NewRequest(method string, path string, body io.Reader, params ur
 		newBody = body
 	}
 
-	req, err := http.NewRequest(method, newPath, newBody)
+	req, err := http.NewRequestWithContext(ctx, method, newPath, newBody)
 	if err != nil {
 		return nil, err
 	}
@@ -274,24 +280,30 @@ func (c Client) NewRequest(method string, path string, body io.Reader, params ur
 	return req, nil
 }
 
-func (c Client) newGetRequest(path string, params url.Values, opts ...Option) (*http.Request, error) {
-	return c.NewRequest(http.MethodGet, path, nil, params)
+func (c Client) newGetRequest(ctx context.Context, path string, params url.Values, opts ...Option) (*http.Request, error) {
+	return c.NewRequest(ctx, http.MethodGet, path, nil, params)
 }
 
-func (c Client) newPostRequest(path string, body io.Reader, params url.Values, opts ...Option) (*http.Request, error) {
-	return c.NewRequest(http.MethodPost, path, body, params)
+func (c Client) newPostRequest(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*http.Request, error) {
+	return c.NewRequest(ctx, http.MethodPost, path, body, params)
 }
 
-func (c Client) newPutRequest(path string, body io.Reader, params url.Values, opts ...Option) (*http.Request, error) {
-	return c.NewRequest(http.MethodPut, path, body, params)
+func (c Client) newPutRequest(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*http.Request, error) {
+	return c.NewRequest(ctx, http.MethodPut, path, body, params)
 }
 
-func (c Client) newDeleteRequest(path string, body io.Reader, params url.Values, opts ...Option) (*http.Request, error) {
-	return c.NewRequest(http.MethodDelete, path, body, params)
+func (c Client) newDeleteRequest(
+	ctx context.Context,
+	path string,
+	body io.Reader,
+	params url.Values,
+	opts ...Option,
+) (*http.Request, error) {
+	return c.NewRequest(ctx, http.MethodDelete, path, body, params)
 }
 
 func (c Client) doGet(ctx context.Context, path string, params url.Values, opts ...Option) (*APIResponse, error) {
-	req, err := c.newGetRequest(path, params, opts...)
+	req, err := c.newGetRequest(ctx, path, params, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -305,7 +317,7 @@ func (c Client) doGet(ctx context.Context, path string, params url.Values, opts 
 }
 
 func (c Client) doPost(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*APIResponse, error) {
-	req, err := c.newPostRequest(path, body, params, opts...)
+	req, err := c.newPostRequest(ctx, path, body, params, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -319,7 +331,7 @@ func (c Client) doPost(ctx context.Context, path string, body io.Reader, params 
 }
 
 func (c Client) doDelete(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*APIResponse, error) {
-	req, err := c.newDeleteRequest(path, body, params, opts...)
+	req, err := c.newDeleteRequest(ctx, path, body, params, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -333,7 +345,7 @@ func (c Client) doDelete(ctx context.Context, path string, body io.Reader, param
 }
 
 func (c Client) doPut(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*APIResponse, error) {
-	req, err := c.newPutRequest(path, body, params, opts...)
+	req, err := c.newPutRequest(ctx, path, body, params, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -364,6 +376,7 @@ func (c Client) performRequest(ctx context.Context, req *http.Request, opts ...O
 	var httpClient HTTPClient = &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
+				//nolint:gosec
 				InsecureSkipVerify: newClient.insecure,
 			},
 			DialContext: (&net.Dialer{
@@ -457,7 +470,6 @@ func checkError(resp *APIResponse) error {
 			return err
 		}
 		return e
-
 	}
 }
 

@@ -47,24 +47,24 @@ func (_m *Orgs) CreateOrg(ctx context.Context, input *portal.OrgInput, opts ...p
 	return r0, r1
 }
 
-// CreateTeam provides a mock function with given fields: ctx, orgId, input, opts
-func (_m *Orgs) CreateTeam(ctx context.Context, orgId int64, input *portal.TeamInput, opts ...portal.Option) (*portal.TeamOutput, error) {
+// CreateTeam provides a mock function with given fields: ctx, orgID, input, opts
+func (_m *Orgs) CreateTeam(ctx context.Context, orgID int64, input *portal.TeamInput, opts ...portal.Option) (*portal.TeamOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
 	}
 	var _ca []interface{}
-	_ca = append(_ca, ctx, orgId, input)
+	_ca = append(_ca, ctx, orgID, input)
 	_ca = append(_ca, _va...)
 	ret := _m.Called(_ca...)
 
 	var r0 *portal.TeamOutput
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.TeamInput, ...portal.Option) (*portal.TeamOutput, error)); ok {
-		return rf(ctx, orgId, input, opts...)
+		return rf(ctx, orgID, input, opts...)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.TeamInput, ...portal.Option) *portal.TeamOutput); ok {
-		r0 = rf(ctx, orgId, input, opts...)
+		r0 = rf(ctx, orgID, input, opts...)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*portal.TeamOutput)
@@ -72,7 +72,7 @@ func (_m *Orgs) CreateTeam(ctx context.Context, orgId int64, input *portal.TeamI
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, int64, *portal.TeamInput, ...portal.Option) error); ok {
-		r1 = rf(ctx, orgId, input, opts...)
+		r1 = rf(ctx, orgID, input, opts...)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -113,24 +113,24 @@ func (_m *Orgs) DeleteOrg(ctx context.Context, id int64, opts ...portal.Option) 
 	return r0, r1
 }
 
-// DeleteTeam provides a mock function with given fields: ctx, orgId, teamId, opts
-func (_m *Orgs) DeleteTeam(ctx context.Context, orgId int64, teamId int64, opts ...portal.Option) (*portal.TeamOutput, error) {
+// DeleteTeam provides a mock function with given fields: ctx, orgID, teamID, opts
+func (_m *Orgs) DeleteTeam(ctx context.Context, orgID int64, teamID int64, opts ...portal.Option) (*portal.TeamOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
 	}
 	var _ca []interface{}
-	_ca = append(_ca, ctx, orgId, teamId)
+	_ca = append(_ca, ctx, orgID, teamID)
 	_ca = append(_ca, _va...)
 	ret := _m.Called(_ca...)
 
 	var r0 *portal.TeamOutput
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, int64, int64, ...portal.Option) (*portal.TeamOutput, error)); ok {
-		return rf(ctx, orgId, teamId, opts...)
+		return rf(ctx, orgID, teamID, opts...)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, int64, int64, ...portal.Option) *portal.TeamOutput); ok {
-		r0 = rf(ctx, orgId, teamId, opts...)
+		r0 = rf(ctx, orgID, teamID, opts...)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*portal.TeamOutput)
@@ -138,7 +138,7 @@ func (_m *Orgs) DeleteTeam(ctx context.Context, orgId int64, teamId int64, opts 
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, int64, int64, ...portal.Option) error); ok {
-		r1 = rf(ctx, orgId, teamId, opts...)
+		r1 = rf(ctx, orgID, teamID, opts...)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -179,24 +179,24 @@ func (_m *Orgs) GetOrg(ctx context.Context, id int64, opts ...portal.Option) (*p
 	return r0, r1
 }
 
-// GetTeam provides a mock function with given fields: ctx, orgId, teamId, opts
-func (_m *Orgs) GetTeam(ctx context.Context, orgId int64, teamId int64, opts ...portal.Option) (*portal.TeamOutput, error) {
+// GetTeam provides a mock function with given fields: ctx, orgID, teamID, opts
+func (_m *Orgs) GetTeam(ctx context.Context, orgID int64, teamID int64, opts ...portal.Option) (*portal.TeamOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
 	}
 	var _ca []interface{}
-	_ca = append(_ca, ctx, orgId, teamId)
+	_ca = append(_ca, ctx, orgID, teamID)
 	_ca = append(_ca, _va...)
 	ret := _m.Called(_ca...)
 
 	var r0 *portal.TeamOutput
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, int64, int64, ...portal.Option) (*portal.TeamOutput, error)); ok {
-		return rf(ctx, orgId, teamId, opts...)
+		return rf(ctx, orgID, teamID, opts...)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, int64, int64, ...portal.Option) *portal.TeamOutput); ok {
-		r0 = rf(ctx, orgId, teamId, opts...)
+		r0 = rf(ctx, orgID, teamID, opts...)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*portal.TeamOutput)
@@ -204,7 +204,7 @@ func (_m *Orgs) GetTeam(ctx context.Context, orgId int64, teamId int64, opts ...
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, int64, int64, ...portal.Option) error); ok {
-		r1 = rf(ctx, orgId, teamId, opts...)
+		r1 = rf(ctx, orgID, teamID, opts...)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -245,24 +245,24 @@ func (_m *Orgs) ListOrgs(ctx context.Context, options *portal.ListOrgsInput, opt
 	return r0, r1
 }
 
-// ListTeams provides a mock function with given fields: ctx, orgId, options, opts
-func (_m *Orgs) ListTeams(ctx context.Context, orgId int64, options *portal.ListTeamsInput, opts ...portal.Option) (*portal.ListTeamsOutput, error) {
+// ListTeams provides a mock function with given fields: ctx, orgID, options, opts
+func (_m *Orgs) ListTeams(ctx context.Context, orgID int64, options *portal.ListTeamsInput, opts ...portal.Option) (*portal.ListTeamsOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
 	}
 	var _ca []interface{}
-	_ca = append(_ca, ctx, orgId, options)
+	_ca = append(_ca, ctx, orgID, options)
 	_ca = append(_ca, _va...)
 	ret := _m.Called(_ca...)
 
 	var r0 *portal.ListTeamsOutput
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.ListTeamsInput, ...portal.Option) (*portal.ListTeamsOutput, error)); ok {
-		return rf(ctx, orgId, options, opts...)
+		return rf(ctx, orgID, options, opts...)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.ListTeamsInput, ...portal.Option) *portal.ListTeamsOutput); ok {
-		r0 = rf(ctx, orgId, options, opts...)
+		r0 = rf(ctx, orgID, options, opts...)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*portal.ListTeamsOutput)
@@ -270,7 +270,7 @@ func (_m *Orgs) ListTeams(ctx context.Context, orgId int64, options *portal.List
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, int64, *portal.ListTeamsInput, ...portal.Option) error); ok {
-		r1 = rf(ctx, orgId, options, opts...)
+		r1 = rf(ctx, orgID, options, opts...)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -311,24 +311,24 @@ func (_m *Orgs) UpdateOrg(ctx context.Context, id int64, input *portal.OrgInput,
 	return r0, r1
 }
 
-// UpdateTeam provides a mock function with given fields: ctx, orgId, teamId, input, opts
-func (_m *Orgs) UpdateTeam(ctx context.Context, orgId int64, teamId int64, input *portal.TeamInput, opts ...portal.Option) (*portal.TeamOutput, error) {
+// UpdateTeam provides a mock function with given fields: ctx, orgID, teamID, input, opts
+func (_m *Orgs) UpdateTeam(ctx context.Context, orgID int64, teamID int64, input *portal.TeamInput, opts ...portal.Option) (*portal.TeamOutput, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
 	}
 	var _ca []interface{}
-	_ca = append(_ca, ctx, orgId, teamId, input)
+	_ca = append(_ca, ctx, orgID, teamID, input)
 	_ca = append(_ca, _va...)
 	ret := _m.Called(_ca...)
 
 	var r0 *portal.TeamOutput
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, int64, int64, *portal.TeamInput, ...portal.Option) (*portal.TeamOutput, error)); ok {
-		return rf(ctx, orgId, teamId, input, opts...)
+		return rf(ctx, orgID, teamID, input, opts...)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, int64, int64, *portal.TeamInput, ...portal.Option) *portal.TeamOutput); ok {
-		r0 = rf(ctx, orgId, teamId, input, opts...)
+		r0 = rf(ctx, orgID, teamID, input, opts...)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*portal.TeamOutput)
@@ -336,7 +336,7 @@ func (_m *Orgs) UpdateTeam(ctx context.Context, orgId int64, teamId int64, input
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, int64, int64, *portal.TeamInput, ...portal.Option) error); ok {
-		r1 = rf(ctx, orgId, teamId, input, opts...)
+		r1 = rf(ctx, orgID, teamID, input, opts...)
 	} else {
 		r1 = ret.Error(1)
 	}

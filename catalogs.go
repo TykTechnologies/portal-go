@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	pathCatalogs = "/portal-api/catalogues"
-	pathCatalog  = "/portal-api/catalogues/%d"
+	pathCatalogs = "/portal-api/catalogs"
+	pathCatalog  = "/portal-api/catalogs/%d"
 )
 
 //go:generate mockery --name Catalogs --filename catalogs.go
@@ -23,11 +23,11 @@ type Catalogs interface {
 	UpdateCatalog(ctx context.Context, id int64, input *UpdateCatalogInput, opts ...Option) (*UpdateCatalogOutput, error)
 }
 
-type catalogues struct {
+type catalogs struct {
 	client *Client
 }
 
-func (p catalogues) CreateCatalog(ctx context.Context, input *CreateCatalogInput, opts ...Option) (*CreateCatalogOutput, error) {
+func (p catalogs) CreateCatalog(ctx context.Context, input *CreateCatalogInput, opts ...Option) (*CreateCatalogOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -38,51 +38,51 @@ func (p catalogues) CreateCatalog(ctx context.Context, input *CreateCatalogInput
 		return nil, err
 	}
 
-	var catalogue Catalog
+	var catalog Catalog
 
-	if err := resp.Unmarshal(&catalogue); err != nil {
+	if err := resp.Unmarshal(&catalog); err != nil {
 		return nil, err
 	}
 
 	return &CreateCatalogOutput{
-		Data: &catalogue,
+		Data: &catalog,
 	}, nil
 }
 
-func (p catalogues) GetCatalog(ctx context.Context, id int64, opts ...Option) (*GetCatalogOutput, error) {
+func (p catalogs) GetCatalog(ctx context.Context, id int64, opts ...Option) (*GetCatalogOutput, error) {
 	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathCatalog, id), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	var catalogue Catalog
-	if err := resp.Unmarshal(&catalogue); err != nil {
+	var catalog Catalog
+	if err := resp.Unmarshal(&catalog); err != nil {
 		return nil, err
 	}
 
 	return &GetCatalogOutput{
-		Data: &catalogue,
+		Data: &catalog,
 	}, nil
 }
 
-func (p catalogues) ListCatalogs(ctx context.Context, options *ListCatalogsInput, opts ...Option) (*ListCatalogsOutput, error) {
+func (p catalogs) ListCatalogs(ctx context.Context, options *ListCatalogsInput, opts ...Option) (*ListCatalogsOutput, error) {
 	resp, err := p.client.doGet(ctx, pathCatalogs, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	var catalogues []Catalog
+	var catalogs []Catalog
 
-	if err := resp.Unmarshal(&catalogues); err != nil {
+	if err := resp.Unmarshal(&catalogs); err != nil {
 		return nil, err
 	}
 
 	return &ListCatalogsOutput{
-		Data: catalogues,
+		Data: catalogs,
 	}, nil
 }
 
-func (p catalogues) UpdateCatalog(ctx context.Context, id int64, input *UpdateCatalogInput, opts ...Option) (*UpdateCatalogOutput, error) {
+func (p catalogs) UpdateCatalog(ctx context.Context, id int64, input *UpdateCatalogInput, opts ...Option) (*UpdateCatalogOutput, error) {
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -93,14 +93,14 @@ func (p catalogues) UpdateCatalog(ctx context.Context, id int64, input *UpdateCa
 		return nil, err
 	}
 
-	var catalogue Catalog
+	var catalog Catalog
 
-	if err := resp.Unmarshal(&catalogue); err != nil {
+	if err := resp.Unmarshal(&catalog); err != nil {
 		return nil, err
 	}
 
 	return &UpdateCatalogOutput{
-		Data: &catalogue,
+		Data: &catalog,
 	}, nil
 }
 
