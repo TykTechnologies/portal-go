@@ -12,10 +12,10 @@ import (
 )
 
 const (
-	pathOrgs     = "/portal-api/organizations"
-	pathOrg      = "/portal-api/organizations/%d"
-	pathOrgTeams = "/portal-api/organizations/%d/teams"
-	pathOrgTeam  = "/portal-api/organizations/%d/teams/%d"
+	pathOrgs     = "/portal-api/organisations"
+	pathOrg      = "/portal-api/organisations/%d"
+	pathOrgTeams = "/portal-api/organisations/%d/teams"
+	pathOrgTeam  = "/portal-api/organisations/%d/teams/%d"
 )
 
 //go:generate mockery --name Orgs --filename orgs.go
