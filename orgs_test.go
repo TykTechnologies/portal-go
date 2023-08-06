@@ -19,8 +19,8 @@ func TestOrg_Get(t *testing.T) {
 
 	token := "TOKEN"
 
-	srv.mux.HandleFunc("/portal-api/organizations/1", func(w http.ResponseWriter, r *http.Request) {
-		httpResponse := httpParse(t, "portal-api/organizations/1.txt")
+	srv.mux.HandleFunc("/portal-api/organisations/1", func(w http.ResponseWriter, r *http.Request) {
+		httpResponse := httpParse(t, "portal-api/organisations/1.txt")
 
 		assertMethod(t, "GET", r)
 		assertHeader(t, r, "Authorization", token)
