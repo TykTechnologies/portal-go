@@ -264,7 +264,7 @@ type OrgTeam struct {
 	ID             int64  `json:"ID,omitempty"`
 	Name           string `json:"Name,omitempty"`
 	Organization   string `json:"Organization,omitempty"`
-	OrganizationID string `json:"OrganizationID,omitempty"`
+	OrganizationID string `json:"OrganisationID,omitempty"`
 	Users          []User `json:"Users,omitempty"`
 }
 
@@ -286,7 +286,7 @@ type OrgUser struct {
 	ID                int64    `json:"ID,omitempty"`
 	Joined            string   `json:"Joined,omitempty"`
 	Last              string   `json:"Last,omitempty"`
-	Organization      string   `json:"Organization,omitempty"`
+	Organisation      string   `json:"Organisation,omitempty"`
 	Password          string   `json:"Password,omitempty"`
 	Provider          string   `json:"Provider,omitempty"`
 	ProviderID        int      `json:"ProviderID,omitempty"`
