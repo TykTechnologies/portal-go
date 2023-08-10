@@ -7,7 +7,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"time"
 )
 
 const (
@@ -157,21 +156,21 @@ type ARSummary struct {
 }
 
 type Credentials struct {
-	AccessRequest              string    `json:"AccessRequest,omitempty"`
-	Credential                 string    `json:"Credential,omitempty"`
-	CredentialHash             string    `json:"CredentialHash,omitempty"`
-	DCRRegistrationAccessToken string    `json:"DCRRegistrationAccessToken,omitempty"`
-	DCRRegistrationClientURI   string    `json:"DCRRegistrationClientURI,omitempty"`
-	DCRResponse                string    `json:"DCRResponse,omitempty"`
-	Expires                    time.Time `json:"Expires,omitempty"`
-	OAuthClientID              string    `json:"OAuthClientID,omitempty"`
-	OAuthClientSecret          string    `json:"OAuthClientSecret,omitempty"`
-	RedirectURI                string    `json:"RedirectURI,omitempty"`
-	ResponseType               string    `json:"ResponseType,omitempty"`
-	Scope                      string    `json:"Scope,omitempty"`
-	TokenEndpoints             string    `json:"TokenEndpoints,omitempty"`
-	GrantType                  *string   `json:"GrantType,omitempty"`
-	ID                         *int64    `json:"ID,omitempty"`
+	AccessRequest              string     `json:"AccessRequest,omitempty"`
+	Credential                 string     `json:"Credential,omitempty"`
+	CredentialHash             string     `json:"CredentialHash,omitempty"`
+	DCRRegistrationAccessToken string     `json:"DCRRegistrationAccessToken,omitempty"`
+	DCRRegistrationClientURI   string     `json:"DCRRegistrationClientURI,omitempty"`
+	DCRResponse                string     `json:"DCRResponse,omitempty"`
+	Expires                    CustomTime `json:"Expires,omitempty"`
+	OAuthClientID              string     `json:"OAuthClientID,omitempty"`
+	OAuthClientSecret          string     `json:"OAuthClientSecret,omitempty"`
+	RedirectURI                string     `json:"RedirectURI,omitempty"`
+	ResponseType               string     `json:"ResponseType,omitempty"`
+	Scope                      string     `json:"Scope,omitempty"`
+	TokenEndpoints             string     `json:"TokenEndpoints,omitempty"`
+	GrantType                  *string    `json:"GrantType,omitempty"`
+	ID                         *int64     `json:"ID,omitempty"`
 }
 
 type ListARsOutput struct {
