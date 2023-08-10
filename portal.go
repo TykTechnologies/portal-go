@@ -467,8 +467,9 @@ func checkError(resp *APIResponse) error {
 		}
 
 		if err := json.Unmarshal(resp.Body, &e); err != nil {
-			return err
+			return errors.New(http.StatusText(resp.Response.StatusCode))
 		}
+
 		return e
 	}
 }
