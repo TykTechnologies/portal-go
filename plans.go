@@ -7,7 +7,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 )
 
@@ -88,11 +87,6 @@ func (p plans) ListPlans(ctx context.Context, options *ListPlansInput, opts ...O
 
 // UpdatePlan ...
 func (p plans) UpdatePlan(ctx context.Context, id int64, input *UpdatePlanInput, opts ...Option) (*UpdatePlanOutput, error) {
-	// TODO: review this
-	if input.Configuration != nil && input.Configuration.ID == nil {
-		return nil, errors.New("configuration id must not be nil")
-	}
-
 	payload, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -115,10 +109,11 @@ func (p plans) UpdatePlan(ctx context.Context, id int64, input *UpdatePlanInput,
 }
 
 type PlanInput struct {
-	ID            *int64 `json:",omitempty"`
-	Type          string
-	Name          string
-	Configuration *PlanConfiguration `json:",omitempty"`
+	AutoApproveAccessRequests *bool   `json:"AutoApproveAccessRequests,omitempty"`
+	Catalogues                []int64 `json:"Catalogues,omitempty"`
+	DisplayName               string  `json:"DisplayName,omitempty"`
+	Description               string  `json:"Description,omitempty"`
+	JWTScope                  string  `json:"JWTScope,omitempty"`
 }
 
 type UpdatePlanInput = PlanInput
@@ -140,7 +135,7 @@ type ListPlansOutput struct {
 type Plan struct {
 	AuthType                  string `json:"AuthType"`
 	AutoApproveAccessRequests bool   `json:"AutoApproveAccessRequests"`
-	Catalogs                  any    `json:"Catalogs"`
+	Catalogues                []any  `json:"Catalogues"`
 	Description               string `json:"Description"`
 	DisplayName               string `json:"DisplayName"`
 	ID                        int64  `json:"ID"`

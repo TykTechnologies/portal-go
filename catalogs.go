@@ -132,7 +132,7 @@ type Catalog struct {
 	ID               int64    `json:"ID,omitempty"`
 	Name             string   `json:"Name,omitempty"`
 	OrgCatalogs      []any    `json:"OrgCatalogs,omitempty"`
-	Plans            any      `json:"Plans,omitempty"`
+	Plans            []any    `json:"Plans,omitempty"`
 	Products         []string `json:"Products,omitempty"`
 	UpdatedAt        string   `json:"UpdatedAt,omitempty"`
 	VisibilityStatus string   `json:"VisibilityStatus,omitempty"`

@@ -105,9 +105,11 @@ func (p products) UpdateProduct(ctx context.Context, id int64, input *UpdateProd
 }
 
 type ProductInput struct {
-	ID   *int64 `json:",omitempty"`
-	Type string
-	Name string
+	Content     string `json:"Content,omitempty"`
+	Description string `json:"Description,omitempty"`
+	DisplayName string `json:"DisplayName,omitempty"`
+	Feature     *bool  `json:"Feature,omitempty"`
+	DCREnabled  *bool  `json:"DCREnabled,omitempty"`
 }
 
 type UpdateProductInput = ProductInput
@@ -121,34 +123,33 @@ type ListProductsOutput struct {
 }
 
 type Product struct {
-	APIDetails  []APIDetails `json:"APIDetails"`
-	AuthType    string       `json:"AuthType"`
-	Catalogs    any          `json:"Catalogs"`
-	Content     string       `json:"Content"`
-	DCREnabled  bool         `json:"DCREnabled"`
-	Description string       `json:"Description"`
-	DisplayName string       `json:"DisplayName"`
-	Feature     bool         `json:"Feature"`
-	ID          int          `json:"ID"`
-	Logo        string       `json:"Logo"`
-	Name        string       `json:"Name"`
-	Path        string       `json:"Path"`
-	ReferenceID string       `json:"ReferenceID"`
-	Scopes      string       `json:"Scopes"`
-	Tags        any          `json:"Tags"`
-	Templates   any          `json:"Templates"`
+	ID          int          `json:"ID,omitempty"`
+	APIDetails  []APIDetails `json:"APIDetails,omitempty"`
+	AuthType    string       `json:"AuthType,omitempty"`
+	Catalogues  []string     `json:"Catalogues,omitempty"`
+	Content     string       `json:"Content,omitempty"`
+	DCREnabled  bool         `json:"DCREnabled,omitempty"`
+	Description string       `json:"Description,omitempty"`
+	DisplayName string       `json:"DisplayName,omitempty"`
+	Feature     bool         `json:"Feature,omitempty"`
+	Name        string       `json:"Name,omitempty"`
+	Path        string       `json:"Path,omitempty"`
+	Logo        string       `json:"Logo,omitempty"`
+	ReferenceID string       `json:"ReferenceID,omitempty"`
+	Scopes      string       `json:"Scopes,omitempty"`
+	Tags        []string     `json:"Tags,omitempty"`
+	Templates   []string     `json:"Templates,omitempty"`
 }
 
 type APIDetails struct {
-	APIID       string `json:"APIID"`
-	APIType     string `json:"APIType"`
-	Description string `json:"Description"`
-	ListenPath  string `json:"ListenPath"`
-	Name        string `json:"Name"`
-	OASDocument string `json:"OASDocument"`
-	OASURL      string `json:"OASUrl"`
-	Status      bool   `json:"Status"`
-	TargetURL   string `json:"TargetURL"`
+	APIID       string `json:"APIID,omitempty"`
+	APIType     string `json:"APIType,omitempty"`
+	Description string `json:"Description,omitempty"`
+	ListenPath  string `json:"ListenPath,omitempty"`
+	Name        string `json:"Name,omitempty"`
+	OASURL      string `json:"OASUrl,omitempty"`
+	Status      bool   `json:"Status,omitempty"`
+	TargetURL   string `json:"TargetURL,omitempty"`
 }
 
 type ProductOutput struct {
