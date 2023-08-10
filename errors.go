@@ -13,12 +13,17 @@ type APIError struct {
 }
 
 func (e APIError) Error() string {
+	err := "unknown error"
+	if len(e.Errors) != 0 {
+		err = e.Errors[0]
+	}
+
 	return fmt.Sprintf(
 		"%v %v: %v %v",
 		e.Response.Request.Method,
 		e.Response.Request.URL,
 		e.Response.StatusCode,
-		e.Errors[0],
+		err,
 	)
 }
 
