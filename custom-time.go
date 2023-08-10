@@ -24,6 +24,6 @@ func (ct *CustomTime) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (ct *CustomTime) MarshalJSON() ([]byte, error) {
-	return []byte(ct.Time.Format("2006-01-02 15:04")), nil
+func (ct *CustomTime) MarshalJSON() []byte {
+	return []byte(ct.Time.Format("2006-01-02 15:04"))
 }
