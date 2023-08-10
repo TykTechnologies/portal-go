@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	pathCatalogs = "/portal-api/catalogs"
-	pathCatalog  = "/portal-api/catalogs/%d"
+	pathCatalogs = "/portal-api/catalogues"
+	pathCatalog  = "/portal-api/catalogues/%d"
 )
 
 //go:generate mockery --name Catalogs --filename catalogs.go
