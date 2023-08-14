@@ -135,7 +135,7 @@ type ARDetails struct {
 	ID                   int64         `json:"ID,omitempty"`
 	ProvisionImmediately bool          `json:"ProvisionImmediately,omitempty"`
 	Status               string        `json:"Status,omitempty"`
-	Products             string        `json:"Products,omitempty"`
+	Products             []string      `json:"Products,omitempty"`
 	Credentials          []Credentials `json:"Credentials,omitempty"`
 }
 
