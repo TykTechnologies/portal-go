@@ -26,6 +26,7 @@ type Apps interface {
 	ListApps(ctx context.Context, opts ...Option) (*ListAppsOutput, error)
 	ListARs(ctx context.Context, id int64, opts ...Option) (*ListARsOutput, error)
 	ProvisionApp(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error)
+	GetAR(ctx context.Context, appID int64, arID int64, opts ...Option) (*AROutput, error)
 }
 
 type apps struct {
