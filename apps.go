@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	pathAppARs       = "/portal-api/apps"
-	pathAppAR        = "/portal-api/apps/%v"
+	pathAppARs       = "/portal-api/apps/%v/access-requests"
+	pathAppAR        = "/portal-api/apps/%v/access-requests/%v"
 	pathApps         = "/portal-api/apps"
 	pathApp          = "/portal-api/apps/%v"
 	pathAppProvision = "/portal-api/apps/%v/provision"
@@ -105,7 +105,7 @@ func (p apps) ListApps(ctx context.Context, opts ...Option) (*ListAppsOutput, er
 }
 
 func (p apps) ListARs(ctx context.Context, id int64, opts ...Option) (*ListARsOutput, error) {
-	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathApp, id), nil, opts...)
+	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathAppARs, id), nil, opts...)
 	if err != nil {
 		return nil, err
 	}
