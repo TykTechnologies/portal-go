@@ -1,0 +1,38 @@
+HTTP/1.1 200 OK
+Cache-Control: no-store
+Content-Type: application/json
+Pragma: no-cache
+Date: Tue, 15 Aug 2023 19:42:37 GMT
+Content-Length: 802
+
+{
+	"Catalogue": "Public Catalogue",
+	"Client": "v34",
+	"CreatedAt": "2023-08-14 19:09",
+	"Credentials": [
+		{
+			"AccessRequest": "AccessRequest#30",
+			"Credential": "eyJvcmciOiI2MTcwMDZjMTgyOWI2ZjAwMDFjNmMwMzkiLCJpZCI6IjQ0ZDc1OWYwZGVjYzQ2MDliYmMxNDVjYjJkMTJhNjM4IiwiaCI6Im11cm11cjY0In0=",
+			"CredentialHash": "60bf6ae8aeddde79",
+			"DCRRegistrationAccessToken": "",
+			"DCRRegistrationClientURI": "",
+			"DCRResponse": "",
+			"Expires": "1970-01-01 02:00",
+			"GrantType": "",
+			"ID": 29,
+			"JWKSURI": "",
+			"OAuthClientID": "",
+			"OAuthClientSecret": "",
+			"RedirectURI": "",
+			"ResponseType": "",
+			"Scope": "",
+			"TokenEndpoints": ""
+		}
+	],
+	"DeletedAt": "",
+	"Plan": "free_plan",
+	"PolicyService": [],
+	"Products": "public_product",
+	"UpdatedAt": "2023-08-14 19:09",
+	"User": "User#1"
+}

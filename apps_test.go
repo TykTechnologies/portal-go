@@ -86,10 +86,56 @@ func TestApps_Get(t *testing.T) {
 	assertApps(t, want, resp.Data)
 }
 
+func TestApps_GetAR(t *testing.T) {
+	srv := NewServer(t)
+	defer srv.Close()
+
+	token := "TOKEN"
+
+	srv.mux.HandleFunc("/portal-api/apps/1/access-requests/30", func(w http.ResponseWriter, r *http.Request) {
+		httpResponse := httpParse(t, "portal-api/get_ar_success.txt")
+		defer httpResponse.Body.Close()
+
+		assertMethod(t, "GET", r)
+		assertHeader(t, r, "Authorization", token)
+
+		w.WriteHeader(httpResponse.StatusCode)
+		_, err := io.Copy(w, httpResponse.Body)
+		assert.NoError(t, err)
+	})
+
+	client, err := New(
+		WithBaseURL(srv.srv.URL),
+		WithToken(token),
+	)
+	assert.NoError(t, err)
+
+	resp, err := client.Apps().GetAR(context.Background(), 1, 30)
+	assert.NoError(t, err)
+
+	want := &ARDetails{
+		Client:    "v34",
+		Catalogue: "Public Catalogue",
+		Plan:      "free_plan",
+		Products: []string{
+			"puvlic_product",
+		},
+	}
+
+	assertAR(t, want, resp.Data)
+}
+
 func assertApps(t *testing.T, want, got []App) {
 	require.Equal(t, len(want), len(got), "wanted len %v but got len", len(want), len(got))
 
 	for k, v := range want {
 		assert.Equal(t, v, got[k])
 	}
+}
+
+func assertAR(t *testing.T, want, got *ARDetails) {
+	assert.Equal(t, want.AuthType, got.AuthType, "wanted auth type %v but got %v", want.AuthType, got.AuthType)
+	assert.Equal(t, want.Catalogue, got.Catalogue, "wanted catalogue %v but got %v", want.Catalogue, got.Catalogue)
+	assert.Equal(t, want.Client, got.Client, "wanted client %v but got %v", want.Client, got.Client)
+	assert.Equal(t, want.Plan, got.Plan, "wanted plan %v but got %v", want.Plan, got.Plan)
 }
