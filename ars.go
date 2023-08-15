@@ -53,10 +53,16 @@ func (p ars) ListARs(ctx context.Context, opts ...Option) (*ListARsOutput, error
 		return nil, err
 	}
 
-	var ars []ARSummary
+	var internalAR []internalARDetails
 
-	if err := resp.Unmarshal(&ars); err != nil {
+	if err := resp.Unmarshal(&internalAR); err != nil {
 		return nil, err
+	}
+
+	ars := make([]ARDetails, 0)
+
+	for _, ar := range internalAR {
+		ars = append(ars, ar.ToARDetails())
 	}
 
 	return &ListARsOutput{
@@ -123,20 +129,20 @@ func (p ars) DeleteAR(ctx context.Context, id int64, opts ...Option) (*StatusOut
 }
 
 type ARDetails struct {
-	Catalog              string        `json:"Catalog,omitempty"`
+	AuthType             string        `json:"AuthType,omitempty"`
+	Catalogue            string        `json:"Catalogue,omitempty"`
 	Client               string        `json:"Client,omitempty"`
 	CreatedAt            string        `json:"CreatedAt,omitempty"`
-	UpdatedAt            string        `json:"UpdatedAt,omitempty"`
-	DeletedAt            string        `json:"DeletedAt,omitempty"`
-	Plan                 string        `json:"Plan,omitempty"`
-	User                 string        `json:"User,omitempty"`
-	AuthType             string        `json:"AuthType,omitempty"`
+	Credentials          []Credentials `json:"Credentials,omitempty"`
 	DCREnabled           bool          `json:"DCREnabled,omitempty"`
+	DeletedAt            string        `json:"DeletedAt,omitempty"`
 	ID                   int64         `json:"ID,omitempty"`
+	Plan                 string        `json:"Plan,omitempty"`
+	Products             []string      `json:"Products,omitempty"`
 	ProvisionImmediately bool          `json:"ProvisionImmediately,omitempty"`
 	Status               string        `json:"Status,omitempty"`
-	Products             string        `json:"Products,omitempty"`
-	Credentials          []Credentials `json:"Credentials,omitempty"`
+	UpdatedAt            string        `json:"UpdatedAt,omitempty"`
+	User                 string        `json:"User,omitempty"`
 }
 
 type ARSummary struct {
@@ -174,11 +180,55 @@ type Credentials struct {
 }
 
 type ListARsOutput struct {
-	Data     []ARSummary
+	Data     []ARDetails
 	Response *http.Response
 }
 
 type AROutput struct {
 	Data     *ARDetails
 	Response *http.Response
+}
+
+type internalARDetails struct {
+	AuthType             string        `json:"AuthType,omitempty"`
+	Catalogue            string        `json:"Catalogue,omitempty"`
+	Client               string        `json:"Client,omitempty"`
+	CreatedAt            string        `json:"CreatedAt,omitempty"`
+	Credentials          []Credentials `json:"Credentials,omitempty"`
+	DCREnabled           bool          `json:"DCREnabled,omitempty"`
+	DeletedAt            string        `json:"DeletedAt,omitempty"`
+	ID                   int64         `json:"ID,omitempty"`
+	Plan                 string        `json:"Plan,omitempty"`
+	Products             interface{}   `json:"Products,omitempty"`
+	ProvisionImmediately bool          `json:"ProvisionImmediately,omitempty"`
+	Status               string        `json:"Status,omitempty"`
+	UpdatedAt            string        `json:"UpdatedAt,omitempty"`
+	User                 string        `json:"User,omitempty"`
+}
+
+func (a internalARDetails) ToARDetails() ARDetails {
+	ar := ARDetails{
+		AuthType:             a.AuthType,
+		Catalogue:            a.Catalogue,
+		Client:               a.Client,
+		CreatedAt:            a.CreatedAt,
+		Credentials:          a.Credentials,
+		DCREnabled:           a.DCREnabled,
+		DeletedAt:            a.DeletedAt,
+		ID:                   a.ID,
+		Plan:                 a.Plan,
+		ProvisionImmediately: a.ProvisionImmediately,
+		Status:               a.Status,
+		UpdatedAt:            a.UpdatedAt,
+		User:                 a.User,
+	}
+
+	switch k := a.Products.(type) {
+	case []string:
+		ar.Products = k
+	case string:
+		ar.Products = []string{k}
+	}
+
+	return ar
 }

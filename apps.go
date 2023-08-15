@@ -111,14 +111,16 @@ func (p apps) ListARs(ctx context.Context, id int64, opts ...Option) (*ListARsOu
 		return nil, err
 	}
 
-	var ars []ARSummary
+	var ars struct {
+		AccessRequests []ARDetails `json:"AccessRequests,omitempty"`
+	}
 
 	if err := resp.Unmarshal(&ars); err != nil {
 		return nil, err
 	}
 
 	return &ListARsOutput{
-		Data: ars,
+		Data: ars.AccessRequests,
 	}, nil
 }
 
