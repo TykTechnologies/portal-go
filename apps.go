@@ -24,6 +24,7 @@ type Apps interface {
 	CreateApp(ctx context.Context, input *AppInput, opts ...Option) (*AppOutput, error)
 	GetApp(ctx context.Context, id int64, opts ...Option) (*AppOutput, error)
 	UpdateApp(ctx context.Context, id int64, input *AppInput, opts ...Option) (*AppOutput, error)
+	DeleteApp(ctx context.Context, id int64, opts ...Option) (*AppOutput, error)
 	ListApps(ctx context.Context, opts ...Option) (*ListAppsOutput, error)
 	ListARs(ctx context.Context, id int64, opts ...Option) (*ListARsOutput, error)
 	ProvisionApp(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error)
@@ -79,6 +80,22 @@ func (p apps) UpdateApp(ctx context.Context, id int64, input *AppInput, opts ...
 	}
 
 	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathApp, id), bytes.NewReader(payload), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var app App
+	if err := resp.Unmarshal(&app); err != nil {
+		return nil, err
+	}
+
+	return &AppOutput{
+		Data: &app,
+	}, nil
+}
+
+func (p apps) DeleteApp(ctx context.Context, id int64, opts ...Option) (*AppOutput, error) {
+	resp, err := p.client.doDelete(ctx, fmt.Sprintf(pathApp, id), nil, nil)
 	if err != nil {
 		return nil, err
 	}
