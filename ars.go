@@ -145,22 +145,6 @@ type ARDetails struct {
 	User                 string        `json:"User,omitempty"`
 }
 
-type ARSummary struct {
-	Catalog              string `json:"Catalog,omitempty"`
-	Client               string `json:"Client,omitempty"`
-	CreatedAt            string `json:"CreatedAt,omitempty"`
-	UpdatedAt            string `json:"UpdatedAt,omitempty"`
-	DeletedAt            string `json:"DeletedAt,omitempty"`
-	Plan                 string `json:"Plan,omitempty"`
-	User                 string `json:"User,omitempty"`
-	AuthType             string `json:"AuthType,omitempty"`
-	DCREnabled           bool   `json:"DCREnabled,omitempty"`
-	ID                   int16  `json:"ID,omitempty"`
-	ProvisionImmediately bool   `json:"ProvisionImmediately,omitempty"`
-	Status               string `json:"Status,omitempty"`
-	Products             string `json:"Products,omitempty"`
-}
-
 type Credentials struct {
 	AccessRequest              string     `json:"AccessRequest,omitempty"`
 	Credential                 string     `json:"Credential,omitempty"`
