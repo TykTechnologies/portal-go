@@ -5,6 +5,7 @@ package portal
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -53,16 +54,10 @@ func (p ars) ListARs(ctx context.Context, opts ...Option) (*ListARsOutput, error
 		return nil, err
 	}
 
-	var internalAR []internalARDetails
+	var ars []ARDetails
 
-	if err := resp.Unmarshal(&internalAR); err != nil {
+	if err := resp.Unmarshal(&ars); err != nil {
 		return nil, err
-	}
-
-	ars := make([]ARDetails, 0)
-
-	for _, ar := range internalAR {
-		ars = append(ars, ar.ToARDetails())
 	}
 
 	return &ListARsOutput{
@@ -145,6 +140,52 @@ type ARDetails struct {
 	User                 string        `json:"User,omitempty"`
 }
 
+func (a *ARDetails) UnmarshalJSON(b []byte) error {
+	var customAR struct {
+		AuthType             string        `json:"AuthType,omitempty"`
+		Catalogue            string        `json:"Catalogue,omitempty"`
+		Client               string        `json:"Client,omitempty"`
+		CreatedAt            string        `json:"CreatedAt,omitempty"`
+		Credentials          []Credentials `json:"Credentials,omitempty"`
+		DCREnabled           bool          `json:"DCREnabled,omitempty"`
+		DeletedAt            string        `json:"DeletedAt,omitempty"`
+		ID                   int64         `json:"ID,omitempty"`
+		Plan                 string        `json:"Plan,omitempty"`
+		Products             interface{}   `json:"Products,omitempty"`
+		ProvisionImmediately bool          `json:"ProvisionImmediately,omitempty"`
+		Status               string        `json:"Status,omitempty"`
+		UpdatedAt            string        `json:"UpdatedAt,omitempty"`
+		User                 string        `json:"User,omitempty"`
+	}
+
+	if err := json.Unmarshal(b, &customAR); err != nil {
+		return err
+	}
+
+	a.AuthType = customAR.AuthType
+	a.Catalogue = customAR.Catalogue
+	a.Client = customAR.Client
+	a.CreatedAt = customAR.CreatedAt
+	a.Credentials = customAR.Credentials
+	a.DCREnabled = customAR.DCREnabled
+	a.DeletedAt = customAR.DeletedAt
+	a.ID = customAR.ID
+	a.Plan = customAR.Plan
+	a.ProvisionImmediately = customAR.ProvisionImmediately
+	a.Status = customAR.Status
+	a.UpdatedAt = customAR.UpdatedAt
+	a.User = customAR.User
+
+	switch k := customAR.Products.(type) {
+	case []string:
+		a.Products = k
+	case string:
+		a.Products = []string{k}
+	}
+
+	return nil
+}
+
 type Credentials struct {
 	AccessRequest              string     `json:"AccessRequest,omitempty"`
 	Credential                 string     `json:"Credential,omitempty"`
@@ -171,48 +212,4 @@ type ListARsOutput struct {
 type AROutput struct {
 	Data     *ARDetails
 	Response *http.Response
-}
-
-type internalARDetails struct {
-	AuthType             string        `json:"AuthType,omitempty"`
-	Catalogue            string        `json:"Catalogue,omitempty"`
-	Client               string        `json:"Client,omitempty"`
-	CreatedAt            string        `json:"CreatedAt,omitempty"`
-	Credentials          []Credentials `json:"Credentials,omitempty"`
-	DCREnabled           bool          `json:"DCREnabled,omitempty"`
-	DeletedAt            string        `json:"DeletedAt,omitempty"`
-	ID                   int64         `json:"ID,omitempty"`
-	Plan                 string        `json:"Plan,omitempty"`
-	Products             interface{}   `json:"Products,omitempty"`
-	ProvisionImmediately bool          `json:"ProvisionImmediately,omitempty"`
-	Status               string        `json:"Status,omitempty"`
-	UpdatedAt            string        `json:"UpdatedAt,omitempty"`
-	User                 string        `json:"User,omitempty"`
-}
-
-func (a internalARDetails) ToARDetails() ARDetails {
-	ar := ARDetails{
-		AuthType:             a.AuthType,
-		Catalogue:            a.Catalogue,
-		Client:               a.Client,
-		CreatedAt:            a.CreatedAt,
-		Credentials:          a.Credentials,
-		DCREnabled:           a.DCREnabled,
-		DeletedAt:            a.DeletedAt,
-		ID:                   a.ID,
-		Plan:                 a.Plan,
-		ProvisionImmediately: a.ProvisionImmediately,
-		Status:               a.Status,
-		UpdatedAt:            a.UpdatedAt,
-		User:                 a.User,
-	}
-
-	switch k := a.Products.(type) {
-	case []string:
-		ar.Products = k
-	case string:
-		ar.Products = []string{k}
-	}
-
-	return ar
 }
