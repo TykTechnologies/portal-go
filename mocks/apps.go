@@ -212,6 +212,39 @@ func (_m *Apps) ProvisionApp(ctx context.Context, id int64, opts ...portal.Optio
 	return r0, r1
 }
 
+// UpdateApp provides a mock function with given fields: ctx, id, input, opts
+func (_m *Apps) UpdateApp(ctx context.Context, id int64, input *portal.AppInput, opts ...portal.Option) (*portal.AppOutput, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, id, input)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	var r0 *portal.AppOutput
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.AppInput, ...portal.Option) (*portal.AppOutput, error)); ok {
+		return rf(ctx, id, input, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *portal.AppInput, ...portal.Option) *portal.AppOutput); ok {
+		r0 = rf(ctx, id, input, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*portal.AppOutput)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int64, *portal.AppInput, ...portal.Option) error); ok {
+		r1 = rf(ctx, id, input, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // NewApps creates a new instance of Apps. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewApps(t interface {
