@@ -47,6 +47,39 @@ func (_m *Apps) CreateApp(ctx context.Context, input *portal.AppInput, opts ...p
 	return r0, r1
 }
 
+// GetAR provides a mock function with given fields: ctx, appID, arID, opts
+func (_m *Apps) GetAR(ctx context.Context, appID int64, arID int64, opts ...portal.Option) (*portal.AROutput, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, appID, arID)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	var r0 *portal.AROutput
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64, int64, ...portal.Option) (*portal.AROutput, error)); ok {
+		return rf(ctx, appID, arID, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int64, int64, ...portal.Option) *portal.AROutput); ok {
+		r0 = rf(ctx, appID, arID, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*portal.AROutput)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int64, int64, ...portal.Option) error); ok {
+		r1 = rf(ctx, appID, arID, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetApp provides a mock function with given fields: ctx, id, opts
 func (_m *Apps) GetApp(ctx context.Context, id int64, opts ...portal.Option) (*portal.AppOutput, error) {
 	_va := make([]interface{}, len(opts))

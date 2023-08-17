@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	pathAppARs       = "/portal-api/apps"
-	pathAppAR        = "/portal-api/apps/%v"
+	pathAppAR        = "/portal-api/apps/%v/access-requests/%v"
+	pathAppARs       = "/portal-api/apps/%v/access-requests"
 	pathApps         = "/portal-api/apps"
 	pathApp          = "/portal-api/apps/%v"
 	pathAppProvision = "/portal-api/apps/%v/provision"
@@ -26,6 +26,7 @@ type Apps interface {
 	ListApps(ctx context.Context, opts ...Option) (*ListAppsOutput, error)
 	ListARs(ctx context.Context, id int64, opts ...Option) (*ListARsOutput, error)
 	ProvisionApp(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error)
+	GetAR(ctx context.Context, appID int64, arID int64, opts ...Option) (*AROutput, error)
 }
 
 type apps struct {
@@ -110,14 +111,33 @@ func (p apps) ListARs(ctx context.Context, id int64, opts ...Option) (*ListARsOu
 		return nil, err
 	}
 
-	var ars []ARSummary
+	var ars struct {
+		AccessRequests []ARDetails `json:"AccessRequests,omitempty"`
+	}
 
 	if err := resp.Unmarshal(&ars); err != nil {
 		return nil, err
 	}
 
 	return &ListARsOutput{
-		Data: ars,
+		Data: ars.AccessRequests,
+	}, nil
+}
+
+func (p apps) GetAR(ctx context.Context, appID int64, arID int64, opts ...Option) (*AROutput, error) {
+	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathAppAR, appID, arID), nil, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	var ar ARDetails
+
+	if err := resp.Unmarshal(&ar); err != nil {
+		return nil, err
+	}
+
+	return &AROutput{
+		Data: &ar,
 	}, nil
 }
 

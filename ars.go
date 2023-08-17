@@ -5,6 +5,7 @@ package portal
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -53,7 +54,7 @@ func (p ars) ListARs(ctx context.Context, opts ...Option) (*ListARsOutput, error
 		return nil, err
 	}
 
-	var ars []ARSummary
+	var ars []ARDetails
 
 	if err := resp.Unmarshal(&ars); err != nil {
 		return nil, err
@@ -123,36 +124,66 @@ func (p ars) DeleteAR(ctx context.Context, id int64, opts ...Option) (*StatusOut
 }
 
 type ARDetails struct {
-	Catalog              string        `json:"Catalog,omitempty"`
+	AuthType             string        `json:"AuthType,omitempty"`
+	Catalogue            string        `json:"Catalogue,omitempty"`
 	Client               string        `json:"Client,omitempty"`
 	CreatedAt            string        `json:"CreatedAt,omitempty"`
-	UpdatedAt            string        `json:"UpdatedAt,omitempty"`
-	DeletedAt            string        `json:"DeletedAt,omitempty"`
-	Plan                 string        `json:"Plan,omitempty"`
-	User                 string        `json:"User,omitempty"`
-	AuthType             string        `json:"AuthType,omitempty"`
+	Credentials          []Credentials `json:"Credentials,omitempty"`
 	DCREnabled           bool          `json:"DCREnabled,omitempty"`
+	DeletedAt            string        `json:"DeletedAt,omitempty"`
 	ID                   int64         `json:"ID,omitempty"`
+	Plan                 string        `json:"Plan,omitempty"`
+	Products             []string      `json:"Products,omitempty"`
 	ProvisionImmediately bool          `json:"ProvisionImmediately,omitempty"`
 	Status               string        `json:"Status,omitempty"`
-	Products             string        `json:"Products,omitempty"`
-	Credentials          []Credentials `json:"Credentials,omitempty"`
+	UpdatedAt            string        `json:"UpdatedAt,omitempty"`
+	User                 string        `json:"User,omitempty"`
 }
 
-type ARSummary struct {
-	Catalog              string `json:"Catalog,omitempty"`
-	Client               string `json:"Client,omitempty"`
-	CreatedAt            string `json:"CreatedAt,omitempty"`
-	UpdatedAt            string `json:"UpdatedAt,omitempty"`
-	DeletedAt            string `json:"DeletedAt,omitempty"`
-	Plan                 string `json:"Plan,omitempty"`
-	User                 string `json:"User,omitempty"`
-	AuthType             string `json:"AuthType,omitempty"`
-	DCREnabled           bool   `json:"DCREnabled,omitempty"`
-	ID                   int16  `json:"ID,omitempty"`
-	ProvisionImmediately bool   `json:"ProvisionImmediately,omitempty"`
-	Status               string `json:"Status,omitempty"`
-	Products             string `json:"Products,omitempty"`
+func (a *ARDetails) UnmarshalJSON(b []byte) error {
+	var customAR struct {
+		AuthType             string        `json:"AuthType,omitempty"`
+		Catalogue            string        `json:"Catalogue,omitempty"`
+		Client               string        `json:"Client,omitempty"`
+		CreatedAt            string        `json:"CreatedAt,omitempty"`
+		Credentials          []Credentials `json:"Credentials,omitempty"`
+		DCREnabled           bool          `json:"DCREnabled,omitempty"`
+		DeletedAt            string        `json:"DeletedAt,omitempty"`
+		ID                   int64         `json:"ID,omitempty"`
+		Plan                 string        `json:"Plan,omitempty"`
+		Products             interface{}   `json:"Products,omitempty"`
+		ProvisionImmediately bool          `json:"ProvisionImmediately,omitempty"`
+		Status               string        `json:"Status,omitempty"`
+		UpdatedAt            string        `json:"UpdatedAt,omitempty"`
+		User                 string        `json:"User,omitempty"`
+	}
+
+	if err := json.Unmarshal(b, &customAR); err != nil {
+		return err
+	}
+
+	a.AuthType = customAR.AuthType
+	a.Catalogue = customAR.Catalogue
+	a.Client = customAR.Client
+	a.CreatedAt = customAR.CreatedAt
+	a.Credentials = customAR.Credentials
+	a.DCREnabled = customAR.DCREnabled
+	a.DeletedAt = customAR.DeletedAt
+	a.ID = customAR.ID
+	a.Plan = customAR.Plan
+	a.ProvisionImmediately = customAR.ProvisionImmediately
+	a.Status = customAR.Status
+	a.UpdatedAt = customAR.UpdatedAt
+	a.User = customAR.User
+
+	switch k := customAR.Products.(type) {
+	case []string:
+		a.Products = k
+	case string:
+		a.Products = []string{k}
+	}
+
+	return nil
 }
 
 type Credentials struct {
@@ -174,7 +205,7 @@ type Credentials struct {
 }
 
 type ListARsOutput struct {
-	Data     []ARSummary
+	Data     []ARDetails
 	Response *http.Response
 }
 
