@@ -124,15 +124,15 @@ func (p users) DeleteUser(ctx context.Context, id int64, opts ...Option) (*Delet
 }
 
 type UserInput struct {
-	ID             *int64 `json:"ID,omitempty"`
-	Active         bool   `json:"Active,omitempty"`
-	Email          string `json:"Email,omitempty"`
-	First          string `json:"First,omitempty"`
-	Last           string `json:"Last,omitempty"`
-	OrganizationID int64  `json:"OrganizationID,omitempty"`
-	Role           string `json:"Role,omitempty"`
-	Provider       string `json:"Provider,omitempty"`
-	ResetPassword  bool   `json:"ResetPassword,omitempty"`
+	ID            *int64 `json:"ID,omitempty"`
+	Active        bool   `json:"Active,omitempty"`
+	Email         string `json:"Email,omitempty"`
+	First         string `json:"First,omitempty"`
+	Last          string `json:"Last,omitempty"`
+	OrgID         int64  `json:"OrganizationID,omitempty"`
+	Role          string `json:"Role,omitempty"`
+	Provider      string `json:"Provider,omitempty"`
+	ResetPassword bool   `json:"ResetPassword,omitempty"`
 }
 
 func (u UserInput) validate() error {
@@ -162,12 +162,12 @@ type User struct {
 	Email             string   `json:"Email,omitempty"`
 	First             string   `json:"First,omitempty"`
 	Last              string   `json:"Last,omitempty"`
-	OrganizationID    int64    `json:"OrganizationID,omitempty"`
+	OrgID             int64    `json:"OrganizationID,omitempty"`
 	Role              string   `json:"Role,omitempty"`
 	Provider          string   `json:"Provider,omitempty"`
 	JWTToken          string   `json:"JWTToken,omitempty"`
 	APITokenCreatedAt string   `json:"APITokenCreatedAt,omitempty"`
-	Organization      string   `json:"Organization,omitempty"`
+	Org               string   `json:"Organization,omitempty"`
 	ResetPassword     bool     `json:"ResetPassword,omitempty"`
 	Teams             []string `json:"Teams,omitempty"`
 	ID                int64    `json:"ID,omitempty"`

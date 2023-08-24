@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 )
 
 const (
@@ -128,7 +129,7 @@ func (p apps) ProvisionApp(ctx context.Context, id int64, opts ...Option) (*Stat
 
 // ListApps lists apps
 func (p apps) ListApps(ctx context.Context, opts ...Option) (*ListAppsOutput, error) {
-	resp, err := p.client.doGet(ctx, pathApps, nil, opts...)
+	resp, err := p.client.doGet(ctx, pathApps, url.Values{"p": []string{"-2"}}, opts...)
 	if err != nil {
 		return nil, err
 	}
