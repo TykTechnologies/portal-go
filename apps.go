@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 )
 
 const (
@@ -24,6 +25,7 @@ type Apps interface {
 	CreateApp(ctx context.Context, input *AppInput, opts ...Option) (*AppOutput, error)
 	GetApp(ctx context.Context, id int64, opts ...Option) (*AppOutput, error)
 	UpdateApp(ctx context.Context, id int64, input *AppInput, opts ...Option) (*AppOutput, error)
+	DeleteApp(ctx context.Context, id int64, opts ...Option) (*AppOutput, error)
 	ListApps(ctx context.Context, opts ...Option) (*ListAppsOutput, error)
 	ListARs(ctx context.Context, id int64, opts ...Option) (*ListARsOutput, error)
 	ProvisionApp(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error)
@@ -93,6 +95,22 @@ func (p apps) UpdateApp(ctx context.Context, id int64, input *AppInput, opts ...
 	}, nil
 }
 
+func (p apps) DeleteApp(ctx context.Context, id int64, opts ...Option) (*AppOutput, error) {
+	resp, err := p.client.doDelete(ctx, fmt.Sprintf(pathApp, id), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var app App
+	if err := resp.Unmarshal(&app); err != nil {
+		return nil, err
+	}
+
+	return &AppOutput{
+		Data: &app,
+	}, nil
+}
+
 func (p apps) ProvisionApp(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error) {
 	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathAppProvision, id), nil, nil)
 	if err != nil {
@@ -111,7 +129,7 @@ func (p apps) ProvisionApp(ctx context.Context, id int64, opts ...Option) (*Stat
 
 // ListApps lists apps
 func (p apps) ListApps(ctx context.Context, opts ...Option) (*ListAppsOutput, error) {
-	resp, err := p.client.doGet(ctx, pathApps, nil, opts...)
+	resp, err := p.client.doGet(ctx, pathApps, url.Values{"p": []string{"-2"}}, opts...)
 	if err != nil {
 		return nil, err
 	}
