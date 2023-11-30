@@ -101,15 +101,15 @@ type Client struct {
 	minRetryBackoff time.Duration
 	skipValidation  bool
 
-	pages     Pages
-	providers Providers
-	plans     Plans
-	users     Users
-	orgs      Orgs
-	products  Products
-	catalogs  Catalogs
-	ars       ARs
-	apps      Apps
+	pages      Pages
+	providers  Providers
+	plans      Plans
+	users      Users
+	orgs       Orgs
+	products   Products
+	catalogues Catalogues
+	ars        ARs
+	apps       Apps
 }
 
 func (c Client) Apps() Apps {
@@ -128,12 +128,12 @@ func (c *Client) SetARs(ar ARs) {
 	c.ars = ar
 }
 
-func (c Client) Catalogs() Catalogs {
-	return c.catalogs
+func (c Client) Catalogues() Catalogues {
+	return c.catalogues
 }
 
-func (c *Client) SetCatalogs(catalogs Catalogs) {
-	c.catalogs = catalogs
+func (c *Client) SetCatalogues(catalogues Catalogues) {
+	c.catalogues = catalogues
 }
 
 func (c Client) Products() Products {
@@ -231,7 +231,7 @@ func newClient(opts ...Option) (*Client, error) {
 	client.users = &users{client: client}
 	client.orgs = &orgs{client: client}
 	client.products = &products{client: client}
-	client.catalogs = &catalogs{client: client}
+	client.catalogues = &catalogues{client: client}
 	client.ars = &ars{client: client}
 	client.pages = &pages{client: client}
 	client.apps = &apps{client: client}
