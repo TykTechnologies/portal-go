@@ -6,9 +6,7 @@ import (
 )
 
 func TestCustomTime_UnmarshalJSON(t *testing.T) {
-	var (
-		t0, _ = time.Parse("2006-01-02 15:04", "2020-01-01 00:00")
-	)
+	t0, _ := time.Parse("2006-01-02 15:04", "2020-01-01 00:00")
 	tests := []struct {
 		name    string
 		Time    time.Time

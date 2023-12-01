@@ -21,7 +21,7 @@ type Catalogues interface {
 	GetCatalogue(ctx context.Context, id int64, opts ...Option) (*GetCatalogueOutput, error)
 	ListCatalogues(ctx context.Context, options *ListCataloguesInput, opts ...Option) (*ListCataloguesOutput, error)
 	UpdateCatalogue(ctx context.Context, id int64, input *UpdateCatalogueInput, opts ...Option) (*UpdateCatalogueOutput, error)
-	DeleteCatalogue(ctx context.Context, id int64, opts ...Option)  (*CatalogueOutput, error)
+	DeleteCatalogue(ctx context.Context, id int64, opts ...Option) (*CatalogueOutput, error)
 }
 
 type catalogues struct {
@@ -113,7 +113,6 @@ func (p catalogues) DeleteCatalogue(ctx context.Context, id int64, opts ...Optio
 
 	return &CatalogueOutput{}, nil
 }
-
 
 type CatalogueInput struct {
 	ID               *int64  `json:"ID,omitempty"`
