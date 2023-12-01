@@ -21,6 +21,7 @@ type Pages interface {
 	GetPage(ctx context.Context, id int64, opts ...Option) (*GetPageOutput, error)
 	ListPages(ctx context.Context, options *ListPagesInput, opts ...Option) (*ListPagesOutput, error)
 	UpdatePage(ctx context.Context, id int64, input *UpdatePageInput, opts ...Option) (*UpdatePageOutput, error)
+	DeletePage(ctx context.Context, id int64, opts ...Option) (*PageOutput, error)
 }
 
 type pages struct {
@@ -104,10 +105,22 @@ func (p pages) UpdatePage(ctx context.Context, id int64, input *UpdatePageInput,
 	}, nil
 }
 
+func (p pages) DeletePage(ctx context.Context, id int64, opts ...Option) (*PageOutput, error) {
+	_, err := p.client.doDelete(ctx, fmt.Sprintf(pathPage, id), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return &PageOutput{}, nil
+}
+
 type PageInput struct {
-	ID   *int64 `json:",omitempty"`
-	Type string
-	Name string
+	AllowFormSubmission bool   `json:"AllowFormSubmission"`
+	PageTypeID          int64  `json:"PageTypeID"`
+	Path                string `json:"Path"`
+	Status              string `json:"Status"`
+	Template            string `json:"Template"`
+	Title               string `json:"Title"`
 }
 
 type UpdatePageInput = PageInput
@@ -122,8 +135,8 @@ type ListPagesOutput struct {
 
 type Page struct {
 	AllowFormSubmission bool   `json:"AllowFormSubmission"`
-	ID                  int    `json:"ID"`
-	PageTypeID          int    `json:"PageTypeID"`
+	ID                  int64  `json:"ID"`
+	PageTypeID          int64  `json:"PageTypeID"`
 	Path                string `json:"Path"`
 	Status              string `json:"Status"`
 	Template            string `json:"Template"`
