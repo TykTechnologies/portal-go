@@ -29,7 +29,7 @@ type Apps interface {
 	ListApps(ctx context.Context, opts ...Option) (*ListAppsOutput, error)
 	ListARs(ctx context.Context, id int64, opts ...Option) (*ListARsOutput, error)
 	ProvisionApp(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error)
-	GetAR(ctx context.Context, appID int64, arID int64, opts ...Option) (*AROutput, error)
+	GetAR(ctx context.Context, appID, arID int64, opts ...Option) (*AROutput, error)
 }
 
 type apps struct {
@@ -164,7 +164,7 @@ func (p apps) ListARs(ctx context.Context, id int64, opts ...Option) (*ListARsOu
 	}, nil
 }
 
-func (p apps) GetAR(ctx context.Context, appID int64, arID int64, opts ...Option) (*AROutput, error) {
+func (p apps) GetAR(ctx context.Context, appID, arID int64, opts ...Option) (*AROutput, error) {
 	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathAppAR, appID, arID), nil, opts...)
 	if err != nil {
 		return nil, err

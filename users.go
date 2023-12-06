@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 )
 
 const (
@@ -98,6 +99,8 @@ func (p users) UpdateUser(ctx context.Context, id int64, input *UpdateUserInput,
 		return nil, err
 	}
 
+	log.Println(string(payload))
+
 	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathUser, id), bytes.NewReader(payload), nil)
 	if err != nil {
 		return nil, err
@@ -129,7 +132,7 @@ type UserInput struct {
 	Email         string `json:"Email,omitempty"`
 	First         string `json:"First,omitempty"`
 	Last          string `json:"Last,omitempty"`
-	OrgID         int64  `json:"OrganizationID,omitempty"`
+	OrgID         int64  `json:"OrganisationID,omitempty"`
 	Role          string `json:"Role,omitempty"`
 	Provider      string `json:"Provider,omitempty"`
 	ResetPassword bool   `json:"ResetPassword,omitempty"`
@@ -162,12 +165,12 @@ type User struct {
 	Email             string   `json:"Email,omitempty"`
 	First             string   `json:"First,omitempty"`
 	Last              string   `json:"Last,omitempty"`
-	OrgID             int64    `json:"OrganizationID,omitempty"`
+	OrgID             int64    `json:"OrganisationID,omitempty"`
 	Role              string   `json:"Role,omitempty"`
 	Provider          string   `json:"Provider,omitempty"`
 	JWTToken          string   `json:"JWTToken,omitempty"`
 	APITokenCreatedAt string   `json:"APITokenCreatedAt,omitempty"`
-	Org               string   `json:"Organization,omitempty"`
+	Org               string   `json:"Organisation,omitempty"`
 	ResetPassword     bool     `json:"ResetPassword,omitempty"`
 	Teams             []string `json:"Teams,omitempty"`
 	ID                int64    `json:"ID,omitempty"`

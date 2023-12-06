@@ -13,6 +13,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -88,6 +89,18 @@ func WithDebug(debug bool) Option {
 	}
 }
 
+func WithHeaders(h map[string]string) Option {
+	return func(c *Client) {
+		headers := http.Header{}
+
+		for k, v := range h {
+			headers.Add(k, v)
+		}
+
+		c.headers = headers
+	}
+}
+
 type Client struct {
 	httpClient      HTTPClient
 	connectTimeout  time.Duration
@@ -100,6 +113,7 @@ type Client struct {
 	maxRetries      int
 	minRetryBackoff time.Duration
 	skipValidation  bool
+	headers         http.Header
 
 	pages      Pages
 	providers  Providers
@@ -110,6 +124,7 @@ type Client struct {
 	catalogues Catalogues
 	ars        ARs
 	apps       Apps
+	themes     Themes
 }
 
 func (c Client) Apps() Apps {
@@ -184,6 +199,14 @@ func (c *Client) SetPages(pages Pages) {
 	c.pages = pages
 }
 
+func (c Client) Themes() Themes {
+	return c.themes
+}
+
+func (c *Client) SetThemes(themes Themes) {
+	c.themes = themes
+}
+
 func (c *Client) Apply(opts ...Option) {
 	for _, opt := range opts {
 		if opt == nil {
@@ -235,6 +258,7 @@ func newClient(opts ...Option) (*Client, error) {
 	client.ars = &ars{client: client}
 	client.pages = &pages{client: client}
 	client.apps = &apps{client: client}
+	client.themes = &themes{client: client}
 
 	return client, nil
 }
@@ -246,9 +270,9 @@ func (c Client) NewRequest(
 	body io.Reader,
 	params url.Values, opts ...Option,
 ) (*http.Request, error) {
-	newClient := c.copy(opts...)
+	client := c.copy(opts...)
 
-	newPath, err := url.JoinPath(newClient.baseURL, path)
+	newPath, err := url.JoinPath(client.baseURL, path)
 	if err != nil {
 		return nil, err
 	}
@@ -263,7 +287,7 @@ func (c Client) NewRequest(
 		return nil, err
 	}
 
-	req.Header.Add(headerAuthorization, newClient.token)
+	req.Header.Add(headerAuthorization, client.token)
 	req.Header.Add(headerAccept, "application/json")
 
 	if body != nil {
@@ -275,21 +299,25 @@ func (c Client) NewRequest(
 		req.Header.Set("User-Agent", c.userAgent)
 	}
 
+	for k, v := range client.headers {
+		req.Header.Set(k, strings.Join(v, ";"))
+	}
+
 	req.URL.RawQuery = params.Encode()
 
 	return req, nil
 }
 
 func (c Client) newGetRequest(ctx context.Context, path string, params url.Values, opts ...Option) (*http.Request, error) {
-	return c.NewRequest(ctx, http.MethodGet, path, nil, params)
+	return c.NewRequest(ctx, http.MethodGet, path, nil, params, opts...)
 }
 
 func (c Client) newPostRequest(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*http.Request, error) {
-	return c.NewRequest(ctx, http.MethodPost, path, body, params)
+	return c.NewRequest(ctx, http.MethodPost, path, body, params, opts...)
 }
 
 func (c Client) newPutRequest(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*http.Request, error) {
-	return c.NewRequest(ctx, http.MethodPut, path, body, params)
+	return c.NewRequest(ctx, http.MethodPut, path, body, params, opts...)
 }
 
 func (c Client) newDeleteRequest(
