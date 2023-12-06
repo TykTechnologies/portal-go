@@ -1,5 +1,72 @@
 package portal
 
+import (
+	"bytes"
+	"context"
+	"io"
+	"mime/multipart"
+)
+
+const (
+	pathThemesUpload = "/portal-api/themes/upload"
+	pathThemes       = "/portal-api/themes"
+	pathTheme        = "/portal-api/themes/%v"
+)
+
+//go:generate mockery --name Themes --filename themes.go
+type Themes interface {
+	UploadTheme(ctx context.Context, input io.Reader, opts ...Option) (*UploadThemeOutput, error)
+}
+
+type themes struct {
+	client *Client
+}
+
+func (t themes) UploadTheme(ctx context.Context, input io.Reader, opts ...Option) (*UploadThemeOutput, error) {
+	form, contentType, err := createThemeForm(input)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = t.client.doPost(
+		ctx,
+		pathThemesUpload,
+		form,
+		nil,
+		WithHeaders(
+			map[string]string{
+				"Content-Type": contentType,
+			},
+		),
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &UploadThemeOutput{}, nil
+}
+
+func createThemeForm(r io.Reader) (io.Reader, string, error) {
+	buf := &bytes.Buffer{}
+
+	formWriter := multipart.NewWriter(buf)
+	defer formWriter.Close()
+
+	fileWriter, err := formWriter.CreateFormFile("file", "theme.zip")
+	if err != nil {
+		return nil, "", err
+	}
+
+	if _, err = io.Copy(fileWriter, r); err != nil {
+		return nil, "", err
+	}
+
+	return buf, formWriter.FormDataContentType(), nil
+}
+
+type UploadThemeOutput struct{}
+
 type Theme struct {
 	Author  string `json:"Author,omitempty"`
 	ID      string `json:"ID,omitempty"`
@@ -7,6 +74,14 @@ type Theme struct {
 	Path    string `json:"Path,omitempty"`
 	Status  string `json:"Status,omitempty"`
 	Version string `json:"Version,omitempty"`
+}
+
+type ThemeOutput struct {
+	Data *Theme
+}
+
+type ListThemesOutput struct {
+	Data []Theme
 }
 
 type Err struct {
@@ -24,102 +99,4 @@ type ContentBlock struct {
 type ContentBlockInput struct {
 	Content string `json:"Content,omitempty"`
 	Name    string `json:"Name,omitempty"`
-}
-
-type Configs struct {
-	Blog               Blog      `json:"Blog,omitempty"`
-	Database           Database  `json:"Database,omitempty"`
-	Forms              Forms     `json:"Forms,omitempty"`
-	HostPort           int       `json:"HostPort,omitempty"`
-	JwtSigningKey      string    `json:"JwtSigningKey,omitempty"`
-	LicenseKey         string    `json:"LicenseKey,omitempty"`
-	LogFormat          string    `json:"LogFormat,omitempty"`
-	LogLevel           string    `json:"LogLevel,omitempty"`
-	PortalAPISecret    string    `json:"PortalAPISecret,omitempty"`
-	ProductDocRenderer string    `json:"ProductDocRenderer,omitempty"`
-	RefreshInterval    int       `json:"RefreshInterval,omitempty"`
-	S3                 S3        `json:"S3,omitempty"`
-	Site               Site      `json:"Site,omitempty"`
-	Storage            string    `json:"Storage,omitempty"`
-	StoreSessionName   string    `json:"StoreSessionName,omitempty"`
-	TLSConfig          TLSConfig `json:"TLSConfig,omitempty"`
-	Theming            Theming   `json:"Theming,omitempty"`
-}
-type Blog struct {
-	AllowFormSubmission bool `json:"AllowFormSubmission,omitempty"`
-	Enable              bool `json:"Enable,omitempty"`
-}
-type Database struct {
-	ConnectionString string `json:"ConnectionString,omitempty"`
-	Dialect          string `json:"Dialect,omitempty"`
-	EnableLogs       bool   `json:"EnableLogs,omitempty"`
-	MaxRetries       int    `json:"MaxRetries,omitempty"`
-	RetryDelay       int    `json:"RetryDelay,omitempty"`
-}
-type Forms struct {
-	Enable bool `json:"Enable,omitempty"`
-}
-type S3 struct {
-	ACL         string `json:"ACL,omitempty"`
-	AccessKey   string `json:"AccessKey,omitempty"`
-	Bucket      string `json:"Bucket,omitempty"`
-	Endpoint    string `json:"Endpoint,omitempty"`
-	PresignURLs bool   `json:"PresignURLs,omitempty"`
-	Region      string `json:"Region,omitempty"`
-	SecretKey   string `json:"SecretKey,omitempty"`
-}
-type Site struct {
-	Enable bool `json:"Enable,omitempty"`
-}
-type Certificates struct {
-	CertFile string `json:"CertFile,omitempty"`
-	KeyFile  string `json:"KeyFile,omitempty"`
-	Name     string `json:"Name,omitempty"`
-}
-type TLSConfig struct {
-	Certificates       []Certificates `json:"Certificates,omitempty"`
-	Enable             bool           `json:"Enable,omitempty"`
-	InsecureSkipVerify bool           `json:"InsecureSkipVerify,omitempty"`
-	MinVersion         int            `json:"MinVersion,omitempty"`
-}
-type Theming struct {
-	Path  string `json:"Path,omitempty"`
-	Theme string `json:"Theme,omitempty"`
-}
-
-type AudienceInput struct {
-	OrganizationID int `json:"OrganizationID,omitempty"`
-	TeamID         int `json:"TeamID,omitempty"`
-}
-
-type Audience struct {
-	ID             int    `json:"ID,omitempty"`
-	OrganizationID int    `json:"OrganizationID,omitempty"`
-	TeamID         int    `json:"TeamID,omitempty"`
-	CreatedAt      string `json:"CreatedAt,omitempty"`
-	UpdatedAt      string `json:"UpdatedAt,omitempty"`
-}
-
-type CatalogDetails struct {
-	ID               int          `json:"ID,omitempty"`
-	Name             string       `json:"Name,omitempty"`
-	CreatedAt        string       `json:"CreatedAt,omitempty"`
-	UpdatedAt        string       `json:"UpdatedAt,omitempty"`
-	OrgCatalogs      []OrgCatalog `json:"OrgCatalogs,omitempty"`
-	Plans            []string     `json:"Plans,omitempty"`
-	Products         []string     `json:"Products,omitempty"`
-	VisibilityStatus string       `json:"VisibilityStatus,omitempty"`
-}
-type OrgCatalog struct {
-	Catalog      string `json:"Catalog,omitempty"`
-	ID           int    `json:"ID,omitempty"`
-	Name         string `json:"Name,omitempty"`
-	Organization string `json:"Organization,omitempty"`
-}
-
-type CatalogSummary struct {
-	ID               int    `json:"ID,omitempty"`
-	Name             string `json:"Name,omitempty"`
-	NameWithSlug     string `json:"NameWithSlug,omitempty"`
-	VisibilityStatus string `json:"VisibilityStatus,omitempty"`
 }
