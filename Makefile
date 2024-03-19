@@ -1,5 +1,5 @@
 COPYRIGHT_HOLDER := "Tyk Technologies"
-COPYRIGHT_YEARS := "2023"
+COPYRIGHT_YEARS := "2024"
 
 .PHONY: update-deps
 update-deps:
