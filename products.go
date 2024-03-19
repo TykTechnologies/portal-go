@@ -21,7 +21,7 @@ type Product struct {
 	Name        string       `json:"Name,omitempty"`
 	Path        string       `json:"Path,omitempty"`
 	Logo        string       `json:"Logo,omitempty"`
-	ReferenceID int64       `json:"ReferenceID,omitempty"`
+	ReferenceID int64        `json:"ReferenceID,omitempty"`
 	Scopes      string       `json:"Scopes,omitempty"`
 	Tags        []string     `json:"Tags,omitempty"`
 	Templates   []string     `json:"Templates,omitempty"`

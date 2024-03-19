@@ -196,7 +196,7 @@ func (u *OrgsService) CreateTeam(ctx context.Context, orgID int64, input *Team) 
 	return team, resp, nil
 }
 
-func (u *OrgsService) UpdateTeam(ctx context.Context, orgID int64, teamID int64, input *Team) (*Team, *Response, error) {
+func (u *OrgsService) UpdateTeam(ctx context.Context, orgID, teamID int64, input *Team) (*Team, *Response, error) {
 	urlPath := fmt.Sprintf("/organisations/%v/teams/%v", orgID, teamID)
 
 	userReq := &orgInput{
@@ -218,7 +218,7 @@ func (u *OrgsService) UpdateTeam(ctx context.Context, orgID int64, teamID int64,
 	return team, resp, nil
 }
 
-func (u *OrgsService) DeleteTeam(ctx context.Context, orgID int64, teamID int64) (*Response, error) {
+func (u *OrgsService) DeleteTeam(ctx context.Context, orgID, teamID int64) (*Response, error) {
 	urlPath := fmt.Sprintf("/organisations/%v/teams/%v", orgID, teamID)
 
 	req, err := u.client.NewRequest(ctx, http.MethodDelete, urlPath, nil)

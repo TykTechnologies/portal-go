@@ -104,7 +104,7 @@ func jsonEncode(w io.Writer, body interface{}) error {
 	return enc.Encode(body)
 }
 
-func (c *Client) NewRequestWithOptions(ctx context.Context, method, urlPath string, body interface{}, options interface{}, opts ...RequestOption) (*http.Request, error) {
+func (c *Client) NewRequestWithOptions(ctx context.Context, method, urlPath string, body, options interface{}, opts ...RequestOption) (*http.Request, error) {
 	if v, ok := body.(Validator); ok {
 		err := v.Validate()
 		if err != nil {
@@ -142,7 +142,7 @@ func (c *Client) NewRequest(ctx context.Context, method, urlPath string, body in
 		}
 	}
 
-	req, err := http.NewRequest(method, u.String(), buf)
+	req, err := http.NewRequestWithContext(ctx, method, u.String(), buf)
 	if err != nil {
 		return nil, err
 	}
@@ -192,7 +192,6 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 	}
 
 	return resp, err
-
 }
 
 var ErrInvalidContext = errors.New("no context")
