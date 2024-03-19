@@ -1,164 +1,16 @@
-// Copyright 2023 Tyk Technologies
+// Copyright 2024 Tyk Technologies
 // SPDX-License-Identifier: MPL-2.0
 
 package portal
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
+	"net/http"
 )
 
-const (
-	pathUsers = "/portal-api/users"
-	pathUser  = "/portal-api/users/%d"
-)
-
-//go:generate mockery --name Users --filename users.go
-type Users interface {
-	CreateUser(ctx context.Context, input *CreateUserInput, opts ...Option) (*CreateUserOutput, error)
-	GetUser(ctx context.Context, id int64, opts ...Option) (*GetUserOutput, error)
-	ListUsers(ctx context.Context, options *ListUsersInput, opts ...Option) (*ListUsersOutput, error)
-	UpdateUser(ctx context.Context, id int64, input *UpdateUserInput, opts ...Option) (*UpdateUserOutput, error)
-	DeleteUser(ctx context.Context, id int64, opts ...Option) (*DeleteUserOutput, error)
-}
-
-type users struct {
-	client *Client
-}
-
-func (p users) CreateUser(ctx context.Context, input *CreateUserInput, opts ...Option) (*CreateUserOutput, error) {
-	payload, err := json.Marshal(input)
-	if err != nil {
-		return nil, err
-	}
-
-	if !p.client.skipValidation {
-		if err := input.validate(); err != nil {
-			return nil, err
-		}
-	}
-
-	resp, err := p.client.doPost(ctx, pathUsers, bytes.NewReader(payload), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var user User
-
-	if err := resp.Unmarshal(&user); err != nil {
-		return nil, err
-	}
-
-	return &CreateUserOutput{
-		Data: &user,
-	}, nil
-}
-
-func (p users) GetUser(ctx context.Context, id int64, opts ...Option) (*GetUserOutput, error) {
-	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathUser, id), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var user User
-	if err := resp.Unmarshal(&user); err != nil {
-		return nil, err
-	}
-
-	return &GetUserOutput{
-		Data: &user,
-	}, nil
-}
-
-func (p users) ListUsers(ctx context.Context, options *ListUsersInput, opts ...Option) (*ListUsersOutput, error) {
-	resp, err := p.client.doGet(ctx, pathUsers, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var users []User
-
-	if err := resp.Unmarshal(&users); err != nil {
-		return nil, err
-	}
-
-	return &ListUsersOutput{
-		Users: users,
-	}, nil
-}
-
-func (p users) UpdateUser(ctx context.Context, id int64, input *UpdateUserInput, opts ...Option) (*UpdateUserOutput, error) {
-	input.ID = nil
-
-	payload, err := json.Marshal(input)
-	if err != nil {
-		return nil, err
-	}
-
-	log.Println(string(payload))
-
-	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathUser, id), bytes.NewReader(payload), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var user User
-
-	if err := resp.Unmarshal(&user); err != nil {
-		return nil, err
-	}
-
-	return &UpdateUserOutput{
-		Data: &user,
-	}, nil
-}
-
-func (p users) DeleteUser(ctx context.Context, id int64, opts ...Option) (*DeleteUserOutput, error) {
-	_, err := p.client.doDelete(ctx, fmt.Sprintf(pathUser, id), nil, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return &GetUserOutput{}, nil
-}
-
-type UserInput struct {
-	ID            *int64 `json:"ID,omitempty"`
-	Active        bool   `json:"Active,omitempty"`
-	Email         string `json:"Email,omitempty"`
-	First         string `json:"First,omitempty"`
-	Last          string `json:"Last,omitempty"`
-	OrgID         int64  `json:"OrganisationID,omitempty"`
-	Role          string `json:"Role,omitempty"`
-	Provider      string `json:"Provider,omitempty"`
-	ResetPassword bool   `json:"ResetPassword,omitempty"`
-}
-
-func (u UserInput) validate() error {
-	if u.Email == "" {
-		return errors.New("email is required")
-	}
-
-	if u.First == "" {
-		return errors.New("first is required")
-	}
-
-	return nil
-}
-
-type CreateUserInput = UserInput
-
-type UpdateUserInput = UserInput
-
-type ListUsersInput struct{}
-
-type ListUsersOutput struct {
-	Users []User
-}
+type UsersService service
 
 type User struct {
 	Active            bool     `json:"Active,omitempty"`
@@ -178,14 +30,128 @@ type User struct {
 	UpdatedAt         string   `json:"UpdatedAt,omitempty"`
 }
 
-type UserOutput struct {
-	Data *User
+type Validator interface {
+	Validate() error
 }
 
-type UpdateUserOutput = UserOutput
+type userInput struct {
+	Active        bool   `json:"Active,omitempty"`
+	Email         string `json:"Email,omitempty"`
+	First         string `json:"First,omitempty"`
+	Last          string `json:"Last,omitempty"`
+	OrgID         int64  `json:"OrganisationID,omitempty"`
+	Provider      string `json:"Provider,omitempty"`
+	ResetPassword bool   `json:"ResetPassword,omitempty"`
+	Role          string `json:"Role,omitempty"`
+}
 
-type GetUserOutput = UserOutput
+func (u userInput) Validate() error {
+	if u.Email == "" {
+		return errors.New("Email is required")
+	}
 
-type CreateUserOutput = UserOutput
+	return nil
+}
 
-type DeleteUserOutput = UserOutput
+func (u *UsersService) ListUsers(ctx context.Context, opts *ListOptions) ([]*User, *Response, error) {
+	urlPath := "/users"
+
+	req, err := u.client.NewRequestWithOptions(ctx, http.MethodGet, urlPath, nil, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var users []*User
+
+	resp, err := u.client.Do(ctx, req, &users)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return users, resp, nil
+}
+
+func (u *UsersService) CreateUser(ctx context.Context, input *User) (*User, *Response, error) {
+	urlPath := "/users"
+
+	userReq := &userInput{
+		Active:        input.Active,
+		Email:         input.Email,
+		First:         input.First,
+		Last:          input.Last,
+		OrgID:         input.OrgID,
+		Provider:      input.Provider,
+		ResetPassword: input.ResetPassword,
+		Role:          input.Role,
+	}
+
+	req, err := u.client.NewRequest(ctx, http.MethodPost, urlPath, userReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	user := new(User)
+
+	resp, err := u.client.Do(ctx, req, user)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return user, resp, nil
+}
+
+func (u *UsersService) GetUser(ctx context.Context, userID int64) (*User, *Response, error) {
+	urlPath := fmt.Sprintf("/users/%v", userID)
+
+	req, err := u.client.NewRequest(ctx, http.MethodGet, urlPath, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	user := new(User)
+
+	resp, err := u.client.Do(ctx, req, user)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return user, resp, nil
+}
+
+func (u *UsersService) UpdateUser(ctx context.Context, userID int64, input *User) (*User, *Response, error) {
+	urlPath := fmt.Sprintf("/users/%v", userID)
+
+	userReq := &userInput{
+		First: input.First,
+	}
+
+	req, err := u.client.NewRequest(ctx, http.MethodPut, urlPath, userReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	user := new(User)
+
+	resp, err := u.client.Do(ctx, req, user)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return user, resp, nil
+}
+
+func (u *UsersService) DeleteUser(ctx context.Context, userID int64) (*Response, error) {
+	urlPath := fmt.Sprintf("/users/%v", userID)
+
+	req, err := u.client.NewRequest(ctx, http.MethodDelete, urlPath, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := u.client.Do(ctx, req, nil)
+	if err != nil {
+		return resp, err
+	}
+
+	return resp, nil
+}

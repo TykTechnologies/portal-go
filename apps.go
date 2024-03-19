@@ -1,209 +1,249 @@
-// Copyright 2023 Tyk Technologies
+// Copyright 2024 Tyk Technologies
 // SPDX-License-Identifier: MPL-2.0
 
 package portal
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 )
 
-const (
-	pathAppAR        = "/portal-api/apps/%v/access-requests/%v"
-	pathAppARs       = "/portal-api/apps/%v/access-requests"
-	pathApps         = "/portal-api/apps"
-	pathApp          = "/portal-api/apps/%v"
-	pathAppProvision = "/portal-api/apps/%v/provision"
-)
-
-//go:generate mockery --name Apps --filename apps.go
-type Apps interface {
-	CreateApp(ctx context.Context, input *AppInput, opts ...Option) (*AppOutput, error)
-	GetApp(ctx context.Context, id int64, opts ...Option) (*AppOutput, error)
-	UpdateApp(ctx context.Context, id int64, input *AppInput, opts ...Option) (*AppOutput, error)
-	DeleteApp(ctx context.Context, id int64, opts ...Option) (*AppOutput, error)
-	ListApps(ctx context.Context, opts ...Option) (*ListAppsOutput, error)
-	ListARs(ctx context.Context, id int64, opts ...Option) (*ListARsOutput, error)
-	ProvisionApp(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error)
-	GetAR(ctx context.Context, appID, arID int64, opts ...Option) (*AROutput, error)
-}
-
-type apps struct {
-	client *Client
-}
-
-func (p apps) CreateApp(ctx context.Context, input *AppInput, opts ...Option) (*AppOutput, error) {
-	payload, err := json.Marshal(input)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := p.client.doPost(ctx, pathApps, bytes.NewReader(payload), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var app App
-
-	if err := resp.Unmarshal(&app); err != nil {
-		return nil, err
-	}
-
-	return &AppOutput{
-		Data: &app,
-	}, nil
-}
-
-func (p apps) GetApp(ctx context.Context, id int64, opts ...Option) (*AppOutput, error) {
-	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathApp, id), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var app App
-	if err := resp.Unmarshal(&app); err != nil {
-		return nil, err
-	}
-
-	return &AppOutput{
-		Data: &app,
-	}, nil
-}
-
-func (p apps) UpdateApp(ctx context.Context, id int64, input *AppInput, opts ...Option) (*AppOutput, error) {
-	payload, err := json.Marshal(input)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathApp, id), bytes.NewReader(payload), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var app App
-	if err := resp.Unmarshal(&app); err != nil {
-		return nil, err
-	}
-
-	return &AppOutput{
-		Data: &app,
-	}, nil
-}
-
-func (p apps) DeleteApp(ctx context.Context, id int64, opts ...Option) (*AppOutput, error) {
-	resp, err := p.client.doDelete(ctx, fmt.Sprintf(pathApp, id), nil, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var app App
-	if err := resp.Unmarshal(&app); err != nil {
-		return nil, err
-	}
-
-	return &AppOutput{
-		Data: &app,
-	}, nil
-}
-
-func (p apps) ProvisionApp(ctx context.Context, id int64, opts ...Option) (*StatusOutput, error) {
-	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathAppProvision, id), nil, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var status Status
-	if err := resp.Unmarshal(&status); err != nil {
-		return nil, err
-	}
-
-	return &StatusOutput{
-		Data: &status,
-	}, nil
-}
-
-// ListApps lists apps
-func (p apps) ListApps(ctx context.Context, opts ...Option) (*ListAppsOutput, error) {
-	resp, err := p.client.doGet(ctx, pathApps, url.Values{"p": []string{"-2"}}, opts...)
-	if err != nil {
-		return nil, err
-	}
-
-	var ars []App
-
-	if err := resp.Unmarshal(&ars); err != nil {
-		return nil, err
-	}
-
-	return &ListAppsOutput{
-		Data: ars,
-	}, nil
-}
-
-func (p apps) ListARs(ctx context.Context, id int64, opts ...Option) (*ListARsOutput, error) {
-	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathApp, id), nil, opts...)
-	if err != nil {
-		return nil, err
-	}
-
-	var ars struct {
-		AccessRequests []ARDetails `json:"AccessRequests,omitempty"`
-	}
-
-	if err := resp.Unmarshal(&ars); err != nil {
-		return nil, err
-	}
-
-	return &ListARsOutput{
-		Data: ars.AccessRequests,
-	}, nil
-}
-
-func (p apps) GetAR(ctx context.Context, appID, arID int64, opts ...Option) (*AROutput, error) {
-	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathAppAR, appID, arID), nil, opts...)
-	if err != nil {
-		return nil, err
-	}
-
-	var ar ARDetails
-
-	if err := resp.Unmarshal(&ar); err != nil {
-		return nil, err
-	}
-
-	return &AROutput{
-		Data: &ar,
-	}, nil
-}
-
-type ListAppsOutput struct {
-	Response *http.Response
-	Data     []App
-}
-
-type AppOutput struct {
-	Response *http.Response
-	Data     *App
-}
+type AppsService service
 
 type App struct {
-	ID            int64       `json:"ID,omitempty"`
-	Name          string      `json:"Name,omitempty"`
-	Description   string      `json:"Description,omitempty"`
-	RedirectURLs  string      `json:"RedirectURLs,omitempty"`
-	UserID        int64       `json:"UserID,omitempty"`
-	AccessRequest []ARDetails `json:"AccessRequests,omitempty"`
-	CreatedAt     string      `json:"CreatedAt,omitempty"`
+	ID            int64  `json:"ID,omitempty"`
+	Name          string `json:"Name,omitempty"`
+	Description   string `json:"Description,omitempty"`
+	RedirectURLs  string `json:"RedirectURLs,omitempty"`
+	UserID        int64  `json:"UserID,omitempty"`
+	AccessRequest []AR   `json:"AccessRequests,omitempty"`
+	CreatedAt     string `json:"CreatedAt,omitempty"`
 }
 
-type AppInput struct {
+type appInput struct {
 	Name         string `json:"Name,omitempty"`
 	Description  string `json:"Description,omitempty"`
 	RedirectURLs string `json:"RedirectURLs,omitempty"`
 	UserID       int64  `json:"UserID,omitempty"`
+}
+
+func (u *AppsService) ListApps(ctx context.Context, opts *ListOptions) ([]*App, *Response, error) {
+	ulrPath := "/apps"
+
+	req, err := u.client.NewRequestWithOptions(ctx, http.MethodGet, ulrPath, nil, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var apps []*App
+
+	resp, err := u.client.Do(ctx, req, &apps)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return apps, resp, nil
+}
+
+func (u *AppsService) CreateApp(ctx context.Context, input *App) (*App, *Response, error) {
+	urlPath := "/apps"
+
+	appReq := &appInput{}
+
+	req, err := u.client.NewRequest(ctx, http.MethodPost, urlPath, appReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	app := new(App)
+
+	resp, err := u.client.Do(ctx, req, app)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return app, resp, nil
+}
+
+func (u *AppsService) GetApp(ctx context.Context, appID int64) (*App, *Response, error) {
+	urlPath := fmt.Sprintf("/apps/%v", appID)
+
+	req, err := u.client.NewRequest(ctx, http.MethodGet, urlPath, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	app := new(App)
+
+	resp, err := u.client.Do(ctx, req, app)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return app, resp, nil
+}
+
+func (u *AppsService) UpdateApp(ctx context.Context, appID int64, input *App) (*App, *Response, error) {
+	urlPath := fmt.Sprintf("/apps/%v", appID)
+
+	appReq := &appInput{}
+
+	req, err := u.client.NewRequest(ctx, http.MethodPut, urlPath, appReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	app := new(App)
+
+	resp, err := u.client.Do(ctx, req, app)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return app, resp, nil
+}
+
+func (u *AppsService) DeleteApp(ctx context.Context, appID string) (*Response, error) {
+	urlPath := fmt.Sprintf("/apps/%v", appID)
+
+	req, err := u.client.NewRequest(ctx, http.MethodDelete, urlPath, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := u.client.Do(ctx, req, nil)
+	if err != nil {
+		return resp, err
+	}
+
+	return resp, nil
+}
+
+func (u *AppsService) ProvisionApp(ctx context.Context, appID string, input *App) (*App, *Response, error) {
+	urlPath := fmt.Sprintf("/apps/%v", appID)
+
+	appReq := &appInput{}
+
+	req, err := u.client.NewRequest(ctx, http.MethodPut, urlPath, appReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	app := new(App)
+
+	resp, err := u.client.Do(ctx, req, app)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return app, resp, nil
+}
+
+func (u *AppsService) GetAR(ctx context.Context, appID, arID string) (*AR, *Response, error) {
+	urlPath := fmt.Sprintf("/apps/%v/access-requests/%v", appID, arID)
+
+	req, err := u.client.NewRequest(ctx, http.MethodGet, urlPath, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	ar := new(AR)
+
+	resp, err := u.client.Do(ctx, req, ar)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return ar, resp, nil
+}
+
+func (u *AppsService) DeleteAR(ctx context.Context, appID, arID string) (*Response, error) {
+	urlPath := fmt.Sprintf("/apps/%v/access-requests/%v", appID, arID)
+
+	appReq := &appInput{}
+
+	req, err := u.client.NewRequest(ctx, http.MethodPut, urlPath, appReq)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := u.client.Do(ctx, req, nil)
+	if err != nil {
+		return resp, err
+	}
+
+	return resp, nil
+}
+
+func (u *AppsService) ListARs(ctx context.Context, appID string, input *AR, opts *ListOptions) (*AR, *Response, error) {
+	urlPath := fmt.Sprintf("/apps/%v/access-requests", appID)
+
+	req, err := u.client.NewRequestWithOptions(ctx, http.MethodGet, urlPath, nil, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	ars := new(AR)
+
+	resp, err := u.client.Do(ctx, req, ars)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return ars, resp, nil
+}
+
+func (u *AppsService) ListARCredentials(ctx context.Context, appID, arID string, opts *ListOptions) ([]*Credentials, *Response, error) {
+	urlPath := fmt.Sprintf("/apps/%v/access-requests/%v/credentials", appID, arID)
+
+	req, err := u.client.NewRequestWithOptions(ctx, http.MethodGet, urlPath, nil, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var creds []*Credentials
+
+	resp, err := u.client.Do(ctx, req, creds)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return creds, resp, nil
+}
+
+func (u *AppsService) GetARCredential(ctx context.Context, appID, arID, credID string) (*Credentials, *Response, error) {
+	urlPath := fmt.Sprintf("/apps/%v/access-requests/%v/credentials/%v", appID, arID, credID)
+
+	req, err := u.client.NewRequest(ctx, http.MethodPut, urlPath, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	app := new(Credentials)
+
+	resp, err := u.client.Do(ctx, req, app)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return app, resp, nil
+}
+
+func (u *AppsService) DeleteARCredential(ctx context.Context, appID, arID, credID string) (*Credentials, *Response, error) {
+	urlPath := fmt.Sprintf("/apps/%v/access-requests/%v/credentials/%v", appID, arID, credID)
+
+	req, err := u.client.NewRequest(ctx, http.MethodDelete, urlPath, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	app := new(Credentials)
+
+	resp, err := u.client.Do(ctx, req, app)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return app, resp, nil
 }

@@ -1,277 +1,28 @@
-// Copyright 2023 Tyk Technologies
+// Copyright 2024 Tyk Technologies
 // SPDX-License-Identifier: MPL-2.0
 
 package portal
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
-	"errors"
 	"fmt"
+	"net/http"
 )
 
-const (
-	pathOrgs     = "/portal-api/organisations"
-	pathOrg      = "/portal-api/organisations/%d"
-	pathOrgTeams = "/portal-api/organisations/%d/teams"
-	pathOrgTeam  = "/portal-api/organisations/%d/teams/%d"
-)
-
-//go:generate mockery --name Orgs --filename orgs.go
-type Orgs interface {
-	CreateOrg(ctx context.Context, input *CreateOrgInput, opts ...Option) (*CreateOrgOutput, error)
-	GetOrg(ctx context.Context, id int64, opts ...Option) (*GetOrgOutput, error)
-	ListOrgs(ctx context.Context, options *ListOrgsInput, opts ...Option) (*ListOrgsOutput, error)
-	UpdateOrg(ctx context.Context, id int64, input *UpdateOrgInput, opts ...Option) (*UpdateOrgOutput, error)
-	DeleteOrg(ctx context.Context, id int64, opts ...Option) (*DeleteOrgOutput, error)
-	CreateTeam(ctx context.Context, orgID int64, input *TeamInput, opts ...Option) (*TeamOutput, error)
-	GetTeam(ctx context.Context, orgID, teamID int64, opts ...Option) (*TeamOutput, error)
-	ListTeams(ctx context.Context, orgID int64, options *ListTeamsInput, opts ...Option) (*ListTeamsOutput, error)
-	UpdateTeam(ctx context.Context, orgID, teamID int64, input *TeamInput, opts ...Option) (*TeamOutput, error)
-	DeleteTeam(ctx context.Context, orgID, teamID int64, opts ...Option) (*TeamOutput, error)
-}
-
-type orgs struct {
-	client *Client
-}
-
-func (p orgs) CreateOrg(ctx context.Context, input *CreateOrgInput, opts ...Option) (*CreateOrgOutput, error) {
-	payload, err := json.Marshal(input)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := input.validate(); err != nil {
-		return nil, err
-	}
-
-	resp, err := p.client.doPost(ctx, pathOrgs, bytes.NewReader(payload), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var org Org
-
-	if err := resp.Unmarshal(&org); err != nil {
-		return nil, err
-	}
-
-	return &CreateOrgOutput{
-		Data: &org,
-	}, nil
-}
-
-func (p orgs) GetOrg(ctx context.Context, id int64, opts ...Option) (*GetOrgOutput, error) {
-	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathOrg, id), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var org Org
-	if err := resp.Unmarshal(&org); err != nil {
-		return nil, err
-	}
-
-	return &GetOrgOutput{
-		Data: &org,
-	}, nil
-}
-
-func (p orgs) ListOrgs(ctx context.Context, options *ListOrgsInput, opts ...Option) (*ListOrgsOutput, error) {
-	resp, err := p.client.doGet(ctx, pathOrgs, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var orgs []Org
-
-	if err := resp.Unmarshal(&orgs); err != nil {
-		return nil, err
-	}
-
-	return &ListOrgsOutput{
-		Data: orgs,
-	}, nil
-}
-
-func (p orgs) UpdateOrg(ctx context.Context, id int64, input *UpdateOrgInput, opts ...Option) (*UpdateOrgOutput, error) {
-	payload, err := json.Marshal(input)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathOrg, id), bytes.NewReader(payload), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var org Org
-
-	if err := resp.Unmarshal(&org); err != nil {
-		return nil, err
-	}
-
-	return &UpdateOrgOutput{
-		Data: &org,
-	}, nil
-}
-
-func (p orgs) DeleteOrg(ctx context.Context, id int64, opts ...Option) (*DeleteOrgOutput, error) {
-	_, err := p.client.doDelete(ctx, fmt.Sprintf(pathOrg, id), nil, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return &GetOrgOutput{}, nil
-}
-
-func (p orgs) CreateTeam(ctx context.Context, orgID int64, input *TeamInput, opts ...Option) (*TeamOutput, error) {
-	payload, err := json.Marshal(input)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := input.validate(); err != nil {
-		return nil, err
-	}
-
-	resp, err := p.client.doPost(ctx, fmt.Sprintf(pathOrgTeams, orgID), bytes.NewReader(payload), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var org Team
-
-	if err := resp.Unmarshal(&org); err != nil {
-		return nil, err
-	}
-
-	return &TeamOutput{
-		Data: &org,
-	}, nil
-}
-
-func (p orgs) GetTeam(ctx context.Context, orgID, teamID int64, opts ...Option) (*TeamOutput, error) {
-	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathOrgTeam, orgID, teamID), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var org Team
-	if err := resp.Unmarshal(&org); err != nil {
-		return nil, err
-	}
-
-	return &TeamOutput{
-		Data: &org,
-	}, nil
-}
-
-func (p orgs) ListTeams(ctx context.Context, orgID int64, options *ListTeamsInput, opts ...Option) (*ListTeamsOutput, error) {
-	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathOrgTeams, orgID), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var orgs []Team
-
-	if err := resp.Unmarshal(&orgs); err != nil {
-		return nil, err
-	}
-
-	return &ListTeamsOutput{
-		Data: orgs,
-	}, nil
-}
-
-func (p orgs) UpdateTeam(ctx context.Context, orgID, teamID int64, input *TeamInput, opts ...Option) (*TeamOutput, error) {
-	payload, err := json.Marshal(input)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathOrgTeam, orgID, teamID), bytes.NewReader(payload), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var org Team
-
-	if err := resp.Unmarshal(&org); err != nil {
-		return nil, err
-	}
-
-	return &TeamOutput{
-		Data: &org,
-	}, nil
-}
-
-func (p orgs) DeleteTeam(ctx context.Context, orgID, teamID int64, opts ...Option) (*TeamOutput, error) {
-	_, err := p.client.doDelete(ctx, fmt.Sprintf(pathOrgTeam, orgID, teamID), nil, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return &TeamOutput{}, nil
-}
-
-type OrgInput struct {
-	ID   *int64 `json:"ID,omitempty"`
-	Name string `json:"Name,omitempty"`
-}
-
-func (o OrgInput) validate() error {
-	if o.Name == "" {
-		return errors.New("name is required")
-	}
-
-	return nil
-}
-
-type (
-	UpdateOrgInput = OrgInput
-	CreateOrgInput = OrgInput
-	ListOrgsInput  struct{}
-)
-
-type ListOrgsOutput struct {
-	Data []Org
-}
-
-type OrgOutput struct {
-	Data *Org
-}
-
-type (
-	UpdateOrgOutput = OrgOutput
-	GetOrgOutput    = OrgOutput
-	CreateOrgOutput = OrgOutput
-	DeleteOrgOutput = OrgOutput
-)
+type OrgsService service
 
 type Org struct {
+	ID   int64  `json:"ID"`
+	Name string `json:"Name"`
+}
+
+type Team struct {
 	ID        int64       `json:"ID,omitempty"`
 	Name      string      `json:"Name,omitempty"`
 	Teams     interface{} `json:"Teams,omitempty"`
 	Users     interface{} `json:"Users,omitempty"`
 	UpdatedAt string      `json:"UpdatedAt,omitempty"`
 	CreatedAt string      `json:"CreatedAt,omitempty"`
-}
-
-type OrgTeam struct {
-	Default        bool   `json:"Default,omitempty"`
-	ID             int64  `json:"ID,omitempty"`
-	Name           string `json:"Name,omitempty"`
-	Organization   string `json:"Organization,omitempty"`
-	OrganizationID string `json:"OrganisationID,omitempty"`
-	Users          []User `json:"Users,omitempty"`
-}
-
-type OrgCart struct {
-	CatalogOrders string `json:"CatalogOrders,omitempty"`
-	ID            int64  `json:"ID,omitempty"`
-	ProviderID    any    `json:"ProviderID,omitempty"`
 }
 
 type OrgUser struct {
@@ -298,38 +49,190 @@ type OrgUser struct {
 	UserID            string   `json:"UserID,omitempty"`
 }
 
-type Team struct {
-	ID        int64    `json:"ID,omitempty"`
-	Name      string   `json:"Name,omitempty"`
-	Default   bool     `json:"Default,omitempty"`
-	Users     []string `json:"Users,omitempty"`
-	CreatedAt string   `json:"CreatedAt,omitempty"`
-	UpdatedAt string   `json:"UpdatedAt,omitempty"`
+type OrgCart struct {
+	CatalogOrders string `json:"CatalogOrders,omitempty"`
+	ID            int64  `json:"ID,omitempty"`
+	ProviderID    any    `json:"ProviderID,omitempty"`
 }
 
-type TeamOutput struct {
-	Data *Team
+type orgInput struct {
+	Name string `json:"Name"`
 }
 
-type ListTeamsOutput struct {
-	Data []Team
+type teamInput struct {
+	Name string `json:"Name"`
 }
 
-type (
-	UpdateTeam = TeamOutput
-	GetTeam    = TeamOutput
-	CreateTeam = TeamOutput
-	DeleteTeam = TeamOutput
-)
+func (u *OrgsService) ListOrgs(ctx context.Context, opts *ListOptions) ([]*Org, *Response, error) {
+	urlPath := "/organisations"
 
-type TeamInput struct {
-	ID    *int64  `json:"ID,omitempty"`
-	Name  string  `json:"Name,omitempty"`
-	Users []int64 `json:"Users,omitempty"`
+	req, err := u.client.NewRequestWithOptions(ctx, http.MethodGet, urlPath, nil, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var users []*Org
+
+	resp, err := u.client.Do(ctx, req, &users)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return users, resp, nil
 }
 
-func (t TeamInput) validate() error {
-	return nil
+func (u *OrgsService) CreateOrg(ctx context.Context, input *Org) (*Org, *Response, error) {
+	urlPath := "/organisations"
+
+	userReq := &orgInput{
+		Name: input.Name,
+	}
+
+	req, err := u.client.NewRequest(ctx, http.MethodPost, urlPath, userReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	user := new(Org)
+
+	resp, err := u.client.Do(ctx, req, user)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return user, resp, nil
 }
 
-type ListTeamsInput struct{}
+func (u *OrgsService) GetOrg(ctx context.Context, orgID int64) (*Org, *Response, error) {
+	urlPath := fmt.Sprintf("/organisations/%v", orgID)
+
+	req, err := u.client.NewRequest(ctx, http.MethodGet, urlPath, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	user := new(Org)
+
+	resp, err := u.client.Do(ctx, req, user)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return user, resp, nil
+}
+
+func (u *OrgsService) UpdateOrg(ctx context.Context, orgID int64, input *Org) (*Org, *Response, error) {
+	urlPath := fmt.Sprintf("/organisations/%v", orgID)
+
+	userReq := &orgInput{
+		Name: input.Name,
+	}
+
+	req, err := u.client.NewRequest(ctx, http.MethodPut, urlPath, userReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	user := new(Org)
+
+	resp, err := u.client.Do(ctx, req, user)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return user, resp, nil
+}
+
+func (u *OrgsService) DeleteOrg(ctx context.Context, orgID int64) (*Response, error) {
+	urlPath := fmt.Sprintf("/organisations/%v", orgID)
+
+	req, err := u.client.NewRequest(ctx, http.MethodDelete, urlPath, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := u.client.Do(ctx, req, nil)
+	if err != nil {
+		return resp, err
+	}
+
+	return resp, nil
+}
+
+func (u *OrgsService) ListTeams(ctx context.Context, orgID int64, opts *ListOptions) ([]*Team, *Response, error) {
+	urlPath := fmt.Sprintf("/organisations/%v/teams", orgID)
+
+	req, err := u.client.NewRequestWithOptions(ctx, http.MethodGet, urlPath, nil, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var teams []*Team
+
+	resp, err := u.client.Do(ctx, req, &teams)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return teams, resp, nil
+}
+
+func (u *OrgsService) CreateTeam(ctx context.Context, orgID int64, input *Team) (*Team, *Response, error) {
+	urlPath := fmt.Sprintf("/organisations/%v/teams", orgID)
+
+	teamBody := &teamInput{
+		Name: input.Name,
+	}
+
+	req, err := u.client.NewRequest(ctx, http.MethodPost, urlPath, teamBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	team := new(Team)
+
+	resp, err := u.client.Do(ctx, req, team)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return team, resp, nil
+}
+
+func (u *OrgsService) UpdateTeam(ctx context.Context, orgID, teamID int64, input *Team) (*Team, *Response, error) {
+	urlPath := fmt.Sprintf("/organisations/%v/teams/%v", orgID, teamID)
+
+	userReq := &orgInput{
+		Name: input.Name,
+	}
+
+	req, err := u.client.NewRequest(ctx, http.MethodPut, urlPath, userReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	team := new(Team)
+
+	resp, err := u.client.Do(ctx, req, team)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return team, resp, nil
+}
+
+func (u *OrgsService) DeleteTeam(ctx context.Context, orgID, teamID int64) (*Response, error) {
+	urlPath := fmt.Sprintf("/organisations/%v/teams/%v", orgID, teamID)
+
+	req, err := u.client.NewRequest(ctx, http.MethodDelete, urlPath, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := u.client.Do(ctx, req, nil)
+	if err != nil {
+		return resp, err
+	}
+
+	return resp, nil
+}

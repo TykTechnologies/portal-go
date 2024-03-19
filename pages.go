@@ -1,137 +1,15 @@
-// Copyright 2023 Tyk Technologies
+// Copyright 2024 Tyk Technologies
 // SPDX-License-Identifier: MPL-2.0
 
 package portal
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
+	"net/http"
 )
 
-const (
-	pathPages = "/portal-api/pages"
-	pathPage  = "/portal-api/pages/%d"
-)
-
-//go:generate mockery --name Pages --filename pages.go
-type Pages interface {
-	CreatePage(ctx context.Context, input *CreatePageInput, opts ...Option) (*CreatePageOutput, error)
-	GetPage(ctx context.Context, id int64, opts ...Option) (*GetPageOutput, error)
-	ListPages(ctx context.Context, options *ListPagesInput, opts ...Option) (*ListPagesOutput, error)
-	UpdatePage(ctx context.Context, id int64, input *UpdatePageInput, opts ...Option) (*UpdatePageOutput, error)
-	DeletePage(ctx context.Context, id int64, opts ...Option) (*PageOutput, error)
-}
-
-type pages struct {
-	client *Client
-}
-
-func (p pages) CreatePage(ctx context.Context, input *CreatePageInput, opts ...Option) (*CreatePageOutput, error) {
-	payload, err := json.Marshal(input)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := p.client.doPost(ctx, pathPages, bytes.NewReader(payload), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var page Page
-
-	if err := resp.Unmarshal(&page); err != nil {
-		return nil, err
-	}
-
-	return &CreatePageOutput{
-		Data: &page,
-	}, nil
-}
-
-func (p pages) GetPage(ctx context.Context, id int64, opts ...Option) (*GetPageOutput, error) {
-	resp, err := p.client.doGet(ctx, fmt.Sprintf(pathPage, id), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var page Page
-	if err := resp.Unmarshal(&page); err != nil {
-		return nil, err
-	}
-
-	return &GetPageOutput{
-		Data: &page,
-	}, nil
-}
-
-func (p pages) ListPages(ctx context.Context, options *ListPagesInput, opts ...Option) (*ListPagesOutput, error) {
-	resp, err := p.client.doGet(ctx, pathPages, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var pages []Page
-
-	if err := resp.Unmarshal(&pages); err != nil {
-		return nil, err
-	}
-
-	return &ListPagesOutput{
-		Pages: pages,
-	}, nil
-}
-
-func (p pages) UpdatePage(ctx context.Context, id int64, input *UpdatePageInput, opts ...Option) (*UpdatePageOutput, error) {
-	payload, err := json.Marshal(input)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := p.client.doPut(ctx, fmt.Sprintf(pathPage, id), bytes.NewReader(payload), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var page Page
-
-	if err := resp.Unmarshal(&page); err != nil {
-		return nil, err
-	}
-
-	return &UpdatePageOutput{
-		Data: &page,
-	}, nil
-}
-
-func (p pages) DeletePage(ctx context.Context, id int64, opts ...Option) (*PageOutput, error) {
-	_, err := p.client.doDelete(ctx, fmt.Sprintf(pathPage, id), nil, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return &PageOutput{}, nil
-}
-
-type PageInput struct {
-	AllowFormSubmission bool   `json:"AllowFormSubmission"`
-	PageTypeID          int64  `json:"PageTypeID"`
-	Path                string `json:"Path"`
-	Status              string `json:"Status"`
-	Template            string `json:"Template"`
-	Title               string `json:"Title"`
-}
-
-type UpdatePageInput = PageInput
-
-type CreatePageInput = PageInput
-
-type ListPagesInput struct{}
-
-type ListPagesOutput struct {
-	Pages []Page
-}
+type PagesService service
 
 type Page struct {
 	AllowFormSubmission bool   `json:"AllowFormSubmission"`
@@ -145,12 +23,202 @@ type Page struct {
 	UpdatedAt           string `json:"UpdatedAt"`
 }
 
-type PageOutput struct {
-	Data *Page
+type ContentBlock struct {
+	Content string `json:"Content,omitempty"`
+	Name    string `json:"Name,omitempty"`
+	ID      int    `json:"ID,omitempty"`
+	PageID  int    `json:"PageID,omitempty"`
 }
 
-type UpdatePageOutput = PageOutput
+type pageInput struct {
+	AllowFormSubmission bool   `json:"AllowFormSubmission"`
+	PageTypeID          int64  `json:"PageTypeID"`
+	Path                string `json:"Path"`
+	Status              string `json:"Status"`
+	Template            string `json:"Template"`
+	Title               string `json:"Title"`
+}
 
-type GetPageOutput = PageOutput
+func (u *PagesService) ListPages(ctx context.Context, opts *ListOptions) ([]*Page, *Response, error) {
+	urlPath := "/pages"
 
-type CreatePageOutput = PageOutput
+	req, err := u.client.NewRequestWithOptions(ctx, http.MethodGet, urlPath, nil, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var pages []*Page
+
+	resp, err := u.client.Do(ctx, req, &pages)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return pages, resp, nil
+}
+
+func (u *PagesService) CreatePage(ctx context.Context, input *Page) (*Page, *Response, error) {
+	urlPath := "/pages"
+
+	pageReq := &pageInput{}
+
+	req, err := u.client.NewRequest(ctx, http.MethodPost, urlPath, pageReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	page := new(Page)
+
+	resp, err := u.client.Do(ctx, req, page)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return page, resp, nil
+}
+
+func (u *PagesService) GetPage(ctx context.Context, pageID int64) (*Page, *Response, error) {
+	urlPath := fmt.Sprintf("/pages/%v", pageID)
+
+	req, err := u.client.NewRequest(ctx, http.MethodGet, urlPath, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	page := new(Page)
+
+	resp, err := u.client.Do(ctx, req, page)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return page, resp, nil
+}
+
+func (u *PagesService) UpdatePage(ctx context.Context, pageID int64, input *Page) (*Page, *Response, error) {
+	urlPath := fmt.Sprintf("/pages/%v", pageID)
+
+	pageReq := &pageInput{}
+
+	req, err := u.client.NewRequest(ctx, http.MethodPut, urlPath, pageReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	page := new(Page)
+
+	resp, err := u.client.Do(ctx, req, page)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return page, resp, nil
+}
+
+func (u *PagesService) DeletePage(ctx context.Context, pageID int64) (*Response, error) {
+	urlPath := fmt.Sprintf("/pages/%v", pageID)
+
+	req, err := u.client.NewRequest(ctx, http.MethodDelete, urlPath, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := u.client.Do(ctx, req, nil)
+	if err != nil {
+		return resp, err
+	}
+
+	return resp, nil
+}
+
+func (u *PagesService) ListContentBlocks(ctx context.Context, pageID int64, opts *ListOptions) ([]*ContentBlock, *Response, error) {
+	urlPath := fmt.Sprintf("/pages/%v/content-blocks", pageID)
+
+	req, err := u.client.NewRequestWithOptions(ctx, http.MethodGet, urlPath, nil, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var pages []*ContentBlock
+
+	resp, err := u.client.Do(ctx, req, &pages)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return pages, resp, nil
+}
+
+func (u *PagesService) CreateContentBlocks(ctx context.Context, pageID int64, input *Page) (*ContentBlock, *Response, error) {
+	urlPath := fmt.Sprintf("/pages/%v/content-blocks", pageID)
+
+	pageReq := &pageInput{}
+
+	req, err := u.client.NewRequest(ctx, http.MethodPost, urlPath, pageReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	page := new(ContentBlock)
+
+	resp, err := u.client.Do(ctx, req, page)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return page, resp, nil
+}
+
+func (u *PagesService) GetContentBlocks(ctx context.Context, pageID, cbID int64) (*ContentBlock, *Response, error) {
+	urlPath := fmt.Sprintf("/pages/%v/content-blocks/%v", pageID, cbID)
+
+	req, err := u.client.NewRequest(ctx, http.MethodGet, urlPath, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	page := new(ContentBlock)
+
+	resp, err := u.client.Do(ctx, req, page)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return page, resp, nil
+}
+
+func (u *PagesService) UpdateContentBlocks(ctx context.Context, pageID, cbID int64, input *Page) (*ContentBlock, *Response, error) {
+	urlPath := fmt.Sprintf("/pages/%v/content-blocks/%v", pageID, cbID)
+
+	pageReq := &pageInput{}
+
+	req, err := u.client.NewRequest(ctx, http.MethodPut, urlPath, pageReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	page := new(ContentBlock)
+
+	resp, err := u.client.Do(ctx, req, page)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return page, resp, nil
+}
+
+func (u *PagesService) DeleteContentBlocks(ctx context.Context, pageID, cbID int64) (*Response, error) {
+	urlPath := fmt.Sprintf("/pages/%v/content-blocks/%v", pageID, cbID)
+
+	req, err := u.client.NewRequest(ctx, http.MethodDelete, urlPath, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := u.client.Do(ctx, req, nil)
+	if err != nil {
+		return resp, err
+	}
+
+	return resp, nil
+}
