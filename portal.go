@@ -1,525 +1,300 @@
-// Copyright 2023 Tyk Technologies
-// SPDX-License-Identifier: MPL-2.0
-
 package portal
 
 import (
+	"bytes"
 	"context"
-	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
-	"net"
+	"log"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strings"
-	"time"
-)
 
-const (
-	headerAuthorization   = "Authorization"
-	headerAccept          = "Accept"
-	headerContentType     = "Content-Type"
-	defaultBaseURL        = "http://localhost:3001"
-	defaultConnectTimeout = 60000
-	defaultReadTimeout    = 60000
-	defaultUserAgent      = "ua"
+	"github.com/google/go-querystring/query"
 )
 
 type Option func(*Client)
 
-func WithSkipValidation() Option {
-	return func(c *Client) {
-		c.skipValidation = true
+func NewClient(baseURL, secret string, opts ...Option) (*Client, error) {
+	b, err := url.Parse(baseURL)
+	if err != nil {
+		return nil, err
 	}
-}
 
-func WithDialTimeout(d time.Duration) Option {
-	return func(o *Client) {
-		o.connectTimeout = d
+	newClient := &Client{
+		baseURL: b,
+		secret:  secret,
 	}
-}
 
-func WithReadTimeout(d time.Duration) Option {
-	return func(o *Client) {
-		o.readTimeout = d
-	}
-}
-
-func WithHTTPClient(c HTTPClient) Option {
-	return func(o *Client) {
-		o.httpClient = c
-	}
-}
-
-func WithBaseURL(url string) Option {
-	return func(o *Client) {
-		o.baseURL = url
-	}
-}
-
-func WithToken(value string) Option {
-	return func(o *Client) {
-		o.token = value
-	}
-}
-
-func WithInsecure(value bool) Option {
-	return func(o *Client) {
-		o.insecure = value
-	}
-}
-
-func WithConnectTimeout(value time.Duration) Option {
-	return func(o *Client) {
-		o.connectTimeout = value
-	}
-}
-
-func WithUserAgent(ua string) Option {
-	return func(o *Client) {
-		o.userAgent = ua
-	}
-}
-
-func WithDebug(debug bool) Option {
-	return func(o *Client) {
-		o.debug = debug
-	}
-}
-
-func WithHeaders(h map[string]string) Option {
-	return func(c *Client) {
-		headers := http.Header{}
-
-		for k, v := range h {
-			headers.Add(k, v)
-		}
-
-		c.headers = headers
-	}
-}
-
-type Client struct {
-	httpClient      HTTPClient
-	connectTimeout  time.Duration
-	readTimeout     time.Duration
-	userAgent       string
-	token           string
-	debug           bool
-	insecure        bool
-	baseURL         string
-	maxRetries      int
-	minRetryBackoff time.Duration
-	skipValidation  bool
-	headers         http.Header
-
-	pages      Pages
-	providers  Providers
-	plans      Plans
-	users      Users
-	orgs       Orgs
-	products   Products
-	catalogues Catalogues
-	ars        ARs
-	apps       Apps
-	themes     Themes
-}
-
-func (c Client) Apps() Apps {
-	return c.apps
-}
-
-func (c *Client) SetApps(app Apps) {
-	c.apps = app
-}
-
-func (c Client) ARs() ARs {
-	return c.ars
-}
-
-func (c *Client) SetARs(ar ARs) {
-	c.ars = ar
-}
-
-func (c Client) Catalogues() Catalogues {
-	return c.catalogues
-}
-
-func (c *Client) SetCatalogues(catalogues Catalogues) {
-	c.catalogues = catalogues
-}
-
-func (c Client) Products() Products {
-	return c.products
-}
-
-func (c *Client) SetProducts(products Products) {
-	c.products = products
-}
-
-func (c Client) Orgs() Orgs {
-	return c.orgs
-}
-
-func (c *Client) SetOrgs(orgs Orgs) {
-	c.orgs = orgs
-}
-
-func (c Client) Users() Users {
-	return c.users
-}
-
-func (c *Client) SetUsers(users Users) {
-	c.users = users
-}
-
-func (c Client) Providers() Providers {
-	return c.providers
-}
-
-func (c *Client) SetProviders(providers Providers) {
-	c.providers = providers
-}
-
-func (c Client) Plans() Plans {
-	return c.plans
-}
-
-func (c *Client) SetPlans(plans Plans) {
-	c.plans = plans
-}
-
-func (c Client) Pages() Pages {
-	return c.pages
-}
-
-func (c *Client) SetPages(pages Pages) {
-	c.pages = pages
-}
-
-func (c Client) Themes() Themes {
-	return c.themes
-}
-
-func (c *Client) SetThemes(themes Themes) {
-	c.themes = themes
-}
-
-func (c *Client) Apply(opts ...Option) {
 	for _, opt := range opts {
 		if opt == nil {
 			continue
 		}
 
-		opt(c)
+		opt(newClient)
 	}
+
+	newClient.setup()
+
+	return newClient, err
 }
 
-func New(opts ...Option) (*Client, error) {
-	return newClient(opts...)
+type Client struct {
+	client    *http.Client
+	common    service
+	baseURL   *url.URL
+	userAgent string
+	secret    string
+
+	ARs        *ARsService
+	Apps       *AppsService
+	Catalogues *CataloguesService
+	EAs        *EAsService
+	Orgs       *OrgsService
+	Pages      *PagesService
+	Plans      *PlansService
+	Products   *ProductsService
+	Providers  *ProvidersService
+	Themes     *ThemesService
+	Users      *UsersService
 }
 
-func (c Client) validate() error {
-	if c.token == "" {
-		return fmt.Errorf("token is required")
+func (c *Client) setup() error {
+	if c.client == nil {
+		c.client = &http.Client{}
 	}
+
+	if c.baseURL == nil {
+		baseURL, err := url.Parse("http://localhost:3001/portal-api/")
+		if err != nil {
+			return err
+		}
+
+		c.baseURL = baseURL
+	}
+
+	if c.userAgent == "" {
+		c.userAgent = "portal"
+	}
+
+	c.common.client = c
+
+	c.ARs = (*ARsService)(&c.common)
+	c.Apps = (*AppsService)(&c.common)
+	c.Catalogues = (*CataloguesService)(&c.common)
+	c.EAs = (*EAsService)(&c.common)
+	c.Orgs = (*OrgsService)(&c.common)
+	c.Pages = (*PagesService)(&c.common)
+	c.Plans = (*PlansService)(&c.common)
+	c.Products = (*ProductsService)(&c.common)
+	c.Providers = (*ProvidersService)(&c.common)
+	c.Themes = (*ThemesService)(&c.common)
+	c.Users = (*UsersService)(&c.common)
 
 	return nil
 }
 
-func newClient(opts ...Option) (*Client, error) {
-	client := &Client{
-		baseURL:        defaultBaseURL,
-		connectTimeout: defaultConnectTimeout,
-	}
+func jsonEncode(w io.Writer, body interface{}) error {
+	enc := json.NewEncoder(w)
+	enc.SetEscapeHTML(false)
 
-	if client.maxRetries == 0 {
-		client.maxRetries = 3
-	}
-
-	if client.minRetryBackoff == 0 {
-		client.minRetryBackoff = 100 * time.Millisecond
-	}
-
-	client.Apply(opts...)
-
-	if err := client.validate(); err != nil {
-		return nil, err
-	}
-
-	client.providers = &providers{client: client}
-	client.plans = &plans{client: client}
-	client.users = &users{client: client}
-	client.orgs = &orgs{client: client}
-	client.products = &products{client: client}
-	client.catalogues = &catalogues{client: client}
-	client.ars = &ars{client: client}
-	client.pages = &pages{client: client}
-	client.apps = &apps{client: client}
-	client.themes = &themes{client: client}
-
-	return client, nil
+	return enc.Encode(body)
 }
 
-func (c Client) NewRequest(
-	ctx context.Context,
-	method string,
-	path string,
-	body io.Reader,
-	params url.Values, opts ...Option,
-) (*http.Request, error) {
-	client := c.copy(opts...)
+func (c *Client) NewRequestWithOptions(ctx context.Context, method, urlPath string, body interface{}, options interface{}, opts ...RequestOption) (*http.Request, error) {
+	if v, ok := body.(Validator); ok {
+		err := v.Validate()
+		if err != nil {
+			return nil, err
+		}
+	}
 
-	newPath, err := url.JoinPath(client.baseURL, path)
+	req, err := c.NewRequest(ctx, method, urlPath, body, opts...)
 	if err != nil {
+		log.Println("Unable to create request")
 		return nil, err
 	}
 
-	var newBody io.Reader = http.NoBody
-	if body != nil {
-		newBody = body
-	}
-
-	req, err := http.NewRequestWithContext(ctx, method, newPath, newBody)
-	if err != nil {
+	if err := requestWithOptions(req, options); err != nil {
 		return nil, err
 	}
-
-	req.Header.Add(headerAuthorization, client.token)
-	req.Header.Add(headerAccept, "application/json")
-
-	if body != nil {
-		req.Header.Add(headerContentType, "application/json")
-	}
-
-	req.Header.Set("User-Agent", defaultUserAgent)
-	if c.userAgent != "" {
-		req.Header.Set("User-Agent", c.userAgent)
-	}
-
-	for k, v := range client.headers {
-		req.Header.Set(k, strings.Join(v, ";"))
-	}
-
-	req.URL.RawQuery = params.Encode()
 
 	return req, nil
 }
 
-func (c Client) newGetRequest(ctx context.Context, path string, params url.Values, opts ...Option) (*http.Request, error) {
-	return c.NewRequest(ctx, http.MethodGet, path, nil, params, opts...)
-}
-
-func (c Client) newPostRequest(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*http.Request, error) {
-	return c.NewRequest(ctx, http.MethodPost, path, body, params, opts...)
-}
-
-func (c Client) newPutRequest(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*http.Request, error) {
-	return c.NewRequest(ctx, http.MethodPut, path, body, params, opts...)
-}
-
-func (c Client) newDeleteRequest(
-	ctx context.Context,
-	path string,
-	body io.Reader,
-	params url.Values,
-	opts ...Option,
-) (*http.Request, error) {
-	return c.NewRequest(ctx, http.MethodDelete, path, body, params)
-}
-
-func (c Client) doGet(ctx context.Context, path string, params url.Values, opts ...Option) (*APIResponse, error) {
-	req, err := c.newGetRequest(ctx, path, params, opts...)
-	if err != nil {
-		return nil, err
+func (c *Client) NewRequest(ctx context.Context, method, urlPath string, body interface{}, opts ...RequestOption) (*http.Request, error) {
+	if !strings.HasSuffix(c.baseURL.Path, "/") {
+		return nil, fmt.Errorf("BaseURL must have a trailing slash, but %q does not", c.baseURL)
 	}
 
-	resp, err := c.performRequest(ctx, req)
-	if err != nil {
-		return nil, err
-	}
+	u := c.baseURL.JoinPath(urlPath)
 
-	return resp, nil
-}
+	var buf io.ReadWriter
+	if body != nil {
+		buf = &bytes.Buffer{}
 
-func (c Client) doPost(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*APIResponse, error) {
-	req, err := c.newPostRequest(ctx, path, body, params, opts...)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := c.performRequest(ctx, req)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp, nil
-}
-
-func (c Client) doDelete(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*APIResponse, error) {
-	req, err := c.newDeleteRequest(ctx, path, body, params, opts...)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := c.performRequest(ctx, req)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp, nil
-}
-
-func (c Client) doPut(ctx context.Context, path string, body io.Reader, params url.Values, opts ...Option) (*APIResponse, error) {
-	req, err := c.newPutRequest(ctx, path, body, params, opts...)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := c.performRequest(ctx, req, opts...)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp, nil
-}
-
-func (c Client) copy(opts ...Option) Client {
-	newClient := c
-
-	newClient.Apply(opts...)
-
-	return newClient
-}
-
-func (c Client) performRequest(ctx context.Context, req *http.Request, opts ...Option) (*APIResponse, error) {
-	if err := ctx.Err(); err != nil {
-		return nil, err
-	}
-
-	newClient := c.copy(opts...)
-
-	var httpClient HTTPClient = &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{
-				//nolint:gosec
-				InsecureSkipVerify: newClient.insecure,
-			},
-			DialContext: (&net.Dialer{
-				Timeout: newClient.connectTimeout * time.Millisecond,
-			}).DialContext,
-		},
-		Timeout: newClient.readTimeout * time.Millisecond,
-	}
-
-	if newClient.httpClient != nil {
-		httpClient = newClient.httpClient
-	}
-
-	var (
-		attempt  int
-		httpResp *http.Response
-		err      error
-		respC    = make(chan APIResponse)
-		errC     = make(chan error)
-	)
-
-	backoff := c.minRetryBackoff
-
-	go func() {
-		for attempt = 0; attempt < c.maxRetries; attempt++ {
-			httpResp, err = httpClient.Do(req)
-			if err != nil {
-				retry := shouldRetry(err)
-				if retry && attempt < c.maxRetries-1 {
-					time.Sleep(backoff)
-					backoff *= 2
-					continue
-				}
-
-				errC <- err
-				return
-			}
-
-			break
-		}
-
-		defer httpResp.Body.Close()
-
-		body, err := io.ReadAll(httpResp.Body)
+		err := jsonEncode(buf, body)
 		if err != nil {
-			errC <- err
-			return
+			return nil, err
 		}
+	}
 
-		r := &APIResponse{
-			Body:     body,
-			Response: httpResp,
-		}
-
-		if err := checkError(r); err != nil {
-			errC <- err
-			return
-		}
-
-		respC <- APIResponse{
-			Response: httpResp,
-			Body:     body,
-		}
-	}()
-
-	select {
-	case <-ctx.Done():
-		return nil, context.DeadlineExceeded
-	case err := <-errC:
+	req, err := http.NewRequest(method, u.String(), buf)
+	if err != nil {
 		return nil, err
-	case resp := <-respC:
-		return &resp, nil
 	}
+
+	if body != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
+	req.Header.Set("Accept", "application/json")
+
+	if c.userAgent != "" {
+		req.Header.Set("User-Agent", c.userAgent)
+	}
+
+	req.Header.Set("Authorization", c.secret)
+
+	for _, opt := range opts {
+		opt(req)
+	}
+
+	return req, nil
 }
 
-var (
-	ErrNotFound  = errors.New("not found")
-	ErrForbidden = errors.New("forbidden")
-)
+type RequestOption func(req *http.Request)
 
-func checkError(resp *APIResponse) error {
-	switch resp.Response.StatusCode {
-	case 200, 201:
-		return nil
+func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Response, error) {
+	resp, err := c.performRequest(ctx, req)
+	if err != nil {
+		return resp, err
+	}
+
+	defer resp.Body.Close()
+
+	switch v := v.(type) {
+	case nil:
+	case io.Writer:
+		_, err = io.Copy(v, resp.Body)
 	default:
-		e := APIError{
-			APIResponse: resp,
+		jsonErr := json.NewDecoder(resp.Body).Decode(v)
+		if jsonErr == io.EOF {
+			jsonErr = nil
 		}
 
-		if err := json.Unmarshal(resp.Body, &e); err != nil {
-			return errors.New(http.StatusText(resp.Response.StatusCode))
+		if jsonErr != nil {
+			err = jsonErr
+		}
+	}
+
+	return resp, err
+
+}
+
+var ErrInvalidContext = errors.New("no context")
+
+func (c *Client) performRequest(ctx context.Context, req *http.Request) (*Response, error) {
+	if ctx == nil {
+		return nil, ErrInvalidContext
+	}
+
+	resp, err := c.client.Do(req)
+	if err != nil {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		default:
 		}
 
-		return e
+		return nil, err
+	}
+
+	err = checkResponse(resp)
+	if err != nil {
+		defer resp.Body.Close()
+	}
+
+	return newResponse(resp), err
+}
+
+func checkResponse(r *http.Response) error {
+	if c := r.StatusCode; 200 <= c && c <= 299 {
+		return nil
+	}
+
+	errResp := &ResponseError{Response: r}
+
+	data, err := io.ReadAll(r.Body)
+	log.Println(string(data))
+
+	if err == nil && data != nil {
+		err = json.Unmarshal(data, errResp)
+		if err != nil {
+			errResp = &ResponseError{Response: r}
+		}
+	}
+
+	r.Body = io.NopCloser(bytes.NewBuffer(data))
+
+	switch {
+	default:
+		return errResp
 	}
 }
 
-type APIResponse struct {
-	Response *http.Response
-	Body     []byte
+type ResponseError struct {
+	Response *http.Response `json:"-"`
+	Message  string         `json:"message"`
+	Errors   []string       `json:"errors"`
 }
 
-func (a APIResponse) Unmarshal(v interface{}) error {
-	return json.Unmarshal(a.Body, &v)
+func (r *ResponseError) Error() string {
+	if r.Response != nil && r.Response.Request != nil {
+		return fmt.Sprintf("%v %v: %d %v %+v", r.Response.Request.Method, r.Response.Request.URL, r.Response.StatusCode, r.Message, r.Errors)
+	}
+
+	if r.Response != nil {
+		return fmt.Sprintf("%d %v %+v", r.Response.StatusCode, r.Message, r.Errors)
+	}
+
+	return fmt.Sprintf("%v %+v", r.Message, r.Errors)
 }
 
-type HTTPClient interface {
-	Do(*http.Request) (*http.Response, error)
+type service struct {
+	client *Client
 }
 
-func shouldRetry(err error) bool {
-	return false
+type Response struct {
+	*http.Response
 }
 
-type Status struct {
-	Status  string `json:"status,omitempty"`
-	Message string `json:"message,omitempty"`
+func requestWithOptions(req *http.Request, opts interface{}) error {
+	v := reflect.ValueOf(opts)
+	if v.Kind() == reflect.Ptr && v.IsNil() {
+		return nil
+	}
+
+	qs, err := query.Values(opts)
+	if err != nil {
+		return err
+	}
+
+	req.URL.RawQuery = qs.Encode()
+	return nil
+}
+
+func Bool(v bool) *bool { return &v }
+
+func Int(v int) *int { return &v }
+
+func Int64(v int64) *int64 { return &v }
+
+func String(v string) *string { return &v }
+
+func newResponse(r *http.Response) *Response {
+	return &Response{Response: r}
 }
